@@ -1,0 +1,52 @@
+<nav  class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"><img src="img/upa.png" id="logoUPA" /></a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul ng-controller="DropdownCtrl" class="nav navbar-nav navbar-left" role="menu">
+                <li ng-repeat="(name, menudata) in data" id="{{menudata[1].id}}" role="menu">
+                    <a class="dropdown-toggle" data-toggle="dropdown">{{name}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li ng-repeat="(href, submenuname) in menudata[0]">
+                            <a href="{{href}}">{{submenuname}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ul ng-controller="User_DataCtrl" class="nav navbar-nav navbar-right" role="menu">
+                <li role="menu">
+                    <a class="dropdown-toggle" data-toggle="dropdown">{{UserData.nocuenta}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a>{{UserData.email}}</a>
+                            <a ng-click="logout()" class="ng-binding">Salir</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="col-md-2">
+            <div ng-controller="TabsMenuCtrl" ng-app="link">
+                <ul class="nav nav-pills nav-stacked">
+                    <li ng-repeat="tab in tabs" active-link="active" ng-attr-id="{{tab.href.substring(1)}}">
+                        <a href="{{tab.href}}">{{tab.title}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10" ng-include="template"></div>
+    </div>
+</div>

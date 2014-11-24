@@ -1,0 +1,33 @@
+<style type="text/css">
+    body {
+        background-color: #ccc;
+    }
+</style>
+<!--<div ng-if="visible" ng-include="main_template" ng-controller="Control_loginCtrl">-->
+<div class="modal-dialog" ng-controller="Control_loginCtrl" >
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="text-center">Inicia Sesión</h1>
+        </div>
+        <div class="modal-body">
+            <form class="form col-md-12 center-block">
+                <div class="form-group">
+                    <input ng-model="loginData.userName" id="amaterno" name="amaterno" type="text" placeholder="Usuario" class="form-control input-md">
+                </div>
+                <div class="form-group">
+                    <input ng-model="loginData.password" id="amaterno" name="amaterno" type="password" placeholder="contraseña" class="form-control input-md">
+                </div>
+                <div class="form-group">
+                    <button ng-click="login()" id="entrar" name="entrar" class="btn btn-primary btn-lg btn-block">Entrar</button>
+                </div>
+                <div class="form-group">
+                    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+                </div>
+            </form>
+            <center>
+<!--                <img src="img/upa_logo.jpg">-->
+            </center>
+        </div>
+        <div class="modal-footer" style="border-top: 0px;"></div>
+    </div>
+</div>
