@@ -1,0 +1,31 @@
+<div ng-controller="EstadoCuentaCtrl" class="col-md-10">
+    <select ng-model="Modelo_Periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="Mostrar_Referencia()">
+    </select>
+    <!--    <select ng-model="Modelo_Periodo">
+            <option ng-selected="{{periodo.actual == 1}}"
+                    ng-repeat="periodo in periodos"
+                    value="{{periodo.idperiodo}}">
+                {{periodo.periodo}}
+            </option>
+        </select>-->
+    <div class="table-responsive" ng-if="adeudos">
+        <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+            <thead>
+            <th>Descripción</th>
+            <th>Importe</th>
+            <th>Recargos</th>
+            <th>Vence</th>
+            <th>Beca</th>
+            <th>Saldo</th>
+            </thead>
+            <tr ng-repeat="adeudo in adeudos">
+                <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
+                <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>
+                <td data-title="'Recargo'">{{adeudo.recargo_total}}</td>
+                <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
+                <td data-title="'Beca'">{{adeudo.beca}}</td>
+                <td data-title="'Total'">{{adeudo.importe}}</td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 'use strict';
 
-
+var serviceBase = 'http://laravel.localhost/SistemaUPA2.0/public/index.php';
 // Declare app level module which depends on filters, and services
 var UPapp = angular.module('UPA_Pagos', [
     'ngRoute',
@@ -9,22 +9,36 @@ var UPapp = angular.module('UPA_Pagos', [
     'myApp.directives',
     'myApp.controllers',
     'Interceptor_Service',
+    'ui.bootstrap',
     'Auth_Service'
 ]);
 
 UPapp.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/administracion/:pagename', {
-            templateUrl: 'partials/admin/index.html',
-            controller: 'AdminCtrl'
+        $routeProvider.when('/home', {
+            templateUrl: 'partials/index.html',
+            controller: 'HomeCtrl'
         });
-        $routeProvider.when('/view2', {
-            templateUrl: 'partials/partial2.html',
-            controller: 'MyCtrl2'
+        //.../home/admin
+        $routeProvider.when('/home/admin/:pagename', {
+            templateUrl: 'partials/index.html',
+            controller: 'HomeCtrl'
+        });
+        $routeProvider.when('/home/alumno/:pagename', {
+            templateUrl: 'partials/index.html',
+            controller: 'HomeCtrl'
+        });
+        $routeProvider.when('/home/admin/:pagename/:subpagename', {
+            templateUrl: 'partials/index.html',
+            controller: 'HomeCtrl'
+        });
+        $routeProvider.when('/home/alumno/:pagename/:subpagename', {
+            templateUrl: 'partials/index.html',
+            controller: 'HomeCtrl'
         });
         $routeProvider.when('/login', {
             templateUrl: 'partials/login/index.html'
         });
-        $routeProvider.otherwise({redirectTo: '/login'});
+        //$routeProvider.otherwise({redirectTo: '/login'});
     }]);
 UPapp.run(['authService', function (authService) {
         authService.fillAuthData();
