@@ -1,0 +1,22 @@
+<div class="col-md-12" ng-controller="Administracion_Agrupaciones_showalumnos">
+    <form class="form-horizontal">
+        <fieldset>
+            <legend><span class="glyphicon glyphicon-star"></span> Agrupacion: </legend>
+
+            <div class="table-responsive">
+                <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                    <thead>
+                    <th>Añadir</th>
+                    <th>Matricula</th>
+                    <th>Nombre</th>
+                    </thead>
+                    <tr ng-repeat="alumno in alumnos">
+                        <td data-title="'Clave'"><input type="checkbox"/></td>
+                        <td data-title="'Descripcion'">{{alumno.matricula}}</td>
+                        <td data-title="'Nombre'">{{alumno.nom + " " + alumno.appat + " " + alumno.apmat}}</td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </form>
+</div>

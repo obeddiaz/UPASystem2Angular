@@ -1,7 +1,7 @@
 UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $location) {
     var curr_user = authService.authentication;
-    console.log(authService.authentication);
-    console.log($routeParams);
+    //console.log(authService.authentication);
+    //console.log($routeParams);
     if (curr_user.isAuth) {
         if (curr_user.user_type === 'alumno') {
             var main_route = '#/home/alumno';
@@ -28,11 +28,11 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                     menu: [
                         {
                             title: "Agrupaciones",
-                            action: main_route + "/agrupaciones"
+                            action: main_route + "/administracion/agrupaciones"
                         },
                         {
                             title: "Generales",
-                            action: main_route + "/agrupaciones/generales"
+                            action: main_route + "/administracion/generales"
                         }
                     ]
                 },
@@ -63,7 +63,7 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                     ]
                 }
             ];
-            console.log($routeParams);
+            //console.log($routeParams);
             if ($routeParams.pagename && $routeParams.subpagename) {
                 $scope.template = 'partials/administrador/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html';
             } else {

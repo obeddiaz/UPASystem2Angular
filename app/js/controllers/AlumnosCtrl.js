@@ -1,6 +1,9 @@
 UPapp.controller('EstadoCuentaCtrl', function ($scope, $routeParams, studentService, authService) {
     var curr_user = authService.authentication.persona;
     //console.log(studentService.getPeriodos());
+    var ref_count = 0;
+    var anp = {};
+    var total_referencias = {};
     studentService.getPeriodos().then(function (data) {
         //console.log(data);
         $scope.periodos = data;
@@ -36,6 +39,13 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $routeParams, studentServ
         studentService.getAdeudos(curr_user.idpersonas, $scope.Modelo_Periodo.idperiodo).then(function (data) {
             console.log(data);
             $scope.adeudos = data;
+            data.forEach(function (val, key) {
+                if (val.status_adeudo == 0) {
+                    anp[ref_count] = val;
+                    ref_count++;
+                    $scope.adeudos[key]['ref_counter'] = ref_count;
+                }
+            });
 //        if (authService.authentication.isAuth) {
 //            $location.path('/home');
 //        } else {
@@ -50,6 +60,19 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $routeParams, studentServ
             $scope.message = err.error_description;
         });
     };
+    $scope.Generareferencia = function (a) {
+        for (var c = 0; c < a; c++) {
+            total_referencias[c] = anp[c];
+        }
+        //studentService.setReferencias
 
-
+        studentService.setReferencias(total_referencias).then(function (data) {
+            console.log(data);
+        }, function (err) {
+            
+            //$scope.message = err.error_description;
+        });
+        //console.log(a);
+        //console.log(total_referencias);
+    };
 });

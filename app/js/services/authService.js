@@ -9,11 +9,11 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
         };
 
         var _login = function (loginData) {
-            console.log(loginData);
+            //console.log(loginData);
             var deferred = $q.defer();
             $http.post(serviceBase, {'u': loginData.userName, 'p': loginData.password}).
                     success(function (data, status) {
-                        console.log(data);
+                        //console.log(data);
                         if (!data.error) {
                             var response_data = data.respuesta[0];
                             var persona = response_data.user.persona;

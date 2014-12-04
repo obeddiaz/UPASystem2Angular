@@ -13,13 +13,13 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
                     if (Auth_Service.authentication.isAuth) {
                         config.headers.Authorization = $window.sessionStorage.getItem('token');
                     } else {
-                        $location.path('/login');
+                        //$location.path('/login');
                     }
                     return config || $q.when(config);
                 },
                 responseError: function (response) {
                     $window.sessionStorage.removeItem('token');
-                    $location.path('/login');
+                    //$location.path('/login');
                     if (response.status === 401) {
 
                     }

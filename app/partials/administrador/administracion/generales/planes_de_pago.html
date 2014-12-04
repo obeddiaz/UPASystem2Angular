@@ -1,0 +1,20 @@
+<div class="col-md-10" ng-controller="Administracion_Generales_planes_pago">
+    <form class="form-horizontal">
+        <fieldset>
+            <legend><span class="glyphicon glyphicon-star"></span> Planes de Pago</legend>
+
+            <div class="table-responsive">
+                <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                    <thead>
+                    <th>Clave Plan</th>
+                    <th>Descripción</th>
+                    </thead>
+                    <tr ng-repeat="plan in planes">
+                        <td data-title="'Clave'">{{plan.clave_plan}}</td>
+                        <td data-title="'Descripcion'">{{plan.descripcion}}</td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </form>
+</div>

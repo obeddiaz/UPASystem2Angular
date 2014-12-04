@@ -9,7 +9,7 @@
             </option>
         </select>-->
     <div class="table-responsive" ng-if="adeudos">
-        <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+        <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
             <thead>
             <th>Descripción</th>
             <th>Importe</th>
@@ -17,14 +17,18 @@
             <th>Vence</th>
             <th>Beca</th>
             <th>Saldo</th>
+            <th>Generar Recibo</th>
             </thead>
-            <tr ng-repeat="adeudo in adeudos">
+            <tr ng-repeat="adeudo in adeudos" ng-class="{'bg-success':adeudo.status_adeudo == 1}">
                 <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
                 <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>
                 <td data-title="'Recargo'">{{adeudo.recargo_total}}</td>
                 <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
                 <td data-title="'Beca'">{{adeudo.beca}}</td>
                 <td data-title="'Total'">{{adeudo.importe}}</td>
+                <td data-title="'Generar'">
+                    <button ng-if="adeudo.status_adeudo == 0" ng-click="Generareferencia(adeudo.ref_counter);">Generar</button>
+                </td>
             </tr>
         </table>
     </div>

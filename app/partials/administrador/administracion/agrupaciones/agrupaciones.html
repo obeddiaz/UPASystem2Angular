@@ -1,0 +1,24 @@
+<div class="col-md-12" ng-controller="Administracion_Agrupaciones_agrupaciones">
+    <form class="form-horizontal">
+        <fieldset>
+            <legend><span class="glyphicon glyphicon-star"></span> {{title}}</legend>
+
+            <div class="table-responsive">
+                <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                    <thead>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Ver Agrupacion</th>
+                    </thead>
+                    <tr ng-repeat="agrupacion in agrupaciones">
+                        <td data-title="'Clave'">{{agrupacion.nombre}}</td>
+                        <td data-title="'Descripcion'">{{agrupacion.descripcion}}</td>
+                        <td data-title="'Ver'">
+                            <button class="btn" ng-click="subPageLoad('agrupaciones_planpago',agrupacion,'planes')">ver agrupacion</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </fieldset>
+    </form>
+</div>

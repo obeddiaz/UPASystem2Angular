@@ -1,80 +1,72 @@
 UPapp.factory('adminService', ['$http', '$q', '$window', function ($http, $q, $window) {
-        var deferred = $q.defer();
-        var serviceBase = 'http://localhost:8000/';
+        //var deferred = $q.defer();
         var adminServiceFactory = {};
-//        var _getCiclos = function (Matricula) {
-//            $http.get(serviceBase + 'ciclos/show', {params: {'nocuenta': Matricula}})
-//                    .success(function (data) {
-//                        deferred.resolve(data.response);
-//                    }).
-//                    error(function (err, status) {
-//                        deferred.reject(err);
-//                    });
-//            return deferred.promise;
-//
-//        };
-//
-//        var _getReferencias = function (Matricula) {
-//
-//            var deferred = $q.defer();
-//            $http.get(serviceBase + 'cobros/show_estado_de_cuenta', {params: {'nocuenta': Matricula}}).
-//                    success(function (data, status) {
-//                        deferred.resolve(data.response);
-//                    }).
-//                    error(function (err, status) {
-//                        deferred.reject(err);
-//                    });
-//            return deferred.promise;
-//        };
-//
-//        var _getAlumnos = function (nombre, ap_paterno, ap_materno) {
-//            var deferred = $q.defer();
-//            $http.get(serviceBase + 'personas/alumno/nombre', {params: {'nombre': nombre, 'apellidopat': ap_paterno, 'apellidomat': ap_materno}}).
-//                    success(function (data, status) {
-//                        deferred.resolve(data.response);
-//                    }).
-//                    error(function (err, status) {
-//                        deferred.reject(err);
-//                    });
-//            return deferred.promise;
-//        };
-//
-//        var _getDataByNoCuenta = function (Matricula) {
-//            var deferred = $q.defer();
-//            $http.get(serviceBase + 'cobros/show_info', {params: {'nocuenta': Matricula}}).
-//                    success(function (data, status) {
-//                        deferred.resolve(data.response);
-//                    }).
-//                    error(function (err, status) {
-//                        deferred.reject(err);
-//                    });
-//            return deferred.promise;
-//        };
-//
-//        var _getAlumno = function (Matricula) {
-//            var deferred = $q.defer();
-//            $http.get(serviceBase + 'personas/alumno/matricula/' + Matricula).
-//                    success(function (data, status) {
-//                        deferred.resolve(data.response[0]);
-//                    }).
-//                    error(function (err, status) {
-//                        deferred.reject(err);
-//                    });
-//            return deferred.promise;
-//        };
-//
-//        adminServiceFactory.getCiclos = _getCiclos;
-//        adminServiceFactory.getReferencias = _getReferencias;
-//        adminServiceFactory.getAlumnos = _getAlumnos;
-//        adminServiceFactory.getAlumno = _getAlumno;
-//        adminServiceFactory.getDataByNoCuenta = _getDataByNoCuenta;
-//        return adminServiceFactory;
-        return {
-            getPeriodod: function (matricula) {
-                return $http.get(serviceBase + 'personas/alumno/matricula/' + matricula);
-            },
-            getciclos:function (){
-                return $http.get(serviceBase + 'ciclos/show' + matricula);
-            }
+        var _getPlanesPago = function (Matricula) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/planes_de_pago/todos')
+                    .success(function (data) {
+                        if (!data.error) {
+                            deferred.resolve(data.respuesta.data);
+                        }
+                        //console.log(data);
+                        //deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
         };
+
+        var _getAgrupaciones = function () {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/agrupaciones')
+                    .success(function (data) {
+                        //console.log(data);
+                        if (!data.error) {
+                            deferred.resolve(data.respuesta.data);
+                        }
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
+
+        var _getPaqueteAgrupacion = function (id) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/planes_de_pago/todos_agrupaciones', {params: {id_agrupaciones: id}})
+                    .success(function (data) {
+                        //console.log(data);
+                        if (!data.error) {
+                            deferred.resolve(data.respuesta.data);
+                        }
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
+        var _getalumnos = function (id) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/alumnos')
+                    .success(function (data) {
+                        //console.log(data);
+                        if (!data.error) {
+                            deferred.resolve(data.respuesta.data);
+                        }
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
+        adminServiceFactory.getPlanesPago = _getPlanesPago;
+        adminServiceFactory.getAgrupaciones = _getAgrupaciones;
+        adminServiceFactory.getPaqueteAgrupacion = _getPaqueteAgrupacion;
+        adminServiceFactory.getalumnos = _getalumnos;
+        return adminServiceFactory;
     }]);
