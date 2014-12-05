@@ -1,7 +1,7 @@
 var UPapp_Auth = angular.module('Auth_Service', []);
 UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q, $window) {
 
-        var serviceBase = 'http://laravel.localhost/SistemaUPA2.0/public/index.php/user/login';
+        var serviceBase = 'http://localhost/UPASystem2/public/index.php/user/login';
         var authServiceFactory = {};
 
         var _authentication = {

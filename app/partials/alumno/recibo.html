@@ -1,0 +1,97 @@
+
+<html>
+<head><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8">
+<title>Ficha de Dep&oacute;sito</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<LINK href="css/ventanadialogo.css" rel=stylesheet type=text/css>
+
+
+
+<body bgcolor="#FFFFFF" text="#000000">
+<table width="614" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="141"><img src="img/logoencabezado.gif"></td>
+    <td width="341" class="texto_box"> 
+      <div align="center">UNIVERSIDAD POLIT&Eacute;CNICA DE AGUASCALIENTES<br>
+      CALLE PASEO SAN GERARDO NO. 207.  <br>
+    FRACC. SAN GERARDO. C.P. 20342. <br>
+      AGUASCALIENTES, AGS. <br>
+      TEL.  01 (449) 442-14-00 <br>
+      </div>
+    </td>
+    <td width="132">&nbsp; 
+      
+    </td>
+  </tr>
+</table>
+<table width="615" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="121">&nbsp;</td>
+    <td colspan="3">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="121" class="texto_general">Alumno</td>
+    <td colspan="3" class="texto_box">{{matricula}} - {{appat + " "+ apmat + " " + nom}}</td>
+  </tr>
+
+  <tr> 
+    <td width="121" class="texto_general">Fecha Vencimiento</td>
+    <td width="267" class="texto_box">{{ fecha_limite }}</td>
+    <td width="62" class="texto_general"> 
+      <div align="center">Ciclo</div>    </td>
+    <td width="148" class="texto_box">20{{periodo}}</td>
+  </tr>
+  <tr>
+    <td class="texto_general">&nbsp;</td>
+    <td colspan="3" class="texto_box">&nbsp;</td>
+ 
+  </tr>
+  <tr> 
+    <td width="121" class="texto_general">Convenio</td>
+    <td colspan="3" class="texto_box">CIE {{ convenio }}</td>
+  </tr>
+  <tr> 
+    <td colspan="4" class="texto_general">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td colspan="4" class="">
+  <table wisth=615 border=0>
+  <tr class="texto_general" align="center"><td width=350>Concepto</td><td width=15>&nbsp;</td><td width=80>Importe</td><td width="170">Referencia</td>
+  </tr>
+  
+  <tr ng-repeat="referencia in referencias" class="texto_box" >
+    <td width=350>{{ referencia.sub_concepto }}</td>
+    <td width=15 align="right"></td>
+    <td width=80 align="right" style="font-decoration:light;">{{ referencia.importe | currency}}</td>
+    <td width="170" align="center">{{ referencia.referencia }}</td>
+  </tr>
+  
+  <tr class="texto_box">
+    <td colspan=4><hr></td>
+  </tr>
+  <tr class="texto_general">
+    <td width=350>Importe Total</td>
+    <td width=15 align="right"></td>
+    <td width=80 align="right">{{ importe_total | currency}}</td>
+    <td width="170" align="center">&nbsp;</td>
+  </tr>
+  <tr class="texto_box">
+    <td colspan=4>&nbsp;</td>
+  </tr>
+  </table>
+  </td>
+  </tr>
+  <tr> 
+    <td colspan="3" class="texto_normal">
+<p align="justify"><b>NOTA PARA EL BANCO / IMPORTANTE:</b><br>Al asentar los pagos de este documento, deberá registrase por separado cada una de las referencias por sus respectivos montos.
+Ejemplo: Para dos referencias, registrar dos pagos por separado.</p>
+</td>
+   <td class="texto_box" width="148"><img src="img/logoBBVA.gif" width="140" height="40"></td>
+  </tr>
+</table>
+</body>
+</html>
+
+

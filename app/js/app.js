@@ -1,6 +1,6 @@
 'use strict';
 
-var serviceBase = 'http://laravel.localhost/SistemaUPA2.0/public/index.php';
+var serviceBase = 'http://localhost/UPASystem2/public/index.php';
 // Declare app level module which depends on filters, and services
 var UPapp = angular.module('UPA_Pagos', [
     'ngRoute',
@@ -23,6 +23,10 @@ UPapp.config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/home/admin/:pagename', {
             templateUrl: 'partials/index.html',
             controller: 'HomeCtrl'
+        });
+        $routeProvider.when('/home/alumno/recibo', {
+            templateUrl: 'partials/alumno/recibo.html',
+            controller: 'ReciboCtrl'
         });
         $routeProvider.when('/home/alumno/:pagename', {
             templateUrl: 'partials/index.html',
