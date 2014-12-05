@@ -1,4 +1,4 @@
-UPapp.controller('EstadoCuentaCtrl', function ($scope, $routeParams, studentService, authService) {
+UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $location, studentService, authService) {
     var curr_user = authService.authentication.persona;
     //console.log(studentService.getPeriodos());
     var ref_count = 0;
@@ -35,6 +35,8 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $routeParams, studentServ
     //console.log(curr_user);
     //console.log(curr_user.idpersonas);
     $scope.Mostrar_Referencia = function () {
+        ref_count = 0;
+
         console.log($scope.Modelo_Periodo);
         studentService.getAdeudos(curr_user.idpersonas, $scope.Modelo_Periodo.idperiodo).then(function (data) {
             console.log(data);
@@ -68,6 +70,11 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $routeParams, studentServ
 
         studentService.setReferencias(total_referencias).then(function (data) {
             console.log(data);
+            //$scope.$broadcast('infoRecibo', $scope.adeudos);  
+            $window.sessionStorage.setItem('recibo', JSON.stringify(data));
+
+            $location.path('/home/alumno/recibo');
+
         }, function (err) {
             
             //$scope.message = err.error_description;
@@ -75,4 +82,22 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $routeParams, studentServ
         //console.log(a);
         //console.log(total_referencias);
     };
+});
+
+UPapp.controller('ReciboCtrl', function ($scope, $window, studentService) {
+   var recibo = $window.sessionStorage.getItem('recibo');
+   recibo = JSON.parse(recibo);
+   console.log(recibo);
+
+             $scope.convenio = recibo.data.convenio;
+             $scope.fecha_limite = recibo.data.fecha_limite;
+             $scope.importe_total = recibo.data.importe_total;
+             $scope.apmat = recibo.data.persona[0].apmat;
+             $scope.appat = recibo.data.persona[0].appat;
+             $scope.nom = recibo.data.persona[0].nom;
+             $scope.matricula = recibo.data.persona[0].matricula;
+             $scope.carrera = recibo.data.persona[0].carrera;
+             $scope.periodo = recibo.data.persona[0].pe;
+             $scope.referencias = recibo.data.referencias;
+    
 });
