@@ -10,10 +10,11 @@ var UPapp = angular.module('UPA_Pagos', [
     'myApp.controllers',
     'Interceptor_Service',
     'ui.bootstrap',
-    'Auth_Service'
+    'Auth_Service',
+    'checklist-model'
 ]);
 
-UPapp.config(['$routeProvider', function ($routeProvider) {
+UPapp.config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/home', {
             templateUrl: 'partials/index.html',
             controller: 'HomeCtrl'
@@ -40,6 +41,6 @@ UPapp.config(['$routeProvider', function ($routeProvider) {
         });
         //$routeProvider.otherwise({redirectTo: '/login'});
     }]);
-UPapp.run(['authService', function (authService) {
+UPapp.run(['authService', function(authService) {
         authService.fillAuthData();
     }]);
