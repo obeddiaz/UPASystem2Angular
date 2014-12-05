@@ -97,7 +97,7 @@ UPapp.controller('ReciboCtrl', function ($scope, $window, studentService) {
              $scope.nom = recibo.data.persona[0].nom;
              $scope.matricula = recibo.data.persona[0].matricula;
              $scope.carrera = recibo.data.persona[0].carrera;
-             $scope.periodo = recibo.data.persona[0].pe;
+             $scope.periodo = recibo.data.periodo;
              $scope.referencias = recibo.data.referencias;
     
 });

@@ -1,0 +1,54 @@
+
+.texto_sub_menus {
+	COLOR: Blue; FONT-FAMILY: Tahoma, Sans-Serif; FONT-SIZE: 12px;  
+	POSITION: relative; TOP:0Px; Z-INDEX: 0;
+	text-decoration: none; 
+}
+
+.texto_general {
+	COLOR: Black; FONT-FAMILY: Tahoma, SansSerif; FONT-SIZE: 12px; font-weight: bold; 
+	text-decoration: none;
+}
+
+.texto_box {
+    font-family: tahoma, sans-serif; font-size: 12px;
+	text-transform: uppercase 
+}
+
+.texto_normal {
+    font-family: tahoma, sans-serif; font-size: 12px;
+}
+
+.DIVFondo {
+	POSITION: relative; TOP:25Px;
+	BORDER-BOTTOM: #003399 2px solid; BORDER-LEFT: #003399 2px solid; BORDER-RIGHT: #003399 2px solid; 
+	BORDER-TOP: #003399 2px solid; HEIGHT: 10px;
+	MARGIN-LEFT: 6px; MARGIN-RIGHT: 6px; MARGIN-TOP: 0px; Z-INDEX: 0
+}
+
+.texto_encabezado_menus {
+	COLOR: white; FONT-FAMILY: Tahoma, SansSerif; FONT-SIZE: 12px; font-weight: bold; 
+	POSITION: relative; TOP:0Px; Z-INDEX: 0; HEIGHT: 50px;
+	text-decoration: none;
+}
+
+.FONDOSubmenus {
+	BACKGROUND-COLOR: #003399;
+	COLOR: white; FONT-FAMILY: Tahoma, SansSerif; FONT-SIZE: 12px; font-weight: bold
+
+}
+
+.Botones { 
+	background-color:#E4E4E4; color:black; height:25; width:80;
+	COLOR: Black; FONT-FAMILY: Tahoma, SansSerif; FONT-SIZE: 11px; font-weight: bold
+}
+
+.Boton_Actualiza { 
+	background-color:#E4E4E4; color:black; height:24; width:25;
+	COLOR: Black; FONT-FAMILY: Tahoma, SansSerif; FONT-SIZE: 11px; font-weight: bold
+}
+
+
+a.texto_sub_menus:link { color: blue }
+a.texto_sub_menus:visited { color: blue }
+a.texto_sub_menus:hover { color: green }
