@@ -1,0 +1,54 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">×</button>
+    <h4 class="modal-title">{{concepto.clave_plan}}</h4>
+</div>
+<div class="modal-body">
+    <div class="row form-group">
+        <div class="col-lg-4">
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">Ciclo</span>
+                <select class="form-control" ng-model="Modelo_Periodo" ng-options="periodo.periodo for periodo in periodos"></select>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">Nivel</span>
+                <select class="form-control" ng-model="Modelo_Nivel" ng-options="key as val for (key,val) in niveles"></select>
+            </div>
+        </div>
+    </div>
+    <div class="row form-group">
+        <form ng-submit="Nuevo_Subconcepto()">
+            <div class="col-md-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Nuevo</span>
+                    <input type='text' class="form-control" ng-model="Modelo_NewConcepto">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">Añadir</button>
+                    </span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+            <thead>
+            <th>Sub Concepto</th>
+            <th>Descripcion</th>
+            <th>Importe</th>
+            </thead>
+            <tr ng-repeat="subconcepto in subconceptos">
+                <td data-title="'Concepto'">{{subconcepto.sub_concepto}}</td>
+                <td data-title="'Importe'">{{subconcepto.descripcion}}</td>
+                <td data-title="'Recargo'">{{subconcepto.importe| currency}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="col-md-2 pull-right">
+        <button class="btn btn-primary btn-sm btn-block col-md-4" ng-click="ok()">
+            OK
+        </button>
+    </div>
+</div>

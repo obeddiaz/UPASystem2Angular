@@ -115,7 +115,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', function ($http, $q, $w
             var deferred = $q.defer();
             console.log(id_periodo);
             console.log(plan_pago);
-            $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_no_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo}})
+            $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo}})
                     .success(function (data) {
                         console.log(data);
                         deferred.resolve(data);
@@ -125,6 +125,46 @@ UPapp.factory('adminService', ['$http', '$q', '$window', function ($http, $q, $w
                     });
             return deferred.promise;
         };
+
+        var _getconceptos = function () {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/caja/conceptos/conceptos')
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _getSubConceptos = function (conceptos_id, periodo, nivel_id) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/caja/subconceptos/subconceptos', {params: {conceptos_id: conceptos_id, periodo: periodo, nivel_id: nivel_id}})
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _getNiveles = function () {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/niveles')
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -132,5 +172,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', function ($http, $q, $w
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.getPeriodos = _getPeriodos;
         adminServiceFactory.getAlumnosPaquete = _getAlumnosPaquete;
+        adminServiceFactory.getconceptos = _getconceptos;
+        adminServiceFactory.getNiveles = _getNiveles;
+        adminServiceFactory.getSubConceptos = _getSubConceptos;
         return adminServiceFactory;
     }]);

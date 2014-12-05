@@ -16,7 +16,7 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                 $scope.template = 'partials/alumno/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html';
             } else if ($routeParams.pagename) {
                 $scope.template = 'partials/alumno/' + $routeParams.pagename + '.html';
-            } else {
+            } else {    
                 $scope.template = 'partials/alumno/estado_de_cuenta.html';
             }
         } else if (curr_user.user_type === 'profesor' || curr_user.user_type === 'administrador') {
@@ -66,16 +66,15 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
             //console.log($routeParams);
             if ($routeParams.pagename && $routeParams.subpagename) {
                 $scope.template = 'partials/administrador/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html';
-            } else {
-                $scope.template = 'partials/administrador/index.html';
+            } else if ($routeParams.pagename) {
+                $scope.template = 'partials/administrador/' + $routeParams.pagename + '.html';
+            }else{
+                $location.path('/home/admin/administracion/agrupaciones');
             }
 
         }
 
-    } else {
-
     }
-
     $scope.logout = function () {
         authService.logOut();
         //$scope.main_template = 'views/login/login_form.html';

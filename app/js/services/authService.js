@@ -1,9 +1,6 @@
 var UPapp_Auth = angular.module('Auth_Service', []);
 UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q, $window) {
-
-        var serviceBase = 'http://localhost/UPASystem2/public/index.php/user/login';
         var authServiceFactory = {};
-
         var _authentication = {
             isAuth: false
         };
@@ -11,7 +8,7 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
         var _login = function (loginData) {
             //console.log(loginData);
             var deferred = $q.defer();
-            $http.post(serviceBase, {'u': loginData.userName, 'p': loginData.password}).
+            $http.post(serviceBase + '/user/login', {'u': loginData.userName, 'p': loginData.password}).
                     success(function (data, status) {
                         //console.log(data);
                         if (!data.error) {

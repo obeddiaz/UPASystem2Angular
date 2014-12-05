@@ -1,6 +1,6 @@
 'use strict';
 
-var serviceBase = 'http://localhost/UPASystem2/public/index.php';
+var serviceBase = 'http://laravel.localhost/SistemaUPA2.0/public/index.php';
 // Declare app level module which depends on filters, and services
 var UPapp = angular.module('UPA_Pagos', [
     'ngRoute',
