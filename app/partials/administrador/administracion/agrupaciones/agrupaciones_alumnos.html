@@ -15,15 +15,36 @@
             <button class="btn" type="button" ng-click="checkAll()">
                 Seleccionar Todos
             </button>
+            <button class="btn" type="button" ng-click="mostrar_ocultar('inscritos')">
+                Alumnos Inscritos
+            </button>
+            <button class="btn" type="button" ng-click="mostrar_ocultar('no_inscritos')">
+                Alumnos no Inscritos
+            </button>
             <!--            <pre class="ng-binding" ng-model="alumno_assign.add">{{alumno_assign.add}}</pre>-->
-            <div class="table-responsive">
+            <div class="table-responsive" ng-show="alumnos_todos">
                 <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
                     <thead>
                     <th>Añadir</th>
                     <th>Matricula</th>
                     <th>Nombre</th>
                     </thead>
-                    <tr ng-repeat="alumno in filteredAlumnos = (alumnos | filter:alumno_filter)">
+                    <tr ng-repeat="alumno in filteredAlumnos = (alumnos| filter:alumno_filter)">
+                        <td data-title="'Assign'"><input type="checkbox" checklist-model="alumno_assign.add" checklist-value="alumno.idpersonas"></td>
+                        <!--                        <td data-title="'Clave'"><input type="checkbox" value="{{alumno.idpersonas}}" ng-model="alumno.idpersonas" /></td>-->
+                        <td data-title="'Descripcion'">{{alumno.matricula}}</td>
+                        <td data-title="'Nombre'">{{alumno.nom + " " + alumno.appat + " " + alumno.apmat}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="table-responsive" ng-if="alumnos_inscritos">
+                <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                    <thead>
+                    <th>Añadir</th>
+                    <th>Matricula</th>
+                    <th>Nombre</th>
+                    </thead>
+                    <tr ng-repeat="alumno in alumnos_insc">
                         <td data-title="'Assign'"><input type="checkbox" checklist-model="alumno_assign.add" checklist-value="alumno.idpersonas"></td>
                         <!--                        <td data-title="'Clave'"><input type="checkbox" value="{{alumno.idpersonas}}" ng-model="alumno.idpersonas" /></td>-->
                         <td data-title="'Descripcion'">{{alumno.matricula}}</td>

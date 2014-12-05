@@ -62,6 +62,7 @@ UPapp.controller('Administracion_Agrupaciones_agrupaciones', function ($scope, $
 });
 
 UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $routeParams, adminService) {
+    $scope.alumnos_todos = false;
     adminService.getalumnos().then(function (data) {
         $scope.alumno_filter = {
             carrera: false
@@ -85,7 +86,7 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         data.forEach(function (val, key) {
             if (val.actual == 1) {
                 $scope.Modelo_Periodo = $scope.periodos[key];
-                //$scope.Mostrar_Referencia();
+                $scope.mostrar_ocultar('inscritos');
             }
         });
     }, function (err) {
@@ -94,6 +95,22 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         ];
         $scope.message = err.error_description;
     });
+    $scope.mostrar_ocultar = function (show) {
+        if (show === 'inscritos') {
+            $scope.alumnos_todos = false;
+            $scope.alumnos_inscritos = true;
+            console.log($scope.Modelo_Periodo);
+            adminService.getAlumnosPaquete($scope.Modelo_Periodo.idperiodo, $scope.data_plan.id).then(function (data) {
+                $scope.alumnos_insc = data;
+            }, function (err) {
+
+            });
+        }
+        if (show === 'no_inscritos') {
+            $scope.alumnos_todos = true;
+            $scope.alumnos_inscritos = false;
+        }
+    };
     $scope.alumno_assign = [];
     $scope.checkAll = function () {
 

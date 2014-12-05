@@ -111,11 +111,26 @@ UPapp.factory('adminService', ['$http', '$q', '$window', function ($http, $q, $w
 
         };
 
+        var _getAlumnosPaquete = function (id_periodo, plan_pago) {
+            var deferred = $q.defer();
+            console.log(id_periodo);
+            console.log(plan_pago);
+            $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_no_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo}})
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
         adminServiceFactory.getalumnos = _getalumnos;
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.getPeriodos = _getPeriodos;
+        adminServiceFactory.getAlumnosPaquete = _getAlumnosPaquete;
         return adminServiceFactory;
     }]);
