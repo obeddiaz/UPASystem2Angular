@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <h4 class="modal-title">Añadir Nuevo Concepto</h4>
+</div>
+<div class="modal-body" ng-controller="Modal_NewConcepto">
+    <form ng-submit="add_new()">
+        <div class="row form-group">
+            <div class="col-md-12">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Nombre</span>
+                    <input type='text' class="form-control" ng-model="concepto.nombre" required>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-12">
+                <label>Descripcion</label>
+                <textarea class="form-control"  ng-model="concepto.descripcion" rows="3" style="resize:none;" required></textarea>
+            </div>
+        </div>
+        <div class="col-md-3 pull-right">
+            <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                Añadir
+            </button>
+        </div>
+    </form>
+</div>
+<div class="modal-footer" style="border-top: 0px;">
+    <div class="col-md-3 pull-right">
+        <button class="btn btn-warning btn-md btn-block col-md-4" ng-click="cancel()">
+            Cancelar
+        </button>
+    </div>
+    <div class="col-md-3 pull-left">
+        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
+    </div>
+</div>

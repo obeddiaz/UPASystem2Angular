@@ -2,8 +2,6 @@ UPapp.controller('Administracion_Generales', function ($scope, $routeParams) {
     //console.log($routeParams);
     $scope.tabs = [
         {title: 'Planes de Pago', click: 'planes_de_pago'},
-        {title: 'Nuevo Plan de Pago', click: 'nuevo_plan_pago'},
-        {title: 'Becas', click: 'becas'},
         {title: 'Conceptos', click: 'conceptos'}
     ];
     $scope.subPageTemplate = 'partials/administrador/administracion/generales/planes_de_pago.html';
@@ -18,7 +16,7 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
     }, function (err) {
 
     });
-    $scope.open = function (data, type, html) {
+    $scope.open = function (data, html) {
         $modal.open({
             templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
             controller: 'ModalInstanceCtrl',
@@ -26,25 +24,37 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
             resolve: {
                 custom_data: function () {
                     return data;
-                },
-                type: function () {
-                    return type;
                 }
             }
         });
     };
+    $scope.Nuevo_Plan = function (html) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return false;
+                }
+            }
+        });
+    };
+    $scope.$on('modal_response', function (event, args) {
+        $scope.planes.push(args);
+    });
 });
 
-UPapp.controller('Administracion_Generales_conceptos', function ($scope, $routeParams, adminService, $modal) {
+UPapp.controller('Administracion_Generales_conceptos', function ($scope, adminService, $modal) {
+    $scope.conceptos = [];
     adminService.getconceptos().then(function (data) {
-        console.log(data);
+        //console.log(data);
         if (!data.error) {
             $scope.conceptos = data.respuesta.data;
         }
     }, function (err) {
-
     });
-    $scope.open = function (data, type, html) {
+    $scope.open = function (data, html) {
         $modal.open({
             templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
             controller: 'ModalInstanceCtrl',
@@ -52,13 +62,33 @@ UPapp.controller('Administracion_Generales_conceptos', function ($scope, $routeP
             resolve: {
                 custom_data: function () {
                     return data;
-                },
-                type: function () {
-                    return type;
                 }
             }
         });
     };
+    $scope.Nuevo_Concepto = function (html) {
+//        var modalInstance = 
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return false;
+                }
+            }
+        });
+//        modalInstance.result.then(function (data) {
+//            $scope.conceptos.push(data);
+//        }, function () {
+//            console.log('Modal dismissed at: ' + new Date());
+//        });
+    };
+    $scope.$on('modal_response', function (event, args) {
+        // $scope.return_data = args;
+        $scope.conceptos.push(args);
+        //$rootScope.$broadcast('modal_response', args);
+    });
 });
 
 
@@ -193,51 +223,151 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
     //
 });
 
-UPapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, $http, adminService, custom_data, type) {
-    $scope.info = custom_data;
+UPapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, custom_data, $rootScope) {
+    console.log(custom_data);
+    $scope.data_modal = custom_data;
+    $scope.isBusy = false;
+    $scope.return_data = [];
+    $scope.$on('custom_response', function (event, args) {
+        // $scope.return_data = args;
+        $rootScope.$broadcast('modal_response', args);
+    });
+    $scope.ok = function () {
+        console.log($scope.isBusy);
+        console.log($scope.return_data);
+
+        $modalInstance.close($scope.return_data);
+    };
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});
+
+UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
+    console.log($scope.data_modal);
+    console.log($scope.$parent.isBusy);
+    $scope.isBusy = true;
+    $scope.new_sc = [];
+    $scope.subconceptos = [];
+    $scope.model = [];
+    $scope.tipo_adeudo = [{
+            name: 'Monetario', value: 1
+        }, {
+            name: 'No Monetario', value: 2
+        }];
+    $scope.new_sc.tipo_adeudo = $scope.tipo_adeudo[0];
     adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
         data.forEach(function (val, key) {
-            if (val.actual == 1) {
-                $scope.Modelo_Periodo = $scope.periodos[key];
+            if (val.actual === 1) {
+                $scope.model.periodo = $scope.periodos[key];
             }
         });
         adminService.getNiveles().then(function (data) {
             console.log(data);
             $scope.niveles = data.respuesta.data;
-            $scope.Modelo_Nivel = Object.keys(data.respuesta.data)[0];
+            $scope.model.nivel = Object.keys(data.respuesta.data)[0];
             $scope.getSubConceptos();
         });
 
     }, function (err) {
     });
-    console.log(custom_data);
-
-
+    //console.log($scope.data_modal);
     $scope.getSubConceptos = function () {
-        //(conceptos_id, periodo, nivel_id)
-        console.log(custom_data.id);
-        console.log($scope.Modelo_Periodo);
-        console.log($scope.Modelo_Nivel);
-        //  (custom_data.id, $scope.Modelo_Periodo, $scope.Modelo_Nivel.id)
-        adminService.getSubConceptos(custom_data.id, $scope.Modelo_Periodo.idperiodo, $scope.Modelo_Nivel).then(function (data) {
-            console.log(data);
+        $scope.$parent.isBusy = true;
+        console.log($scope.data_modal.id);
+        console.log($scope.model.periodo);
+        console.log($scope.model.nivel);
+        adminService.getSubConceptos($scope.data_modal.id, $scope.model.periodo.idperiodo, $scope.model.nivel).then(function (data) {
+            $scope.$parent.isBusy = false;
             if (!data.error) {
-                $scope.subconceptos = data.respuesta.data;
+                var arr_length = data.respuesta.data.length;
+                if (arr_length >= 1) {
+                    $scope.subconceptos = data.respuesta.data;
+                    $scope.alerts = [];
+                } else {
+                    $scope.subconceptos = [];
+                    $scope.alerts = [
+                        {type: 'danger', msg: 'No Existe ningun Subconcepto para este ciclo'}
+                    ];
+                }
             }
 
         });
     };
-    if (type === 'concepto') {
-        $scope.Nuevo_Subconcepto = function () {
-
-        };
-    }
-    $scope.ok = function () {
-        $modalInstance.dismiss('cancel');
-        // $modalInstance.close($scope.selected.item);
+    $scope.Nuevo_Subconcepto = function () {
+        $scope.$parent.isBusy = true;
+        $scope.new_sc.nivel_id = $scope.model.nivel;
+        $scope.new_sc.periodo = $scope.model.periodo.idperiodo;
+        $scope.new_sc.conceptos_id = $scope.data_modal.id;
+        $scope.new_sc.tipo_adeudo_id = $scope.new_sc.tipo_adeudo.value;
+        console.log($scope.new_sc);
+        adminService.addSubConcepto($scope.new_sc).then(function (data) {
+            $scope.$parent.isBusy = false;
+            console.log(data.respuesta);
+            if (!data.error) {
+                $scope.subconceptos.push(data.respuesta);
+            }
+        });
     };
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+});
+
+UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
+    console.log($scope.data_modal);
+    $scope.model = [];
+    adminService.getPeriodos().then(function (data) {
+        $scope.periodos = data;
+        console.log(data);
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+        $scope.get_scp();
+        console.log($scope.model.periodo);
+
+    }, function (err) {
+    });
+    console.log($scope.data_modal);
+    $scope.get_scp = function () {
+        adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo).then(function (data) {
+            console.log(data.respuesta.data);
+            if (!data.error) {
+                $scope.scp = data.respuesta.data;
+            }
+        });
+    };
+});
+
+UPapp.controller('Modal_NewConcepto', function ($scope, adminService, $rootScope) {
+    $scope.$parent.isBusy = false;
+    console.log($scope.$parent.return_data);
+    $scope.$parent.return_data = [{'test': 'test'}];
+
+    $scope.add_new = function () {
+        $scope.$parent.isBusy = true;
+        adminService.addConcepto($scope.concepto).then(function (data) {
+            $scope.$parent.isBusy = false;
+            $rootScope.$broadcast('custom_response', data.respuesta.data);
+            $scope.$parent.isBusy = false;
+            console.log(data);
+        });
+    };
+});
+
+UPapp.controller('Modal_NewPlan', function ($scope, adminService, $rootScope) {
+    $scope.model = [];
+    adminService.getAgrupaciones().then(function (data) {
+        console.log(data);
+        $scope.agrupaciones = data;
+        $scope.model.agrupacion = $scope.agrupaciones[0];
+    });
+    $scope.add_newPlan = function () {
+        $scope.$parent.isBusy = true;
+        adminService.addPlandePago($scope.model).then(function (data) {
+            console.log(data);
+            $scope.$parent.isBusy = false;
+            $rootScope.$broadcast('custom_response', data);
+        });
     };
 });

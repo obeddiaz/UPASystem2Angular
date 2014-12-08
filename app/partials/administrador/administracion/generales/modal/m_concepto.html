@@ -1,36 +1,54 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">×</button>
-    <h4 class="modal-title">{{concepto.clave_plan}}</h4>
+    <h4 class="modal-title">{{data_modal.concepto}}</h4>
 </div>
-<div class="modal-body">
+<div class="modal-body" ng-controller="Modal_conceptosCtrl">
     <div class="row form-group">
         <div class="col-lg-4">
             <div class="input-group input-group-sm">
                 <span class="input-group-addon">Ciclo</span>
-                <select class="form-control" ng-model="Modelo_Periodo" ng-options="periodo.periodo for periodo in periodos"></select>
+                <select class="form-control" ng-model="model.periodo" ng-change="getSubConceptos()" ng-options="periodo.periodo for periodo in periodos"></select>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="input-group input-group-sm">
                 <span class="input-group-addon">Nivel</span>
-                <select class="form-control" ng-model="Modelo_Nivel" ng-options="key as val for (key,val) in niveles"></select>
+                <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles"></select>
             </div>
         </div>
     </div>
-    <div class="row form-group">
-        <form ng-submit="Nuevo_Subconcepto()">
-            <div class="col-md-6">
+    <form ng-submit="Nuevo_Subconcepto()">
+        <div class="row form-group">
+            <div class="col-md-4">
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">Nuevo</span>
-                    <input type='text' class="form-control" ng-model="Modelo_NewConcepto">
+                    <input type='text' class="form-control" ng-model="new_sc.sub_concepto" required>
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">Añadir</button>
+                        <button class="btn btn-default" type="submit">Añadir</button>
                     </span>
                 </div>
             </div>
-        </form>
-    </div>
-    <div class="table-responsive">
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Importe</span>
+                    <input type='text' class="form-control" ng-model="new_sc.importe" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Tipo Importe</span>
+                    <select class="form-control" ng-model="new_sc.tipo_adeudo" ng-options="tipo.name for tipo in tipo_adeudo" required></select>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-12">
+                <label>Descripcion</label>
+                <textarea class="form-control"  ng-model="new_sc.descripcion" rows="3" style="resize:none;" required></textarea>
+            </div>
+        </div>
+    </form>
+    <div class="table-responsive" ng-if="subconceptos">
         <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
             <thead>
             <th>Sub Concepto</th>
@@ -40,15 +58,16 @@
             <tr ng-repeat="subconcepto in subconceptos">
                 <td data-title="'Concepto'">{{subconcepto.sub_concepto}}</td>
                 <td data-title="'Importe'">{{subconcepto.descripcion}}</td>
-                <td data-title="'Recargo'">{{subconcepto.importe| currency}}</td>
+                <td data-title="'Recargo'"><strong>{{subconcepto.importe| currency}}</strong></td>
             </tr>
         </table>
+    </div>
+    <div class="form-group">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
     </div>
 </div>
 <div class="modal-footer">
     <div class="col-md-2 pull-right">
-        <button class="btn btn-primary btn-sm btn-block col-md-4" ng-click="ok()">
-            OK
-        </button>
+        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
     </div>
 </div>

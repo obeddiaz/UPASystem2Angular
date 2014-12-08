@@ -1,33 +1,31 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">×</button>
-    <h4 class="modal-title">{{info_paquete.clave_plan + " " + info_paquete.descripcion}}</h4>
+    <h4 class="modal-title">{{data_modal.clave_plan + " " + data_modal.descripcion}}</h4>
 </div>
-<div class="modal-body">
-    <div class="col-lg-3">
-        <div class="input-group input-group-sm">
-            <span class="input-group-addon">Ciclo</span>
-            <select class="form-control">
-                <option ng-repeat='ciclo in ciclos'>{{ciclo.abreviacion}}</option>
-            </select>
+<div class="modal-body" ng-controller="Modal_planCtrl">
+    <form class="form-horizontal">
+        <div class="row form-group">
+            <div class="col-lg-6">
+                <select ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="get_scp()">
+                </select>
+            </div>
         </div>
-    </div>
-    <div class="table-responsive">
+    </form>
+    <div class="table-responsive" ng-if="scp">
         <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
             <thead>
-            <th>Descripción</th>
+            <th>Sub Concepto</th>
+            <th>Fecha de Vencimiento</th>
             <th>Importe</th>
             <th>Recargos</th>
-            <th>Vence</th>
-            <th>Beca</th>
-            <th>Saldo</th>
             </thead>
-            <tr ng-repeat="alumno in alumnos">
-                <td data-title="'Concepto'">{{alumno.concepto}}</td>
-                <td data-title="'Importe'">{{alumno.importe}}</td>
-                <td data-title="'Recargo'">{{alumno.recargo}}</td>
-                <td data-title="'Vence'">{{alumno.vence}}</td>
-                <td data-title="'Beca'">{{alumno.beca}}</td>
-                <td data-title="'Total'">{{alumno.saldo}}</td>
+            <tr ng-repeat="single_scp in scp">
+                <td data-title="'Sub_Concepto'">{{single_scp.sub_concepto}}</td>
+                <td data-title="'Fecha'">
+                    <input type="date" value="{{single_scp.fecha_de_vencimiento}}"/>
+                </td>
+                <td data-title="'Importe'">{{single_scp.importe}}</td>
+                <td data-title="'recargos'">{{single_scp.recargo}}</td>
             </tr>
         </table>
     </div>
