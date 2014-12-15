@@ -11,6 +11,23 @@
             </div>
         </div>
     </form>
+    <div class="row form-group" ng-repeat="ds in data_subconcepto">
+        <div class="col-md-3">
+            <label>{{ds.nombre}}</label>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">Tipo recargo</span>
+                <select class="form-control" ng-model="ds.tipo_recargo" ng-options="tipo.name for tipo in tipo_adeudo" required></select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">Importe</span>
+                <input type='text' class="form-control" ng-model="ds.recargo" required>
+            </div>
+        </div>
+    </div>
     <div class="table-responsive" ng-if="scp">
         <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
             <thead>
@@ -19,16 +36,20 @@
             <th>Importe</th>
             <th>Recargos</th>
             </thead>
-            <tr ng-repeat="single_scp in scp">
+            <tr ng-repeat="(key, single_scp) in scp">
                 <td data-title="'Sub_Concepto'">{{single_scp.sub_concepto}}</td>
                 <td data-title="'Fecha'">
-                    <input type="date" value="{{single_scp.fecha_de_vencimiento}}"/>
+                    <input type="date" ng-model="single_scp.fecha_de_vencimiento" ui-date ui-date-format/>
                 </td>
                 <td data-title="'Importe'">{{single_scp.importe}}</td>
                 <td data-title="'recargos'">{{single_scp.recargo}}</td>
             </tr>
         </table>
     </div>
+    <div ng-repeat="single in test222">
+        <div class="preview">{{single}} {{$index}}</div>
+    </div>
+    <button ng-click="test()">Test</button>
 </div>
 <div class="modal-footer">
     <div class="col-md-2 pull-right">

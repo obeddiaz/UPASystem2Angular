@@ -313,29 +313,47 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
 });
 
 UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
-    console.log($scope.data_modal);
+    //console.log($scope.data_modal);
     $scope.model = [];
     adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
-        console.log(data);
+        //console.log(data);
         data.forEach(function (val, key) {
             if (val.actual == 1) {
                 $scope.model.periodo = $scope.periodos[key];
             }
         });
         $scope.get_scp();
-        console.log($scope.model.periodo);
+        //console.log($scope.model.periodo);
 
     }, function (err) {
     });
-    console.log($scope.data_modal);
+    $scope.tipo_adeudo = [{
+            name: 'Porcentaje', value: 1
+        }, {
+            name: 'Importe', value: 2
+        }];
+    //console.log($scope.data_modal);
     $scope.get_scp = function () {
         adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo).then(function (data) {
-            console.log(data.respuesta.data);
+            //console.log(data.respuesta.data);
             if (!data.error) {
                 $scope.scp = data.respuesta.data;
+                $scope.data_subconcepto = {};
+                data.respuesta.data.forEach(function (val) {
+                    if (!$scope.data_subconcepto[val.id])
+                    {
+                        $scope.data_subconcepto[val.id] = [];
+                        $scope.data_subconcepto[val.id]['nombre'] = val.sub_concepto;
+                    }
+                });
+                console.log($scope.data_subconcepto);
             }
         });
+    };
+    $scope.test = function () {
+        console.log($scope.test222);
+        console.log($scope.data_subconcepto);
     };
 });
 
