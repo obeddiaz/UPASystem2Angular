@@ -18,7 +18,7 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
                     return config || $q.when(config);
                 },
                 responseError: function (response) {
-                    $window.sessionStorage.removeItem('token');
+                    //$window.sessionStorage.removeItem('token');
                     //$location.path('/login');
                     if (response.status === 401) {
 

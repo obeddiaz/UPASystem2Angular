@@ -246,6 +246,62 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
+        var _addPaquetePlan = function (data_paquete) {
+            var deferred = $q.defer();
+            $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar', {
+                id_plandepago: data_paquete.id_plandepago,
+                idnivel: data_paquete.nivel,
+                nivel: 'LICENCIATURA',
+                periodo: data_paquete.periodo.idperiodo,
+                recargo: 0,
+                recargo_inscripcion: 0
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data.respuesta.data);
+            }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        //administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos
+
+        var _addSCPaquete = function (dataSCPaquete) {
+            var deferred = $q.defer();
+            $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos', {
+                paquete_id: dataSCPaquete.paquete_id,
+                sub_concepto: dataSCPaquete.sub_concepto,
+                recargo: dataSCPaquete.recargo,
+                tipo_recargo: dataSCPaquete.tipo_recargo
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data.respuesta.data);
+            }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        
+        var _getTipoAdeudo = function (dataSCPaquete) {
+            var deferred = $q.defer();
+            $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos', {
+                paquete_id: dataSCPaquete.paquete_id,
+                sub_concepto: dataSCPaquete.sub_concepto,
+                recargo: dataSCPaquete.recargo,
+                tipo_recargo: dataSCPaquete.tipo_recargo
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data.respuesta.data);
+            }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -261,5 +317,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addSubConcepto = _addSubConcepto;
         adminServiceFactory.addConcepto = _addConcepto;
         adminServiceFactory.addPlandePago = _addPlandePago;
+        adminServiceFactory.addPaquetePlan = _addPaquetePlan;
+        adminServiceFactory.addSCPaquete = _addSCPaquete;
         return adminServiceFactory;
     }]);

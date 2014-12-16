@@ -1,60 +1,105 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">×</button>
-    <h4 class="modal-title">{{data_modal.clave_plan + " " + data_modal.descripcion}}</h4>
+    <h4 class="modal-title">{{data_modal.descripcion}}</h4>
 </div>
 <div class="modal-body" ng-controller="Modal_planCtrl">
     <form class="form-horizontal">
         <div class="row form-group">
-            <div class="col-lg-6">
-                <select ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="get_scp()">
-                </select>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Ciclo</span>
+                    <select class="form-control" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="get_scp()">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Nivel</span>
+                    <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles"></select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="Nuevo_Paquete()">
+                    Crear Paquete
+                </button>
             </div>
         </div>
     </form>
-    <div class="row form-group" ng-repeat="ds in data_subconcepto">
-        <div class="col-md-3">
-            <label>{{ds.nombre}}</label>
-        </div>
-        <div class="col-md-4">
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">Tipo recargo</span>
-                <select class="form-control" ng-model="ds.tipo_recargo" ng-options="tipo.name for tipo in tipo_adeudo" required></select>
+    <hr>
+    <form class="form-horizontal">
+        <div class="row form-group">
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Concepto</span>
+                    <select class="form-control" ng-model="model.concepto" ng-options="concepto.concepto for concepto in conceptos" ng-change="getSubconceptos()">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Sub-Concepto</span>
+                    <select class="form-control" ng-model="model.subconcepto" ng-options="sc.sub_concepto for sc in subconceptos" required></select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="AddSCPaquete()">
+                    Añadir a Paquete
+                </button>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">Importe</span>
-                <input type='text' class="form-control" ng-model="ds.recargo" required>
+    </form>
+    <hr>
+    <form class="form-horizontal" ng-submit="SaveSCPaquete()">
+        <div class="row form-group" ng-repeat="ds in data_subconcepto">
+            <div class="col-md-4 ">
+                <label>{{ds.nombre}}</label>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Tipo recargo</span>
+                    <select class="form-control" ng-model="ds.tipo_recargo" ng-options="tipo.value as tipo.name for tipo in tipo_adeudo" required></select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Recargo</span>
+                    <input type='text' class="form-control" ng-model="ds.recargo" required>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="table-responsive" ng-if="scp">
-        <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
-            <thead>
-            <th>Sub Concepto</th>
-            <th>Fecha de Vencimiento</th>
-            <th>Importe</th>
-            <th>Recargos</th>
-            </thead>
-            <tr ng-repeat="(key, single_scp) in scp">
-                <td data-title="'Sub_Concepto'">{{single_scp.sub_concepto}}</td>
-                <td data-title="'Fecha'">
-                    <input type="date" ng-model="single_scp.fecha_de_vencimiento" ui-date ui-date-format/>
-                </td>
-                <td data-title="'Importe'">{{single_scp.importe}}</td>
-                <td data-title="'recargos'">{{single_scp.recargo}}</td>
-            </tr>
-        </table>
-    </div>
-    <div ng-repeat="single in test222">
-        <div class="preview">{{single}} {{$index}}</div>
-    </div>
-    <button ng-click="test()">Test</button>
+        <div ng-show="scp_show">
+            <div class="table-responsive" ng-show="scp_show">
+                <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+                    <thead>
+                    <th>Sub Concepto</th>
+                    <th>Fecha de Vencimiento</th>
+                    <th>Importe</th>
+                    </thead>
+                    <tr ng-repeat="single in scp track by $index">
+                        <td data-title="'Sub_Concepto'">{{single.sub_concepto}}</td>
+                        <td data-title="'Fecha'">
+                            <input type="date" ng-model="single.fecha_de_vencimiento"/>
+                        </td>
+                        <td data-title="'Importe'">{{single.importe}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-3 pull-right">
+                <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                    Añadir
+                </button>
+            </div>
+        </div>
+    </form>
+
 </div>
-<div class="modal-footer">
-    <div class="col-md-2 pull-right">
-        <button class="btn btn-primary btn-lg btn-block col-md-4" ng-click="ok()">
+<div class="modal-footer" style="border-top: none;">
+    <div class="col-md-3 pull-right">
+        <button class="btn btn-warning btn-md btn-block col-md-4" ng-click="ok()">
             OK
         </button>
+    </div>
+    <div class="col-md-3 pull-left">
+        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
     </div>
 </div>
