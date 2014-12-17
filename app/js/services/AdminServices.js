@@ -283,24 +283,87 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
-        var _getTipoAdeudo = function (dataSCPaquete) {
+
+        var _getBancos = function (dataSCPaquete) {
             var deferred = $q.defer();
-            $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos', {
-                paquete_id: dataSCPaquete.paquete_id,
-                sub_concepto: dataSCPaquete.sub_concepto,
-                recargo: dataSCPaquete.recargo,
-                tipo_recargo: dataSCPaquete.tipo_recargo
-            }).success(function (data) {
-                console.log(data);
-                deferred.resolve(data.respuesta.data);
-            }).
-                    error(function (err, status) {
+            $http.get(serviceBase + '/bancos')
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
                         deferred.reject(err);
                     });
             return deferred.promise;
         };
 
+        var _addBanco = function (databanco) {
+            var deferred = $q.defer();
+            $http.post(serviceBase + '/bancos/agregar', {
+                banco: databanco.banco,
+                descripcion: databanco.descripcion
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
+        var _Modifybanco = function (databanco) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/bancos/guardar', {
+                id: databanco.id,
+                banco: databanco.banco,
+                descripcion: databanco.descripcion
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
+        var _DeleteBanco = function (databanco) {
+            var deferred = $q.defer();
+            $http.delete(serviceBase + '/bancos/eliminar', {params: {id: databanco}
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
+        var _getCuentasBanco = function (databanco) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/cuentas')
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _addCuentaBanco = function (dataCuenta) {
+            var deferred = $q.defer();
+            $http.post(serviceBase + '/cuentas/agregar', {
+                bancos_id: dataCuenta.bancos_id,
+                cuenta: dataCuenta.cuenta
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
 
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
@@ -312,6 +375,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getNiveles = _getNiveles;
         adminServiceFactory.getSubConceptos = _getSubConceptos;
         adminServiceFactory.getSubConceptosPlan = _getSubConceptosPlan;
+        adminServiceFactory.getBancos = _getBancos;
+        adminServiceFactory.getCuentasBanco = _getCuentasBanco;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;
@@ -319,5 +384,12 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addPlandePago = _addPlandePago;
         adminServiceFactory.addPaquetePlan = _addPaquetePlan;
         adminServiceFactory.addSCPaquete = _addSCPaquete;
+        adminServiceFactory.addBanco = _addBanco;
+        adminServiceFactory.addCuentaBanco = _addCuentaBanco;
+
+        adminServiceFactory.Modifybanco = _Modifybanco;
+
+        adminServiceFactory.DeleteBanco = _DeleteBanco;
+
         return adminServiceFactory;
     }]);

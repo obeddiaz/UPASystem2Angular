@@ -42,6 +42,7 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
             }
         });
     };
+
     $scope.$on('modal_response', function (event, args) {
         $scope.planes.push(args);
     });
@@ -51,6 +52,83 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
 UPapp.controller('Administracion_Generales_adeudos', function ($scope, $routeParams, adminService, $modal) {
     //adminService
 });
+
+UPapp.controller('Administracion_Generales_bancos', function ($scope, $routeParams, adminService, $modal) {
+    var BTemp = false;
+    var Cuentas;
+    var CPB = function (id) {
+        console.log(id);
+        var CuentaData = [];
+        Cuentas.forEach(function (val, key) {
+            if (val.bancos_id === id) {
+                CuentaData.push(val);
+            }
+        });
+        console.log(CuentaData);
+        return CuentaData;
+    };
+    adminService.getBancos().then(function (response) {
+        console.log(response);
+        $scope.bancos = response.respuesta.data;
+    });
+    adminService.getCuentasBanco().then(function (response) {
+        console.log(response);
+        Cuentas = response.respuesta.data;
+    });
+    $scope.NuevoBanco = function (html) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return false;
+                }
+            }
+        });
+    };
+    $scope.ModificarBanco = function (html, data, idx) {
+        BTemp = idx;
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
+    $scope.EliminarBanco = function (bid) {
+        console.log(bid);
+        adminService.DeleteBanco(bid).then(function (data) {
+            $scope.bancos = data.respuesta.data;
+        });
+    };
+    $scope.CuentasBanco = function (html, data) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'sm',
+            resolve: {
+                custom_data: function () {
+                    return {banco: data, cuentas: CPB(data.id)};
+                }
+            }
+        });
+    };
+
+    $scope.$on('modal_response', function (event, args) {
+        if (args.modificado) {
+            $scope.bancos[BTemp] = args.data;
+        } else {
+            $scope.bancos.push(args);
+        }
+
+    });
+});
+
 
 UPapp.controller('Administracion_Generales_conceptos', function ($scope, adminService, $modal) {
     $scope.conceptos = [];
@@ -464,3 +542,48 @@ UPapp.controller('Modal_NewPlan', function ($scope, adminService, $rootScope) {
         });
     };
 });
+
+UPapp.controller('Modal_NewBanco', function ($scope, adminService, $rootScope) {
+    $scope.model = [];
+    $scope.addNewBanco = function () {
+        $scope.$parent.isBusy = true;
+        adminService.addBanco($scope.model).then(function (data) {
+            console.log(data);
+            $scope.$parent.isBusy = false;
+            $rootScope.$broadcast('custom_response', data.respuesta.data);
+        });
+    };
+});
+
+UPapp.controller('Modal_ModifyBanco', function ($scope, adminService, $rootScope) {
+    $scope.model = [];
+    $scope.model['banco'] = $scope.data_modal['banco'];
+    $scope.model['descripcion'] = $scope.data_modal['descripcion'];
+    $scope.model['id'] = $scope.data_modal['id'];
+    $scope.ModifyBanco = function () {
+        $scope.$parent.isBusy = true;
+        adminService.Modifybanco($scope.model).then(function (data) {
+            var MResponse = [];
+            $scope.$parent.isBusy = false;
+            MResponse['modificado'] = true;
+            MResponse['data'] = data.respuesta.data;
+            $rootScope.$broadcast('custom_response', MResponse);
+        });
+    };
+});
+
+UPapp.controller('Modal_cuentasBanco', function ($scope, adminService, $rootScope) {
+    $scope.model = [];
+    console.log($scope.data_modal);
+    $scope.cuentas = $scope.data_modal.cuentas;
+    $scope.model['bancos_id'] = $scope.data_modal.banco.id;
+    $scope.AddCuenta = function () {
+        $scope.$parent.isBusy = true;
+        adminService.addCuentaBanco($scope.model).then(function (data) {
+            $scope.$parent.isBusy = false;
+            $scope.cuentas.push(data.respuesta.data);
+        });
+    };
+});
+
+
