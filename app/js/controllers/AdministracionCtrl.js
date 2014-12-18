@@ -4,7 +4,7 @@ UPapp.controller('Administracion_Generales', function ($scope, $routeParams) {
         {title: 'Planes de Pago', click: 'planes_de_pago'},
         {title: 'Conceptos', click: 'conceptos'},
         {title: 'Bancos', click: 'bancos'},
-        {title: 'Adeudos', click: 'adeudos'}
+        {title: 'Adeudo Simple', click: 'single_adeudo'}
     ];
     $scope.subPageTemplate = 'partials/administrador/administracion/generales/planes_de_pago.html';
     $scope.subPageContent = function (page) {
@@ -586,4 +586,103 @@ UPapp.controller('Modal_cuentasBanco', function ($scope, adminService, $rootScop
     };
 });
 
+UPapp.controller('Administracion_Generales_single_adeudo', function ($scope, adminService, $rootScope, $modal) {
+    adminService.getalumnos().then(function (data) {
+        $scope.model = {
+            filter: {
+                carrera: false,
+                grupo: false,
+                grado: false
+            }
+        };
+        //console.log(data);
+        $scope.alumnos = data;
+        $scope.carreras = [];
+        $scope.grupos = [];
+        $scope.grados = [];
+        angular.forEach(data, function (value, genre) {
+            if ($scope.carreras.indexOf(value.carrera) === -1)
+            {
+                $scope.carreras.push(value.carrera);
+            }
+            if ($scope.grupos.indexOf(value.grupo) === -1)
+            {
+                if (value.grupo !== null) {
+                    $scope.grupos.push(value.grupo);
+                }
+            }
+            if ($scope.grados.indexOf(value.grado) === -1)
+            {
+                if (value.grado !== null) {
+                    $scope.grados.push(value.grado);
+                }
 
+            }
+        });
+        console.log($scope.grados);
+        $scope.model.filter.carrera = $scope.carreras[0];
+        //$scope.model.filter.grupo = $scope.grupos[0];
+        //$scope.model.filter.grado = $scope.grados[0];
+    }, function (err) {
+
+    });
+    $scope.Agregaradeudo = function (html, data) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
+});
+
+UPapp.controller('Modal_generarAdeudos', function ($scope, adminService, $rootScope) {
+    $scope.model = [];
+    $scope.model.id_persona = $scope.data_modal.idpersonas;
+    $scope.getSubconceptos = function () {
+        console.log($scope.model);
+        var t_sc = $scope.model;
+        adminService.getSubConceptos(t_sc.concepto.id, t_sc.periodo.idperiodo, t_sc.nivel).then(function (data) {
+            $scope.subconceptos = data.respuesta.data;
+            $scope.model.subconcepto = $scope.subconceptos[0];
+            console.log(data);
+        });
+    };
+    $scope.getAdeudos = function () {
+        console.log($scope.model);
+        adminService.getAdeudosAlumno($scope.model).then(function (data) {
+            console.log(data);
+            $scope.adeudos = data.respuesta.data;
+        }, function (err) {
+        });
+    };
+    adminService.getPeriodos().then(function (data) {
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual === 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+        adminService.getconceptos().then(function (data) {
+            $scope.conceptos = data.respuesta.data;
+            $scope.model.concepto = $scope.conceptos[0];
+            adminService.getNiveles().then(function (data) {
+                $scope.niveles = data.respuesta.data;
+                $scope.model.nivel = Object.keys(data.respuesta.data)[0];
+                $scope.getSubconceptos();
+            });
+
+        });
+        $scope.getAdeudos();
+    }, function (err) {
+    });
+    $scope.AddAdeudoalumno = function () {
+        console.log($scope.model);
+    };
+
+    console.log($scope.data_modal);
+});

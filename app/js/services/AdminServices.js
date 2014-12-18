@@ -365,6 +365,30 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
+        var _getAdeudosAlumno = function (dataalumno) {
+            var deferred = $q.defer();
+            console.log({
+                id_persona: dataalumno.id_persona,
+                periodo: dataalumno.periodo.idperiodo
+            });
+            $http.get(serviceBase + '/adeudos/alumno',
+                    {params: {
+                            id_persona: dataalumno.id_persona,
+                            periodo: dataalumno.periodo.idperiodo
+                        }
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            //console.log(deferred.promise);
+            return deferred.promise;
+
+        };
+
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -377,6 +401,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getSubConceptosPlan = _getSubConceptosPlan;
         adminServiceFactory.getBancos = _getBancos;
         adminServiceFactory.getCuentasBanco = _getCuentasBanco;
+        adminServiceFactory.getAdeudosAlumno = _getAdeudosAlumno;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;
