@@ -389,6 +389,34 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
+        var _addAdeudosimple = function (dataadeudo) {
+            var deferred = $q.defer();
+            console.log([{
+                    subconcepto_id: dataadeudo.subconcepto.id,
+                    periodo: dataadeudo.periodo.idperiodo,
+                    id_personas: dataadeudo.id_persona,
+                    fecha_limite: dataadeudo.fecha,
+                    tipos_pago: dataadeudo.tipos_pago
+                }]);
+            $http.post(serviceBase + '/adeudos/agregar_subconcepto',
+                    {
+                        subconcepto_id: dataadeudo.subconcepto.id,
+                        periodo: dataadeudo.periodo.idperiodo,
+                        id_personas: dataadeudo.id_persona,
+                        fecha_limite: dataadeudo.fecha,
+                        tipos_pago: dataadeudo.tipos_pago
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            //console.log(deferred.promise);
+            return deferred.promise;
+
+        };
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -411,6 +439,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addSCPaquete = _addSCPaquete;
         adminServiceFactory.addBanco = _addBanco;
         adminServiceFactory.addCuentaBanco = _addCuentaBanco;
+        adminServiceFactory.addAdeudosimple = _addAdeudosimple;
 
         adminServiceFactory.Modifybanco = _Modifybanco;
 

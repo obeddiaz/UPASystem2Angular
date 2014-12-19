@@ -656,7 +656,8 @@ UPapp.controller('Modal_generarAdeudos', function ($scope, adminService, $rootSc
         console.log($scope.model);
         adminService.getAdeudosAlumno($scope.model).then(function (data) {
             console.log(data);
-            $scope.adeudos = data.respuesta.data;
+            $scope.adeudos = data.respuesta;
+            console.log($scope.adeudos);
         }, function (err) {
         });
     };
@@ -682,7 +683,13 @@ UPapp.controller('Modal_generarAdeudos', function ($scope, adminService, $rootSc
     });
     $scope.AddAdeudoalumno = function () {
         console.log($scope.model);
+        adminService.addAdeudosimple($scope.model).then(function (data) {
+            console.log(data);
+        });
     };
-
+    $scope.tipodePago = [
+        {text: 'Banco', value: 1},
+        {text: 'Caja', value: 2}
+    ];
     console.log($scope.data_modal);
 });
