@@ -23,11 +23,12 @@ UPapp.factory('studentService', ['$http', '$q', '$window', function ($http, $q, 
             $http.get(serviceBase + '/estado_de_cuenta/adeudos', {params: {id_persona: persona, periodo: periodo}})
                     .success(function (data) {
                         deferred.resolve(data.respuesta);
+                        console.log(data);
                     }).
                     error(function (err, status) {
                         deferred.reject(err);
                     });
-            //console.log(deferred.promise);
+
             return deferred.promise;
 
         };

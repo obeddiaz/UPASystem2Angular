@@ -38,11 +38,11 @@
                     <input class="form-control" ng-model="model.fecha" type="date" required/>
                 </div>
             </div>
-            <div class="col-md-4">
-                <label ng-repeat="pago in tipodePago">
-                    <input type="checkbox" checklist-model="model.tipos_pago" checklist-value="pago.value"> {{pago.text}}
-                </label>
-            </div>
+        </div>
+        <div class="col-md-4">
+            <label ng-repeat="pago in tipodePago">
+                <input type="checkbox" checklist-model="model.tipos_pago" checklist-value="pago.value"> {{pago.text}}
+            </label>
         </div>
         <div class="col-md-4 pull-right">
             <button class="btn btn-success btn-md btn-block col-md-4">

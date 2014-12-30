@@ -1,13 +1,15 @@
-<div ng-controller="EstadoCuentaCtrl" class="col-md-10">
-    <select ng-model="Modelo_Periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="Mostrar_Referencia()">
-    </select>
-    <!--    <select ng-model="Modelo_Periodo">
-            <option ng-selected="{{periodo.actual == 1}}"
-                    ng-repeat="periodo in periodos"
-                    value="{{periodo.idperiodo}}">
-                {{periodo.periodo}}
-            </option>
-        </select>-->
+<div ng-controller="EstadoCuentaCtrl" class="col-md-12">
+    <form class="form-horizontal">
+        <div class="row form-group">
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Ciclo</span>
+                    <select class="form-control" ng-model="Modelo_Periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="Mostrar_Referencia()">
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
     <div class="table-responsive" ng-if="adeudos">
         <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
             <thead>
@@ -19,7 +21,8 @@
             <th>Saldo</th>
             <th>Generar Recibo</th>
             </thead>
-            <tr ng-repeat="adeudo in adeudos" ng-class="{'bg-success':adeudo.status_adeudo == 1}">
+            <tr ng-repeat="adeudo in adeudos" ng-class="{
+                        'bg-success':adeudo.status_adeudo == 1}">
                 <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
                 <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>
                 <td data-title="'Recargo'">{{adeudo.recargo_total}}</td>

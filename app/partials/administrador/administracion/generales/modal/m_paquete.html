@@ -41,10 +41,17 @@
                     <select class="form-control" ng-model="model.subconcepto" ng-options="sc.sub_concepto for sc in subconceptos" required></select>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 pull-right">
                 <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="AddSCPaquete()">
                     Añadir a Paquete
                 </button>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-4">
+                <label ng-repeat="pago in tipodePago">
+                    <input type="checkbox" checklist-model="model.tipos_pago" checklist-value="pago.value"> {{pago.text}}
+                </label>
             </div>
         </div>
     </form>

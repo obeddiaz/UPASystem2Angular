@@ -1,16 +1,38 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>becas</div>
-    </body>
-</html>
+<div class="col-md-12" ng-controller="Administracion_Generales_becas">
+    <h2><span class="glyphicon glyphicon-user"></span> Becas
+        <span class="col-md-3 pull-right">
+            <button class="btn btn-primary btn-md btn-block" ng-click="NuevaBeca('m_NuevaBeca')">
+                <i class="fa fa-plus fa-2"></i> Nueva Beca
+            </button>
+        </span>
+    </h2>
+    <hr>
+    <div class="table-responsive">
+        <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+            <thead>
+            <th>Abreviatura</th>
+            <th>Descripcion</th>
+            <th>Importe</th>
+            <th>Administrar</th>
+            </thead>
+            <tr ng-repeat="beca in becas">
+                <td data-title="'Concepto'">{{beca.abreviatura}}</td>
+                <td data-title="'Descripcion'">{{beca.descripcion}}</td>
+                <td data-title="'Administrar'">{{beca.importe}}</td>
+                <td data-title="'Administrar'">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            Administrar Beca <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a ng-href="" ng-click="Modificar('m_modificarBeca', beca, $index)">Modificar</a></li>
+                            <li><a ng-href="" ng-click="Eliminar(beca.id)">Eliminar</a></li>
+                            <li class="divider"></li>
+                            <li><a ng-href="" ng-click="AlumnosBeca('m_AlumnosBeca', beca)">Alumnos</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -273,7 +273,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 paquete_id: dataSCPaquete.paquete_id,
                 sub_concepto: dataSCPaquete.sub_concepto,
                 recargo: dataSCPaquete.recargo,
-                tipo_recargo: dataSCPaquete.tipo_recargo
+                tipo_recargo: dataSCPaquete.tipo_recargo,
+                tipos_pago: dataSCPaquete.tipos_pago
             }).success(function (data) {
                 console.log(data);
                 deferred.resolve(data.respuesta.data);
@@ -417,6 +418,227 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
 
         };
+
+        var _getBecas = function () {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/becas')
+                    .success(function (data) {
+                        console.log(data);
+                        // if (!data.error) {
+                        deferred.resolve(data);
+                        //}
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _getAlumnosBecas = function (dataBeca) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/becas/alumnos/beca',
+                    {
+                        params: {
+                            idbeca: dataBeca.idbeca,
+                            idnivel: dataBeca.nivel,
+                            periodo: dataBeca.periodo.idperiodo
+                        }
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        // if (!data.error) {
+                        deferred.resolve(data);
+                        //}
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _getAlumnosNoBecas = function (dataBeca) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/becas/alumnos/nobeca',
+                    {
+                        params: {
+                            idbeca: dataBeca.idbeca,
+                            idnivel: dataBeca.nivel,
+                            periodo: dataBeca.periodo.idperiodo
+                        }
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        // if (!data.error) {
+                        deferred.resolve(data);
+                        //}
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _addNuevaBeca = function (dataBeca) {
+            var deferred = $q.defer();
+            $http.post(serviceBase + '/administracion/generales/becas/agregar',
+                    {
+                        abreviatura: dataBeca.abreviatura,
+                        importe: dataBeca.importe,
+                        periodicidades_id: dataBeca.periodicidades_id,
+                        subcidios_id: dataBeca.subcidios_id,
+                        tipo_importe_id: dataBeca.tipo_importe_id,
+                        descripcion: dataBeca.descripcion
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        // if (!data.error) {
+                        deferred.resolve(data);
+                        //}
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        //Asignar a los no inscritos
+        var _addNIAlumnosBeca = function (dataBeca) {
+            var deferred = $q.defer();
+            $http.post(serviceBase + '/administracion/generales/becas/alumnos/agregar',
+                    {
+                        idbeca: dataBeca.idbeca,
+                        idnivel: dataBeca.nivel,
+                        periodo: dataBeca.periodo.idperiodo,
+                        id_persona: dataBeca.idpersona
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        // if (!data.error) {
+                        deferred.resolve(data);
+                        //}
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        //Reactiva beca a Alumno Inscrito
+        var _reactivarBecaAlumno = function (dataBeca) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/administracion/generales/becas/alumnos/asignar',
+                    {
+                        id_persona: dataBeca.idpersona,
+                        idbeca: dataBeca.idbeca,
+                        idnivel: dataBeca.nivel,
+                        periodo: dataBeca.periodo.idperiodo
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        // if (!data.error) {
+                        deferred.resolve(data);
+                        //}
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        //Desactiva beca a Alumno Inscrito
+        var _desactivarBecaAlumno = function (dataBeca) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/administracion/generales/becas/alumnos/cancelar',
+                    {
+                        id_persona: dataBeca.idpersona,
+                        idbeca: dataBeca.idbeca,
+                        idnivel: dataBeca.nivel,
+                        periodo: dataBeca.periodo.idperiodo
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        // if (!data.error) {
+                        deferred.resolve(data);
+                        //}
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _ModifyBeca = function (dataBeca) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/administracion/generales/becas/guardar', {
+                id: dataBeca.id,
+                abreviatura: dataBeca.abreviatura,
+                importe: dataBeca.importe,
+                periodicidades_id: dataBeca.periodicidades_id,
+                subcidios_id: dataBeca.subcidios_id,
+                tipo_importe_id: dataBeca.tipo_importe_id,
+                descripcion: dataBeca.descripcion,
+                tipobeca: dataBeca.tipobeca
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
+        var _DeleteBeca = function (databeca) {
+            var deferred = $q.defer();
+            $http.delete(serviceBase + '/administracion/generales/becas/eliminar', {params: {id: databeca}
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
+        var _getCatalogos = function () {
+            var deferred = $q.defer();
+            var cache = cacheService.get('CatalogosBeca');
+            if (cache) {
+                deferred.resolve(cache);
+            }
+            else {
+                $http.get(serviceBase + '/administracion/generales/becas/catalogos')
+                        .success(function (data) {
+                            cacheService.put('CatalogosBeca', data);
+                            deferred.resolve(data);
+                        }).
+                        error(function (err, status) {
+                            deferred.reject(err);
+                        });
+            }
+            return deferred.promise;
+        };
+
+        var _SubirReferencias = function (archivo) {
+            var deferred = $q.defer();
+            var fd = new FormData();
+            angular.forEach(archivo, function (file) {
+                fd.append('referencia_archivo', file);
+            });
+            $http.post(serviceBase + '/caja/caja/banco/subir', fd,
+                    {
+                        transformRequest: angular.identity,
+                        headers: {
+                            'Content-Type': undefined
+                        }
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -430,6 +652,10 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getBancos = _getBancos;
         adminServiceFactory.getCuentasBanco = _getCuentasBanco;
         adminServiceFactory.getAdeudosAlumno = _getAdeudosAlumno;
+        adminServiceFactory.getBecas = _getBecas;
+        adminServiceFactory.getCatalogos = _getCatalogos;
+        adminServiceFactory.getAlumnosBecas = _getAlumnosBecas;
+        adminServiceFactory.getAlumnosNoBecas = _getAlumnosNoBecas;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;
@@ -440,10 +666,18 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addBanco = _addBanco;
         adminServiceFactory.addCuentaBanco = _addCuentaBanco;
         adminServiceFactory.addAdeudosimple = _addAdeudosimple;
+        adminServiceFactory.addNuevaBeca = _addNuevaBeca;
+        adminServiceFactory.SubirReferencias = _SubirReferencias;
+        adminServiceFactory.addNIAlumnosBeca = _addNIAlumnosBeca;
 
         adminServiceFactory.Modifybanco = _Modifybanco;
+        adminServiceFactory.ModifyBeca = _ModifyBeca;
 
         adminServiceFactory.DeleteBanco = _DeleteBanco;
+        adminServiceFactory.DeleteBeca = _DeleteBeca;
+
+        adminServiceFactory.reactivarBecaAlumno = _reactivarBecaAlumno;
+        adminServiceFactory.desactivarBecaAlumno = _desactivarBecaAlumno;
 
         return adminServiceFactory;
     }]);

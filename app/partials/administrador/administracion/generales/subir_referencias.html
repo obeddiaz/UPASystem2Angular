@@ -1,0 +1,21 @@
+<div class="col-md-12" ng-controller="Administracion_Generales_fileReferencias">
+    <h2><i class="fa fa-upload fa-3"></i> Subir Archivo Referencias</h2>
+    <hr>
+    <form class="" ng-submit="upload_file()">
+        <div class="row form-group">
+            <div class="col-md-12">
+                <input type="file" file-input="model.file" accept="text/plain" required/>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-4 pull-left">
+                <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                    Subir
+                </button>
+            </div>
+        </div>
+    </form>
+    <pre ng-repeat="file in files">
+        {{file.name}}
+    </pre>
+</div>
