@@ -16,6 +16,35 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
+
+        var _deletePlanePago = function (id) {
+            var deferred = $q.defer();
+            $http.delete(serviceBase + '/administracion/generales/planes_de_pago/eliminar', {params: {id: id}
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
+        var _ModifyPlanePago = function (dataplan) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/administracion/generales/planes_de_pago/guardar', {
+                id: dataplan.id,
+                clave_plan: dataplan.clave_plan,
+                id_agrupaciones: dataplan.agrupacion,
+                descripcion: dataplan.descripcion
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
         var _getAgrupaciones = function () {
             var deferred = $q.defer();
             $http.get(serviceBase + '/administracion/agrupaciones')
@@ -108,6 +137,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             else {
                 $http.get(serviceBase + '/periodos')
                         .success(function (data) {
+                            console.log(data);
                             cacheService.put('periodos', data.respuesta.data);
                             deferred.resolve(data.respuesta.data);
                         }).
@@ -230,6 +260,21 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
+        var _ModifyConcepto = function (dataconcepto) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/caja/conceptos/conceptos/guardar', {
+                id: dataconcepto.id,
+                concepto: dataconcepto.nombre,
+                descripcion: dataconcepto.descripcion
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
         var _addPlandePago = function (data_plan) {
             var deferred = $q.defer();
             $http.post(serviceBase + '/administracion/generales/planes_de_pago/agregar', {
@@ -268,6 +313,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         //administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos
 
         var _addSCPaquete = function (dataSCPaquete) {
+            console.log(dataSCPaquete);
             var deferred = $q.defer();
             $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos', {
                 paquete_id: dataSCPaquete.paquete_id,
@@ -638,6 +684,22 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
+        
+        var _getAdeudos = function (persona, periodo) {
+            var deferred = $q.defer();
+            //console.log(serviceBase);
+            $http.get(serviceBase + '/estado_de_cuenta/adeudos', {params: {id_persona: persona, periodo: periodo}})
+                    .success(function (data) {
+                        deferred.resolve(data.respuesta);
+                        console.log(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+
+            return deferred.promise;
+
+        };
 
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
@@ -656,6 +718,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getCatalogos = _getCatalogos;
         adminServiceFactory.getAlumnosBecas = _getAlumnosBecas;
         adminServiceFactory.getAlumnosNoBecas = _getAlumnosNoBecas;
+        adminServiceFactory.getAdeudos = _getAdeudos;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;
@@ -672,9 +735,12 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         adminServiceFactory.Modifybanco = _Modifybanco;
         adminServiceFactory.ModifyBeca = _ModifyBeca;
+        adminServiceFactory.ModifyPlanePago = _ModifyPlanePago;
+        adminServiceFactory.ModifyConcepto = _ModifyConcepto;
 
         adminServiceFactory.DeleteBanco = _DeleteBanco;
         adminServiceFactory.DeleteBeca = _DeleteBeca;
+        adminServiceFactory.deletePlanePago = _deletePlanePago;
 
         adminServiceFactory.reactivarBecaAlumno = _reactivarBecaAlumno;
         adminServiceFactory.desactivarBecaAlumno = _desactivarBecaAlumno;

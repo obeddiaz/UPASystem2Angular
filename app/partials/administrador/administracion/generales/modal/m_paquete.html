@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">×</button>
+    <label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
     <h4 class="modal-title">{{data_modal.descripcion}}</h4>
 </div>
 <div class="modal-body" ng-controller="Modal_planCtrl">
@@ -12,93 +12,103 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Nivel</span>
-                    <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles"></select>
+            <div ng-show="!pqt_exists">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Nivel</span>
+                        <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles"></select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="Nuevo_Paquete()">
-                    Crear Paquete
-                </button>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="Nuevo_Paquete()">
+                        Crear Paquete
+                    </button>
+                </div>
             </div>
         </div>
     </form>
     <hr>
-    <form class="form-horizontal">
-        <div class="row form-group">
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Concepto</span>
-                    <select class="form-control" ng-model="model.concepto" ng-options="concepto.concepto for concepto in conceptos" ng-change="getSubconceptos()">
-                    </select>
+    <div ng-show="pqt_exists">
+        <form class="form-horizontal">
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Concepto</span>
+                        <select class="form-control" ng-model="model.concepto" ng-options="concepto.concepto for concepto in conceptos" ng-change="getSubconceptos()">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Sub-Concepto</span>
+                        <select class="form-control" ng-model="model.subconcepto" ng-options="sc.sub_concepto for sc in subconceptos" required></select>
+                    </div>
+                </div>
+                <div class="col-md-4 pull-right">
+                    <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="AddSCPaquete()">
+                        Añadir a Paquete
+                    </button>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Sub-Concepto</span>
-                    <select class="form-control" ng-model="model.subconcepto" ng-options="sc.sub_concepto for sc in subconceptos" required></select>
+        </form>
+        <hr>
+        <form class="form-horizontal" ng-submit="SaveSCPaquete()">
+            <div class="row form-group" ng-repeat="ds in data_subconcepto">
+                <div class="col-md-4 ">
+                    <label>{{ds.nombre}}</label>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Tipo recargo</span>
+                        <select required class="form-control" ng-model="ds.tipo_recargo" ng-options="tipo.value as tipo.name for tipo in tipo_adeudo">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Recargo</span>
+                        <input type='text' class="form-control" ng-model="ds.recargo" required>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4 pull-right">
-                <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="AddSCPaquete()">
-                    Añadir a Paquete
-                </button>
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-md-4">
-                <label ng-repeat="pago in tipodePago">
-                    <input type="checkbox" checklist-model="model.tipos_pago" checklist-value="pago.value"> {{pago.text}}
-                </label>
-            </div>
-        </div>
-    </form>
-    <hr>
-    <form class="form-horizontal" ng-submit="SaveSCPaquete()">
-        <div class="row form-group" ng-repeat="ds in data_subconcepto">
-            <div class="col-md-4 ">
-                <label>{{ds.nombre}}</label>
-            </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Tipo recargo</span>
-                    <select class="form-control" ng-model="ds.tipo_recargo" ng-options="tipo.value as tipo.name for tipo in tipo_adeudo" required></select>
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <label ng-repeat="pago in tipodePago">
+                        <input type="checkbox" checklist-model="model.tipos_pago" checklist-value="pago.value"> {{pago.text}}
+                    </label>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Recargo</span>
-                    <input type='text' class="form-control" ng-model="ds.recargo" required>
+            <div ng-show="scp_show">
+                <div class="table-responsive" ng-show="scp_show">
+                    <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+                        <thead>
+                        <th>Sub Concepto</th>
+                        <th>Fecha de Vencimiento</th>
+                        <th>Importe</th>
+                        <th>Eliminar</th>
+                        </thead>
+                        <tr ng-repeat="single in scp track by $index">
+                            <td data-title="'Sub_Concepto'">{{single.sub_concepto}}</td>
+                            <td data-title="'Fecha'">
+                                <input type="date" ng-model="single.fecha_de_vencimiento" required/>
+                            </td>
+                            <td data-title="'Importe'">{{single.importe}}</td>
+                            <td><button type="button" ng-click="dropSC($index)" class="btn">Eliminar</button></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-3 pull-right">
+                    <button type="submit"  ng-disabled="scp.length == 0 || model.tipos_pago.length == 0" class="btn btn-primary btn-md btn-block col-md-4">
+                        Añadir
+                    </button>
                 </div>
             </div>
-        </div>
-        <div ng-show="scp_show">
-            <div class="table-responsive" ng-show="scp_show">
-                <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
-                    <thead>
-                    <th>Sub Concepto</th>
-                    <th>Fecha de Vencimiento</th>
-                    <th>Importe</th>
-                    </thead>
-                    <tr ng-repeat="single in scp track by $index">
-                        <td data-title="'Sub_Concepto'">{{single.sub_concepto}}</td>
-                        <td data-title="'Fecha'">
-                            <input type="date" ng-model="single.fecha_de_vencimiento"/>
-                        </td>
-                        <td data-title="'Importe'">{{single.importe}}</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-md-3 pull-right">
-                <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
-                    Añadir
-                </button>
-            </div>
-        </div>
-    </form>
-
+        </form>
+    </div>
+    <div class="form-group">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}">{{alert.msg}}</alert>
+    </div>
 </div>
 <div class="modal-footer" style="border-top: none;">
     <div class="col-md-3 pull-right">

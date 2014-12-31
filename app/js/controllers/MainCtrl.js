@@ -2,6 +2,7 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
     var curr_user = authService.authentication;
     //console.log(authService.authentication);
     //console.log($routeParams);
+    console.log(curr_user);
     if (curr_user.isAuth) {
         if (curr_user.user_type === 'alumno') {
             var main_route = '#/home/alumno';

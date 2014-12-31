@@ -16,10 +16,40 @@ UPapp.controller('Administracion_Generales', function ($scope, $routeParams) {
 });
 
 UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $routeParams, adminService, $modal) {
+    var BTemp = false;
     adminService.getPlanesPago().then(function (data) {
         $scope.planes = data;
+        console.log(data);
     }, function (err) {
 
+    });
+    $scope.Eliminar = function (id) {
+        adminService.deletePlanePago(id).then(function (data) {
+            console.log(data);
+            if (data.respuesta.data) {
+                $scope.planes = data.respuesta.data;
+            }
+        });
+    };
+    $scope.Modificar = function (html, data, idx) {
+        BTemp = idx;
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
+    $scope.$on('modal_response', function (event, args) {
+        if (args.modificado) {
+            $scope.planes[BTemp] = args.data;
+        } else {
+            $scope.planes.push(args);
+        }
     });
     $scope.open = function (data, html) {
         $modal.open({
@@ -45,10 +75,9 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
             }
         });
     };
-
-    $scope.$on('modal_response', function (event, args) {
-        $scope.planes.push(args);
-    });
+//    $scope.$on('modal_response', function (event, args) {
+//        $scope.planes.push(args);
+//    });
 });
 
 
@@ -63,7 +92,7 @@ UPapp.controller('Administracion_Generales_bancos', function ($scope, $routePara
         console.log(id);
         var CuentaData = [];
         Cuentas.forEach(function (val, key) {
-            if (val.bancos_id === id) {
+            if (val.bancos_id == id) {
                 CuentaData.push(val);
             }
         });
@@ -135,8 +164,8 @@ UPapp.controller('Administracion_Generales_bancos', function ($scope, $routePara
 
 UPapp.controller('Administracion_Generales_conceptos', function ($scope, adminService, $modal) {
     $scope.conceptos = [];
+    var BTemp = false;
     adminService.getconceptos().then(function (data) {
-        //console.log(data);
         if (!data.error) {
             $scope.conceptos = data.respuesta.data;
         }
@@ -154,8 +183,20 @@ UPapp.controller('Administracion_Generales_conceptos', function ($scope, adminSe
             }
         });
     };
+    $scope.Modificar = function (html, data, idx) {
+        BTemp = idx;
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
     $scope.Nuevo_Concepto = function (html) {
-//        var modalInstance = 
         $modal.open({
             templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
             controller: 'ModalInstanceCtrl',
@@ -166,16 +207,13 @@ UPapp.controller('Administracion_Generales_conceptos', function ($scope, adminSe
                 }
             }
         });
-//        modalInstance.result.then(function (data) {
-//            $scope.conceptos.push(data);
-//        }, function () {
-//            console.log('Modal dismissed at: ' + new Date());
-//        });
     };
     $scope.$on('modal_response', function (event, args) {
-        // $scope.return_data = args;
-        $scope.conceptos.push(args);
-        //$rootScope.$broadcast('modal_response', args);
+        if (args.modificado) {
+            $scope.conceptos[BTemp] = args.data;
+        } else {
+            $scope.conceptos.push(args);
+        }
     });
 });
 
@@ -262,7 +300,7 @@ UPapp.controller('Administracion_Agrupaciones', function ($scope, $routeParams, 
     };
     $scope.subPageRigth = function (page, custom_data, type) {
         $scope.subPageTemplate = 'partials/administrador/administracion/agrupaciones/' + page + '.html';
-        if (type === 'planes') {
+        if (type == 'planes') {
             $scope.title = "Agrupacion: " + custom_data.nombre;
             adminService.getPlanesPagoAgrupacion(custom_data.id).then(function (data) {
                 $scope.planes = data;
@@ -270,7 +308,7 @@ UPapp.controller('Administracion_Agrupaciones', function ($scope, $routeParams, 
 
             });
         }
-        if (type === 'alumnos') {
+        if (type == 'alumnos') {
             //console.log(custom_data);
             $scope.title = "Alumnos";
             $scope.data_plan = custom_data;
@@ -305,7 +343,7 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         $scope.carreras = [];
         angular.forEach(data, function (value, genre) {
             //console.log($scope.carreras.indexOf(value.carrera));
-            if ($scope.carreras.indexOf(value.carrera) === -1)
+            if ($scope.carreras.indexOf(value.carrera) == -1)
             {
                 $scope.carreras.push(value.carrera);
             }
@@ -318,7 +356,7 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         //console.log(data);
         $scope.periodos = data;
         data.forEach(function (val, key) {
-            if (val.actual === 1) {
+            if (val.actual == 1) {
                 $scope.Modelo_Periodo = $scope.periodos[key];
                 $scope.aif();
             }
@@ -349,12 +387,12 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         });
     };
     $scope.mostrar_ocultar = function (show) {
-        if (show === 'inscritos') {
+        if (show == 'inscritos') {
             $scope.alumnos_todos = false;
             $scope.alumnos_inscritos = true;
             //console.log($scope.Modelo_Periodo);
         }
-        if (show === 'no_inscritos') {
+        if (show == 'no_inscritos') {
             $scope.alumnos_todos = true;
             $scope.alumnos_inscritos = false;
         }
@@ -418,7 +456,7 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
     adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
         data.forEach(function (val, key) {
-            if (val.actual === 1) {
+            if (val.actual == 1) {
                 $scope.model.periodo = $scope.periodos[key];
             }
         });
@@ -475,6 +513,10 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
     var datos_paquete = [];
     $scope.model = [];
     $scope.scp = [];
+    $scope.dropSC = function (index) {
+        $scope.scp.splice(index, 1);
+        $scope.filldataSC();
+    };
     adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
         data.forEach(function (val, key) {
@@ -519,6 +561,10 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         $scope.scp_show = true;
     };
     $scope.SaveSCPaquete = function () {
+        console.log($scope.scp.length);
+        if ($scope.scp.length == 0) {
+            return;
+        }
         $scope.$parent.isBusy = true;
         var dataSCPaquete = [];
         console.log(datos_paquete);
@@ -531,12 +577,14 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             dataSCPaquete['sub_concepto'][temp_count]['id'] = val.id;
             temp_count++;
         });
+
         dataSCPaquete['recargo'] = {};
         dataSCPaquete['tipo_recargo'] = {};
         for (x in $scope.data_subconcepto) {
             dataSCPaquete['recargo'][x] = $scope.data_subconcepto[x].recargo;
             dataSCPaquete['tipo_recargo'][x] = $scope.data_subconcepto[x].tipo_recargo;
         }
+        dataSCPaquete['tipos_pago'] = $scope.model.tipos_pago;
         adminService.addSCPaquete(dataSCPaquete).then(function (data) {
             $scope.$parent.isBusy = false;
             console.log(data);
@@ -558,23 +606,42 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             }
         });
     };
-
+    $scope.pqt_exists = false;
     $scope.get_scp = function () {
+        $scope.model.tipos_pago = false;
         adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo).then(function (data) {
             if (!data.error) {
                 console.log(data);
                 datos_paquete = data.respuesta.paquete;
+                $scope.pqt_exists = true;
                 $scope.scp_show = true;
                 $scope.scp = data.respuesta.data;
                 $scope.filldataSC();
+                $scope.alerts = [];
+                if (data.respuesta.data) {
+                    data.respuesta.data.forEach(function (val) {
+                        if (val.tipos_pago)
+                        {
+                            $scope.model.tipos_pago = JSON.parse(val.tipos_pago);
+                        }
+                    });
+                    console.log($scope.model.tipos_pago);
+                    if (!$scope.model.tipos_pago) {
+                        $scope.model.tipos_pago = [1];
+                    }
+                }
+            } else {
+                $scope.pqt_exists = false;
+                $scope.alerts = [
+                    {type: 'danger', msg: data.mensaje}
+                ];
             }
         });
     };
     $scope.Nuevo_Paquete = function () {
         $scope.model['id_plandepago'] = $scope.data_modal.id;
-        //console.log($scope.model);
         adminService.addPaquetePlan($scope.model).then(function (data) {
-            //console.log(data);
+            $scope.get_scp();
         });
     };
     $scope.tipodePago = [
@@ -708,17 +775,17 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
         $scope.grupos = [];
         $scope.grados = [];
         angular.forEach(data, function (value, genre) {
-            if ($scope.carreras.indexOf(value.carrera) === -1)
+            if ($scope.carreras.indexOf(value.carrera) == -1)
             {
                 $scope.carreras.push(value.carrera);
             }
-            if ($scope.grupos.indexOf(value.grupo) === -1)
+            if ($scope.grupos.indexOf(value.grupo) == -1)
             {
                 if (value.grupo !== null) {
                     $scope.grupos.push(value.grupo);
                 }
             }
-            if ($scope.grados.indexOf(value.grado) === -1)
+            if ($scope.grados.indexOf(value.grado) == -1)
             {
                 if (value.grado !== null) {
                     $scope.grados.push(value.grado);
@@ -762,17 +829,17 @@ UPapp.controller('Administracion_Generales_single_adeudo', function ($scope, adm
         $scope.grupos = [];
         $scope.grados = [];
         angular.forEach(data, function (value, genre) {
-            if ($scope.carreras.indexOf(value.carrera) === -1)
+            if ($scope.carreras.indexOf(value.carrera) == -1)
             {
                 $scope.carreras.push(value.carrera);
             }
-            if ($scope.grupos.indexOf(value.grupo) === -1)
+            if ($scope.grupos.indexOf(value.grupo) == -1)
             {
                 if (value.grupo !== null) {
                     $scope.grupos.push(value.grupo);
                 }
             }
-            if ($scope.grados.indexOf(value.grado) === -1)
+            if ($scope.grados.indexOf(value.grado) == -1)
             {
                 if (value.grado !== null) {
                     $scope.grados.push(value.grado);
@@ -825,7 +892,7 @@ UPapp.controller('Modal_generarAdeudos', function ($scope, adminService, $rootSc
     adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
         data.forEach(function (val, key) {
-            if (val.actual === 1) {
+            if (val.actual == 1) {
                 $scope.model.periodo = $scope.periodos[key];
             }
         });
@@ -901,9 +968,11 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
     //$scope.carreras = [];
     $scope.$parent.isBusy = true;
     adminService.getPeriodos().then(function (data) {
-        $scope.$parent.periodos = data;
+        $scope.$parent.isBusy = true;
+        $scope.periodos = data;
+        console.log(data);
         data.forEach(function (val, key) {
-            if (val.actual === 1) {
+            if (val.actual == 1) {
                 $scope.model.periodo = $scope.periodos[key];
             }
         });
@@ -933,7 +1002,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
                 //$scope.carreras = [];
                 angular.forEach(data.respuesta.data, function (value, genre) {
                     //console.log($scope.carreras.indexOf(value.carrera));
-                    if (alm_insc_car.indexOf(value.carrera) === -1)
+                    if (alm_insc_car.indexOf(value.carrera) == -1)
                     {
                         alm_insc_car.push(value.carrera);
                     }
@@ -947,7 +1016,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
                 console.log(data);
                 alm_noinsc = data.respuesta.data;
                 angular.forEach(data.respuesta.data, function (value, genre) {
-                    if (alm_noinsc_car.indexOf(value.carrera) === -1)
+                    if (alm_noinsc_car.indexOf(value.carrera) == -1)
                     {
                         alm_noinsc_car.push(value.carrera);
                     }
@@ -979,7 +1048,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
             if (data.respuesta.data) {
                 alm_insc = data.respuesta.data;
                 angular.forEach(data.respuesta.data, function (value, genre) {
-                    if (alm_insc_car.indexOf(value.carrera) === -1)
+                    if (alm_insc_car.indexOf(value.carrera) == -1)
                     {
                         alm_insc_car.push(value.carrera);
                     }
@@ -996,7 +1065,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
             if (data.respuesta.data) {
                 alm_insc = data.respuesta.data;
                 angular.forEach(data.respuesta.data, function (value, genre) {
-                    if (alm_insc_car.indexOf(value.carrera) === -1)
+                    if (alm_insc_car.indexOf(value.carrera) == -1)
                     {
                         alm_insc_car.push(value.carrera);
                     }
@@ -1015,7 +1084,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
             if (data.respuesta.data) {
                 alm_insc = data.respuesta.data;
                 angular.forEach(data.respuesta.data, function (value, genre) {
-                    if (alm_noinsc_car.indexOf(value.carrera) === -1)
+                    if (alm_noinsc_car.indexOf(value.carrera) == -1)
                     {
                         alm_insc_car.push(value.carrera);
                     }
@@ -1024,6 +1093,141 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
                 $scope.alumnos = alm_noinsc;
                 $scope.alumno_filter.carrera = alm_noinsc_car[0];
             }
+        });
+    };
+});
+
+UPapp.controller('Modal_ModifyPlan', function ($scope, adminService, $rootScope) {
+    $scope.model = [];
+    console.log($scope.data_modal);
+    $scope.model['id'] = $scope.data_modal['id'];
+    $scope.model['clave_plan'] = $scope.data_modal['clave_plan'];
+    $scope.model['descripcion'] = $scope.data_modal['descripcion'];
+    $scope.$parent.isBusy = true;
+    adminService.getAgrupaciones().then(function (data) {
+        console.log(data);
+        $scope.$parent.isBusy = false;
+        $scope.agrupaciones = data;
+        $scope.model['agrupacion'] = $scope.data_modal['id_agrupaciones'];
+    });
+    $scope.Modify = function () {
+        $scope.$parent.isBusy = true;
+        adminService.ModifyPlanePago($scope.model).then(function (data) {
+            console.log(data);
+            var MResponse = [];
+            $scope.$parent.isBusy = false;
+            if (data.respuesta.data) {
+                MResponse['modificado'] = true;
+                MResponse['data'] = data.respuesta.data;
+                $rootScope.$broadcast('custom_response', MResponse);
+            }
+        });
+    };
+
+});
+
+UPapp.controller('Modal_ModifyConcepto', function ($scope, adminService, $rootScope) {
+    $scope.concepto = [];
+    console.log($scope.data_modal);
+    $scope.concepto['id'] = $scope.data_modal['id'];
+    $scope.concepto['nombre'] = $scope.data_modal['concepto'];
+    $scope.concepto['descripcion'] = $scope.data_modal['descripcion'];
+    $scope.Modify = function () {
+        $scope.$parent.isBusy = true;
+        console.log($scope.concepto);
+        adminService.ModifyConcepto($scope.concepto).then(function (data) {
+            console.log(data);
+            var MResponse = [];
+            $scope.$parent.isBusy = false;
+            if (data.respuesta.data) {
+                MResponse['modificado'] = true;
+                MResponse['data'] = data.respuesta.data;
+                $rootScope.$broadcast('custom_response', MResponse);
+            }
+        });
+    };
+});
+
+UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope, $modal) {
+    adminService.getalumnos().then(function (data) {
+        $scope.model = {
+            filter: {
+                carrera: false,
+                grupo: false,
+                grado: false
+            }
+        };
+        //console.log(data);
+        $scope.alumnos = data;
+        $scope.carreras = [];
+        $scope.grupos = [];
+        $scope.grados = [];
+        angular.forEach(data, function (value, genre) {
+            if ($scope.carreras.indexOf(value.carrera) == -1)
+            {
+                $scope.carreras.push(value.carrera);
+            }
+            if ($scope.grupos.indexOf(value.grupo) == -1)
+            {
+                if (value.grupo !== null) {
+                    $scope.grupos.push(value.grupo);
+                }
+            }
+            if ($scope.grados.indexOf(value.grado) == -1)
+            {
+                if (value.grado !== null) {
+                    $scope.grados.push(value.grado);
+                }
+
+            }
+        });
+        console.log($scope.grados);
+        $scope.model.filter.carrera = $scope.carreras[0];
+        //$scope.model.filter.grupo = $scope.grupos[0];
+        //$scope.model.filter.grado = $scope.grados[0];
+    }, function (err) {
+
+    });
+    $scope.Consultar = function (html, data) {
+        $modal.open({
+            templateUrl: 'partials/administrador/alumnos/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
+});
+
+UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
+    $scope.model = [];
+    var ref_count = 0;
+    var anp = {};
+    var total_referencias = {};
+    console.log($scope.data_modal);
+    $scope.model['id_persona'] = $scope.data_modal['idpersonas'];
+    adminService.getPeriodos().then(function (data) {
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+                $scope.Mostrar_Referencia();
+            }
+        });
+    }, function (err) {
+    });
+    $scope.Mostrar_Referencia = function () {
+        ref_count = 0;
+        console.log($scope.model);
+        adminService.getAdeudosAlumno($scope.model).then(function (data) {
+            console.log(data);
+            if (data.respuesta) {
+                $scope.adeudos = data.respuesta;
+            }
+        }, function (err) {
         });
     };
 });

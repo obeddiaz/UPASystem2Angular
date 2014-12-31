@@ -18,9 +18,19 @@
                 <td data-title="'Clave'">{{plan.clave_plan}}</td>
                 <td data-title="'Descripcion'">{{plan.descripcion}}</td>
                 <td data-title="'Administrar'">
-                    <button class="btn" ng-click="open(plan, 'm_paquete')">Administrar Plan</button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            Administrar Plan <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a ng-href="" ng-click="open(plan, 'm_paquete')">Datos plan</a></li>
+<!--                            <li><a ng-href="" ng-click="Eliminar(plan.id)">Eliminar</a></li>-->
+                            <li><a ng-href="" ng-click="Modificar('m_modificarPlan', plan, $index)">Modificar</a></li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
+
         </table>
     </div>
 </div>

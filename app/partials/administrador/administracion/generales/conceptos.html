@@ -18,7 +18,15 @@
                 <td data-title="'Concepto'">{{concepto.concepto}}</td>
                 <td data-title="'Descripcion'">{{concepto.descripcion}}</td>
                 <td data-title="'Administrar'">
-                    <button class="btn" ng-click="open(concepto, 'm_concepto')">Administrar Concepto</button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            Administrar Concepto <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a ng-href="" ng-click="open(concepto, 'm_concepto')">Datos plan</a></li>
+                            <li><a ng-href="" ng-click="Modificar('m_modificarConcepto', concepto, $index)">Modificar</a></li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </table>

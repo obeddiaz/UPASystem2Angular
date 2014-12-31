@@ -1,0 +1,42 @@
+<div class="modal-header">
+    <label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
+    <h4 class="modal-title">{{data_modal.clave_plan}}</h4>
+</div>
+<div class="modal-body" ng-controller="Modal_ModifyPlan">
+    <form ng-submit="Modify()">
+        <div class="row form-group">
+            <div class="col-lg-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Agrupacion</span>
+                    <select class="form-control" ng-model="model.agrupacion" ng-options="agrupacion.id as agrupacion.nombre for agrupacion in agrupaciones" required>
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Clave Plan</span>
+                    <input type='text' class="form-control" ng-model="model.clave_plan" required>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-12">
+                <label>Descripcion</label>
+                <textarea class="form-control"  ng-model="model.descripcion" rows="3" style="resize:none;" required></textarea>
+            </div>
+        </div>
+        <div class="col-md-3 pull-right">
+            <button ng-disabled="isBusy" type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                Modificar
+            </button>
+        </div>
+    </form>
+</div>
+<div class="modal-footer" style="border-top: 0px;">
+    <div class="col-md-3 pull-right">
+        <button class="btn btn-warning btn-md btn-block col-md-4" ng-click="cancel()">
+            Cancelar
+        </button>
+    </div>
+</div>
