@@ -34,8 +34,13 @@
             </div>
             <div class="col-md-4">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Vence</span>
-                    <input class="form-control" ng-model="model.fecha" type="date" required/>
+                    <p class="input-group">
+                        <span class="input-group-addon">Vence</span>
+                        <input readonly="readonly" myformat type="text" class="form-control" datepicker-popup="{{format}}" ng-model="model.fecha" is-open="opened" datepicker-options="dateOptions"  ng-required="true" close-text="Cerrar" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -45,26 +50,24 @@
             </label>
         </div>
         <div class="col-md-4 pull-right">
-            <button class="btn btn-success btn-md btn-block col-md-4">
+            <button ng-disabled="model.tipos_pago.length == 0||model.tipos_pago==undefined" class="btn btn-success btn-md btn-block col-md-4">
                 Añadir Adeudo
             </button>
         </div>
     </form>
-    <div class="table-responsive" ng-if="adeudos">
-        <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
-            <thead>
-            <th>Descripción</th>
-            <th>Vence</th>
-            <th>Saldo</th>
-            </thead>
-            <tr ng-repeat="adeudo in adeudos" ng-class="{
-                        'bg-success':adeudo.status_adeudo == 1}">
-                <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
-                <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
-                <td data-title="'Total'">{{adeudo.importe}}</td>
-            </tr>
-        </table>
-    </div>
+    <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
+        <thead>
+        <th>Descripción</th>
+        <th>Vence</th>
+        <th>Saldo</th>
+        </thead>
+        <tr ng-repeat="adeudo in adeudos" ng-class="{
+                    'bg-success':adeudo.status_adeudo == 1}">
+            <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
+            <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
+            <td data-title="'Total'">{{adeudo.importe}}</td>
+        </tr>
+    </table>
 </div>
 <div class="modal-footer" style="border-top: 0px;">
     <div class="col-md-4 pull-right">

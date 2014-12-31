@@ -90,8 +90,13 @@
                         </thead>
                         <tr ng-repeat="single in scp track by $index">
                             <td data-title="'Sub_Concepto'">{{single.sub_concepto}}</td>
-                            <td data-title="'Fecha'">
-                                <input type="date" ng-model="single.fecha_de_vencimiento" required/>
+                            <td class="col-md-4" data-title="'Fecha'">
+                                <p class="input-group">
+                                    <input required myformat type="text" class="form-control" datepicker-popup="{{format}}" ng-model="single.fecha_de_vencimiento" is-open="single.opened" readonly="readonly" datepicker-options="dateOptions"  ng-required="true" close-text="Close" />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="open($index, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    </span>
+                                </p>
                             </td>
                             <td data-title="'Importe'">{{single.importe}}</td>
                             <td><button type="button" ng-click="dropSC($index)" class="btn">Eliminar</button></td>

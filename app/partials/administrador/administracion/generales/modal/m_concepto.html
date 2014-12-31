@@ -23,9 +23,6 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">Nuevo</span>
                     <input type='text' class="form-control" ng-model="new_sc.sub_concepto" required>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">Añadir</button>
-                    </span>
                 </div>
             </div>
             <div class="col-md-4">
@@ -47,21 +44,24 @@
                 <textarea class="form-control"  ng-model="new_sc.descripcion" rows="3" style="resize:none;" required></textarea>
             </div>
         </div>
+        <div class="col-md-3 pull-right">
+            <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                Añadir
+            </button>
+        </div>
     </form>
-    <div class="table-responsive" ng-if="subconceptos">
-        <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
-            <thead>
-            <th>Sub Concepto</th>
-            <th>Descripcion</th>
-            <th>Importe</th>
-            </thead>
-            <tr ng-repeat="subconcepto in subconceptos">
-                <td data-title="'Concepto'">{{subconcepto.sub_concepto}}</td>
-                <td data-title="'Importe'">{{subconcepto.descripcion}}</td>
-                <td data-title="'Recargo'"><strong>{{subconcepto.importe| currency}}</strong></td>
-            </tr>
-        </table>
-    </div>
+    <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+        <thead>
+        <th>Sub Concepto</th>
+        <th>Descripcion</th>
+        <th>Importe</th>
+        </thead>
+        <tr ng-repeat="subconcepto in subconceptos">
+            <td data-title="'Concepto'">{{subconcepto.sub_concepto}}</td>
+            <td data-title="'Importe'">{{subconcepto.descripcion}}</td>
+            <td data-title="'Recargo'"><strong>{{subconcepto.importe| currency}}</strong></td>
+        </tr>
+    </table>
     <div class="form-group">
         <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
     </div>
