@@ -64,7 +64,7 @@
   <tr ng-repeat="referencia in referencias" class="texto_box" >
     <td width=350>{{ referencia.sub_concepto }}</td>
     <td width=15 align="right"></td>
-    <td width=80 align="right" style="font-decoration:light;">{{ referencia.importe | currency}}</td>
+    <td width=80 align="right" style="font-decoration:light;">{{ referencia.importe | currency:MDX}}</td>
     <td width="170" align="center">{{ referencia.referencia }}</td>
   </tr>
   
@@ -74,7 +74,7 @@
   <tr class="texto_general">
     <td width=350>Importe Total</td>
     <td width=15 align="right"></td>
-    <td width=80 align="right">{{ importe_total | currency}}</td>
+    <td width=80 align="right">{{ importe_total | currency:MDX}}</td>
     <td width="170" align="center">&nbsp;</td>
   </tr>
   <tr class="texto_box">

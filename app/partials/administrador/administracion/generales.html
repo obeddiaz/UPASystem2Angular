@@ -3,14 +3,13 @@
         <div class="col-md-2">
             <div ng-app="link">
                 <ul class="nav nav-pills nav-stacked">
-                    <li ng-repeat="tab in tabs">
+                    <li ng-repeat="tab in tabs" class="left-menu" ng-class="{'active': active == tab.click}">
                         <a ng-click="subPageContent(tab.click)">{{tab.title}}</a>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="col-md-10" ng-include="subPageTemplate">
-
         </div>
     </div>
 </div>

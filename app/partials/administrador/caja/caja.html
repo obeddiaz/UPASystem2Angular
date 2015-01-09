@@ -1,0 +1,116 @@
+<div ng-controller="Caja_Caja" class="form-horizontal">
+    <fieldset>
+        <legend>
+            <label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
+            <span class="glyphicon glyphicon-usd"></span>Cobros
+        </legend>
+        <div id='content-estado'>
+            <form ng-submit="Alumno_Buscar()">
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">Matricula</span>
+                            <input ng-model="model.matricula" type='text' class="form-control" required>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default find_data" type="submit" name="find_data" ng-disabled="isBusy">Aceptar</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Nombre: </span>
+                        <span data-title="'nombre'" class="form-control">{{model.alumno_data.nom + " " + model.alumno_data.appat + " " + model.alumno_data.apmat}}</span>
+                    </div>
+                </div>
+            </div>    
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Nivel</span>
+                        <select class="form-control">
+                            <option>LICENCIATURA</option>
+                            <option>MAESTRIA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Grado</span>
+                        <span data-title="'grado'" class="form-control">{{model.alumno_data.grado}}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Grupo</span>
+                        <span data-title="'grupo'" class="form-control">{{model.alumno_data.grupo}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Ciclo</span>
+                        <select class="form-control" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div ng-show="student_found">
+            <div class="table-responsive">
+                <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
+                    <thead>
+                    <th>Pagar</th>
+                    <th>Descripción</th>
+                    <th>Importe</th>
+                    <th>Recargos</th>
+                    <th>Vence</th>
+                    <th>Beca</th>
+                    <th>Saldo</th>
+                    </thead>
+                    <tr ng-repeat="adeudo in adeudos" ng-class="{'bg-success':adeudo.status_adeudo == 1}">
+                        <td data-title="'Generar'">
+                            <div ng-repeat="tp in adeudo.tipos_pago" ng-if="(adeudo.status_adeudo == null || adeudo.status_adeudo == 0) && tp.tipo_pago_id == 2">
+                                <input type="checkbox" checklist-model="adeudo_confirm.add" checklist-value="adeudo.id"/>
+                            </div>
+                        </td>
+                        <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
+                        <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>
+                        <td data-title="'Recargo'">{{adeudo.recargo_total}}</td>
+                        <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
+                        <td data-title="'Beca'">{{adeudo.beca}}</td>
+                        <td data-title="'Total'">{{adeudo.importe}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Forma de pago</span>
+                        <select class="form-control">
+                            <option ng-repeat='forma in formas'>{{forma.id}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <button ng-disabled="adeudo_confirm.add.length == 0 || adeudo_confirm.add == undefined" class="btn btn-default" ng-click="Pagar_Adeudos()" type="button">Pagar</button>
+                </div>
+            </div>
+            <br>
+            <p style="color:red; font-weight: bold">
+                En caso de que no se vayan a pagar todas la colegiaturas, quite la selección de las que no se van a pagar
+            </p>
+            <p style="color:red; font-weight: bold">
+                Para poder pagar un adeudo por este modulo, el pago en caja debe de ser activado en el adeudo.
+            </p>
+        </div>
+        <div class="form-group">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+        </div>
+    </fieldset>
+</div>

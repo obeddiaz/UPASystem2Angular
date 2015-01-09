@@ -13,8 +13,8 @@
         <div class="col-md-4">
             <div class="input-group input-group-sm">
                 <span class="input-group-addon">Grado</span>
-                <select class="form-control" ng-model="model.filter.grupo" ng-options="grupo for grupo in grupos">
-                    <option value="">Mostrar Todos</option>
+                <select class="form-control" ng-model="model.filter.grado" ng-options="grado as grado for grado in grados">
+                    <option value="">Sin Grupo</option>
                 </select>
             </div>
         </div>
@@ -23,8 +23,8 @@
         <div class="col-md-4">
             <div class="input-group input-group-sm">
                 <span class="input-group-addon">Grupo</span>
-                <select class="form-control" ng-model="model.filter.grado" ng-options="grado as grado for grado in grados">
-                    <option value="">Mostrar Todos</option>
+                <select class="form-control" ng-model="model.filter.grupo" ng-options="grupo for grupo in grupos">
+                    <option value="">Sin Grupo</option>
                 </select>
             </div>
         </div>
@@ -35,7 +35,7 @@
         <th>Nombre</th>
         <th>Generar Adeudo</th>
         </thead>
-        <tr ng-repeat="alumno in filteredAlumnos = (alumnos| filter:{carrera:model.filter.carrera,grupo:model.filter.grupo||undefined,grado:model.filter.grado||undefined})">
+        <tr ng-repeat="alumno in filteredAlumnos = (alumnos| filter:{carrera:model.filter.carrera,grupo:model.filter.grupo||null,grado:model.filter.grado||null})">
             <td data-title="'Descripcion'">{{alumno.matricula}}</td>
             <td data-title="'Nombre'">{{alumno.nom + " " + alumno.appat + " " + alumno.apmat}}</td>
             <td data-title="'adeudo'">

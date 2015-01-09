@@ -1,8 +1,5 @@
 UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $location) {
-    var curr_user = authService.authentication;
-    //console.log(authService.authentication);
-    //console.log($routeParams);
-    console.log(curr_user);
+    var curr_user = authService.authentication;;
     if (curr_user.isAuth) {
         if (curr_user.user_type === 'alumno') {
             var main_route = '#/home/alumno';
@@ -17,7 +14,7 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                 $scope.template = 'partials/alumno/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html';
             } else if ($routeParams.pagename) {
                 $scope.template = 'partials/alumno/' + $routeParams.pagename + '.html';
-            } else {    
+            } else {
                 $scope.template = 'partials/alumno/estado_de_cuenta.html';
             }
         } else if (curr_user.user_type === 'profesor' || curr_user.user_type === 'administrador') {
@@ -41,10 +38,6 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                     title: "Alumnos",
                     menu: [
                         {
-                            title: "Expediente",
-                            action: main_route + "/alumnos/expediente"
-                        },
-                        {
                             title: "Consultas",
                             action: main_route + "/alumnos/consultas"
                         }
@@ -54,22 +47,17 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                     title: "Caja",
                     menu: [
                         {
-                            title: "Expediente",
-                            action: main_route + "/caja/expediente"
-                        },
-                        {
-                            title: "Consultas",
-                            action: main_route + "/caja/consultas"
+                            title: "Caja",
+                            action: main_route + "/caja/caja"
                         }
                     ]
                 }
             ];
-            //console.log($routeParams);
             if ($routeParams.pagename && $routeParams.subpagename) {
                 $scope.template = 'partials/administrador/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html';
             } else if ($routeParams.pagename) {
                 $scope.template = 'partials/administrador/' + $routeParams.pagename + '.html';
-            }else{
+            } else {
                 $location.path('/home/admin/administracion/agrupaciones');
             }
 

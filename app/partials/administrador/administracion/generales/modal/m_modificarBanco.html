@@ -1,7 +1,9 @@
 <div class="modal-header">
+    <label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
     <h4 class="modal-title">{{data_modal.banco}}</h4>
 </div>
 <div class="modal-body" ng-controller="Modal_ModifyBanco">
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}">{{alert.msg}}</alert>
     <form ng-submit="ModifyBanco()">
         <div class="row form-group">
             <div class="col-md-12">
@@ -18,7 +20,7 @@
             </div>
         </div>
         <div class="col-md-3 pull-right">
-            <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+            <button ng-disabled="isBusy" type="submit" class="btn btn-primary btn-md btn-block col-md-4">
                 Modificar
             </button>
         </div>
@@ -29,8 +31,5 @@
         <button class="btn btn-warning btn-md btn-block col-md-4" ng-click="cancel()">
             Cancelar
         </button>
-    </div>
-    <div class="col-md-3 pull-left">
-        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
     </div>
 </div>

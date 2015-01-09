@@ -1,5 +1,4 @@
-UPapp.controller('Administracion_Generales', function ($scope, $routeParams) {
-    ////console.log($routeParams);
+UPapp.controller('Administracion_Generales', function ($scope) {
     $scope.tabs = [
         {title: 'Planes de Pago', click: 'planes_de_pago'},
         {title: 'Conceptos', click: 'conceptos'},
@@ -7,25 +6,27 @@ UPapp.controller('Administracion_Generales', function ($scope, $routeParams) {
         {title: 'Adeudo Simple', click: 'single_adeudo'},
         {title: 'Archivo Referencias', click: 'subir_referencias'},
         {title: 'Becas', click: 'becas'},
-        {title: 'Descuentos', click: 'descuentos'}
+        //{title: 'Descuentos', click: 'descuentos'}
     ];
+    $scope.active = 'planes_de_pago';
     $scope.subPageTemplate = 'partials/administrador/administracion/generales/planes_de_pago.html';
     $scope.subPageContent = function (page) {
+        $scope.active = page;
         $scope.subPageTemplate = 'partials/administrador/administracion/generales/' + page + '.html';
     };
 });
 
 UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $routeParams, adminService, $modal) {
     var BTemp = false;
+    waitingDialog.show();
     adminService.getPlanesPago().then(function (data) {
+        waitingDialog.hide();
         $scope.planes = data;
-        ////console.log(data);
     }, function (err) {
 
     });
     $scope.Eliminar = function (id) {
         adminService.deletePlanePago(id).then(function (data) {
-            ////console.log(data);
             if (data.respuesta.data) {
                 $scope.planes = data.respuesta.data;
             }
@@ -75,9 +76,6 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
             }
         });
     };
-//    $scope.$on('modal_response', function (event, args) {
-//        $scope.planes.push(args);
-//    });
 });
 
 
@@ -87,25 +85,10 @@ UPapp.controller('Administracion_Generales_adeudos', function ($scope, $routePar
 
 UPapp.controller('Administracion_Generales_bancos', function ($scope, $routeParams, adminService, $modal) {
     var BTemp = false;
-    var Cuentas;
-    var CPB = function (id) {
-        ////console.log(id);
-        var CuentaData = [];
-        Cuentas.forEach(function (val, key) {
-            if (val.bancos_id == id) {
-                CuentaData.push(val);
-            }
-        });
-        ////console.log(CuentaData);
-        return CuentaData;
-    };
+    waitingDialog.show();
     adminService.getBancos().then(function (response) {
-        ////console.log(response);
         $scope.bancos = response.respuesta.data;
-    });
-    adminService.getCuentasBanco().then(function (response) {
-        ////console.log(response);
-        Cuentas = response.respuesta.data;
+        waitingDialog.hide();
     });
     $scope.NuevoBanco = function (html) {
         $modal.open({
@@ -133,7 +116,6 @@ UPapp.controller('Administracion_Generales_bancos', function ($scope, $routePara
         });
     };
     $scope.EliminarBanco = function (bid) {
-        ////console.log(bid);
         adminService.DeleteBanco(bid).then(function (data) {
             $scope.bancos = data.respuesta.data;
         });
@@ -142,15 +124,14 @@ UPapp.controller('Administracion_Generales_bancos', function ($scope, $routePara
         $modal.open({
             templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
             controller: 'ModalInstanceCtrl',
-            size: 'sm',
+            size: 'md',
             resolve: {
                 custom_data: function () {
-                    return {banco: data, cuentas: CPB(data.id)};
+                    return {banco: data};
                 }
             }
         });
     };
-
     $scope.$on('modal_response', function (event, args) {
         if (args.modificado) {
             $scope.bancos[BTemp] = args.data;
@@ -165,7 +146,9 @@ UPapp.controller('Administracion_Generales_bancos', function ($scope, $routePara
 UPapp.controller('Administracion_Generales_conceptos', function ($scope, adminService, $modal) {
     $scope.conceptos = [];
     var BTemp = false;
+    waitingDialog.show();
     adminService.getconceptos().then(function (data) {
+        waitingDialog.hide();
         if (!data.error) {
             $scope.conceptos = data.respuesta.data;
         }
@@ -223,8 +206,6 @@ UPapp.controller('Administracion_Generales_becas', function ($scope, adminServic
         if (data.respuesta.data) {
             $scope.becas = data.respuesta.data;
         }
-
-        ////console.log(data);
     }, function (err) {
     });
     $scope.NuevaBeca = function (html) {
@@ -281,9 +262,7 @@ UPapp.controller('Administracion_Generales_becas', function ($scope, adminServic
 UPapp.controller('Administracion_Generales_fileReferencias', function ($scope, adminService, $modal) {
     $scope.model = [];
     $scope.upload_file = function () {
-        ////console.log($scope.model.file);
         adminService.SubirReferencias($scope.model.file).then(function (data) {
-            ////console.log(data);
         });
     };
 
@@ -293,23 +272,25 @@ UPapp.controller('Administracion_Agrupaciones', function ($scope, $routeParams, 
     $scope.tabs = [
         {title: 'Alumno', click: 'agrupaciones'}
     ];
+    $scope.active = 'agrupaciones';
     $scope.title = "Agrupaciones";
     $scope.subPageTemplate = 'partials/administrador/administracion/agrupaciones/agrupaciones.html';
     $scope.subPageContent = function (page) {
         $scope.subPageTemplate = 'partials/administrador/administracion/agrupaciones/' + page + '.html';
     };
     $scope.subPageRigth = function (page, custom_data, type) {
+        waitingDialog.show();
         $scope.subPageTemplate = 'partials/administrador/administracion/agrupaciones/' + page + '.html';
         if (type == 'planes') {
             $scope.title = "Agrupacion: " + custom_data.nombre;
             adminService.getPlanesPagoAgrupacion(custom_data.id).then(function (data) {
+                waitingDialog.hide();
                 $scope.planes = data;
             }, function (err) {
 
             });
         }
         if (type == 'alumnos') {
-            //////console.log(custom_data);
             $scope.title = "Alumnos";
             $scope.data_plan = custom_data;
         }
@@ -318,89 +299,147 @@ UPapp.controller('Administracion_Agrupaciones', function ($scope, $routeParams, 
 
 
 UPapp.controller('Administracion_Agrupaciones_agrupaciones', function ($scope, $routeParams, adminService) {
+    waitingDialog.show();
     adminService.getAgrupaciones().then(function (data) {
+        waitingDialog.hide();
         $scope.agrupaciones = data;
     }, function (err) {
 
     });
     $scope.subPageLoad = function (html, data, type) {
-//        ////console.log(html);
-//        ////console.log(data);
-//        ////console.log(type);
         $scope.subPageRigth(html, data, type);
     };
 });
 
-UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $routeParams, adminService) {
+UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $routeParams, adminService, $q, $timeout) {
+    var promises = [];
+    var alumnos = [];
+    var carreras = [];
+    var grados = [];
+    var grupos = [];
+    $scope.paquete_periodo = false;
+    $scope.alumnos_show = true;
     $scope.alumnos_todos = false;
     $scope.alumnos_inscritos = true;
-    var paquete_periodo = {};
-    adminService.getalumnos().then(function (data) {
-        $scope.alumno_filter = {
-            carrera: false
-        };
-        $scope.alumnos = data;
-        $scope.carreras = [];
+    $scope.model = [];
+    $scope.isBusy = true;
+    waitingDialog.show();
+    promises.push(adminService.getalumnos().then(function (data) {
+        alumnos.NoInscritos = data;
+        carreras.NoInscritos = [];
+        grupos.NoInscritos = [];
+        grados.NoInscritos = [];
         angular.forEach(data, function (value, genre) {
-            //////console.log($scope.carreras.indexOf(value.carrera));
-            if ($scope.carreras.indexOf(value.carrera) == -1)
+            if (carreras.NoInscritos.indexOf(value.carrera) == -1)
             {
-                $scope.carreras.push(value.carrera);
+                carreras.NoInscritos.push(value.carrera);
+            }
+            if (grupos.NoInscritos.indexOf(value.grupo) == -1)
+            {
+                if (value.grupo !== null) {
+                    grupos.NoInscritos.push(value.grupo);
+                }
+            }
+            if (grados.NoInscritos.indexOf(value.grado) == -1)
+            {
+                if (value.grado !== null) {
+                    grados.NoInscritos.push(value.grado);
+                }
             }
         });
-        $scope.alumno_filter.carrera = $scope.carreras[0];
+        return true;
     }, function (err) {
 
-    });
-    adminService.getPeriodos().then(function (data) {
-        //////console.log(data);
+    }));
+    promises.push(adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
         data.forEach(function (val, key) {
             if (val.actual == 1) {
-                $scope.Modelo_Periodo = $scope.periodos[key];
-                $scope.aif();
+                $scope.model.periodo = $scope.periodos[key];
             }
         });
+        return true;
     }, function (err) {
-        $scope.alerts = [
-            {type: 'danger', msg: 'Usuario o contraseña incorrectos'}
-        ];
-        $scope.message = err.error_description;
+    }));
+    $q.all(promises).then(function (data) {
+        waitingDialog.hide();
+        $scope.isBusy = false;
+        $scope.aif();
     });
-    //funcion Alumnos Inscritos
+    $scope.Insc_NoInsc = function () {
+        $scope.model.filter = {
+            carrera: false,
+            grupo: false,
+            grado: false
+        };
+        $scope.alumno_assign.add = [];
+        if ($scope.alumnos_show) {
+            $scope.alumnos_show = false;
+            $scope.alumnos = alumnos.Inscritos;
+            $scope.carreras = carreras.Inscritos;
+            $scope.grupos = grupos.Inscritos;
+            $scope.grados = grados.Inscritos;
+            if ($scope.carreras) {
+                $scope.model.filter.carrera = $scope.carreras[0];
+            }
+
+        } else {
+            $scope.alumnos_show = true;
+            $scope.alumnos = alumnos.NoInscritos;
+            $scope.carreras = carreras.NoInscritos;
+            $scope.grupos = grupos.NoInscritos;
+            $scope.grados = grados.NoInscritos;
+            if ($scope.carreras) {
+                $scope.model.filter.carrera = $scope.carreras[0];
+            }
+        }
+    };
     $scope.aif = function () {
-        adminService.getAlumnosPaquete($scope.Modelo_Periodo.idperiodo, $scope.data_plan.id).then(function (data) {
+        $scope.isBusy = true;
+        adminService.getAlumnosPaquete($scope.model.periodo.idperiodo, $scope.data_plan.id).then(function (data) {
+            $scope.isBusy = false;
             if (!data.error) {
-                paquete_periodo = data.respuesta.paquete;
-                $scope.alumnos_insc = data.respuesta.data;
+                console.log(data);
+                alumnos.Inscritos = data.respuesta.data;
+                $scope.paquete_periodo = data.respuesta.paquete;
+                carreras.Inscritos = [];
+                grupos.Inscritos = [];
+                grados.Inscritos = [];
+                angular.forEach(data.respuesta.data, function (value, genre) {
+                    if (carreras.Inscritos.indexOf(value.carrera) == -1)
+                    {
+                        carreras.Inscritos.push(value.carrera);
+                    }
+                    if (grupos.Inscritos.indexOf(value.grupo) == -1)
+                    {
+                        if (value.grupo !== null) {
+                            grupos.Inscritos.push(value.grupo);
+                        }
+                    }
+                    if (grados.Inscritos.indexOf(value.grado) == -1)
+                    {
+                        if (value.grado !== null) {
+                            grados.Inscritos.push(value.grado);
+                        }
+                    }
+                });
                 $scope.alerts = false;
+                $scope.Insc_NoInsc();
             } else {
-                paquete_periodo = false;
+                $scope.paquete_periodo = false;
                 $scope.alumnos_insc = false;
                 $scope.alumnos_inscritos = true;
+                $scope.alumnos = [];
                 $scope.alerts = [
-                    {type: 'danger', msg: 'No existe Ningun Paquete para el periodo ' + $scope.Modelo_Periodo.periodo}
+                    {type: 'danger', msg: 'No existe Ningun Paquete para el periodo ' + $scope.model.periodo.periodo}
                 ];
             }
         }, function (err) {
 
         });
     };
-    $scope.mostrar_ocultar = function (show) {
-        if (show == 'inscritos') {
-            $scope.alumnos_todos = false;
-            $scope.alumnos_inscritos = true;
-            //////console.log($scope.Modelo_Periodo);
-        }
-        if (show == 'no_inscritos') {
-            $scope.alumnos_todos = true;
-            $scope.alumnos_inscritos = false;
-        }
-    };
     $scope.alumno_assign = [];
     $scope.checkAll = function () {
-
-        //////console.log($scope.filteredAlumnos.map(function(item) { return item.idpersonas; }));
         $scope.alumno_assign.add = $scope.filteredAlumnos.map(function (item) {
             return item.idpersonas;
         });
@@ -409,30 +448,29 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         $scope.alumno_assign.add = [];
     };
     $scope.asignar_alumnos = function () {
-        if (paquete_periodo) {
-            adminService.setAdeudosalumno(paquete_periodo.id, $scope.alumno_assign.add).then(function (data) {
-                //////console.log(data);
+        $scope.isBusy = true;
+        if ($scope.paquete_periodo) {
+            adminService.setAdeudosalumno($scope.paquete_periodo.id, $scope.alumno_assign.add).then(function (data) {
+                $scope.isBusy = false;
+                $scope.aif();
+                $scope.alertsAdded = [
+                    {type: 'success', msg: 'Los alumnos seleccionados han sido añadidos Correctamente'}
+                ];
             }, function (err) {
 
             });
         }
     };
-    //
 });
 
 UPapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, custom_data, $rootScope) {
-    //////console.log(custom_data);
     $scope.data_modal = custom_data;
     $scope.isBusy = false;
     $scope.return_data = [];
     $scope.$on('custom_response', function (event, args) {
-        // $scope.return_data = args;
         $rootScope.$broadcast('modal_response', args);
     });
     $scope.ok = function () {
-        ////console.log($scope.isBusy);
-        ////console.log($scope.return_data);
-
         $modalInstance.close($scope.return_data);
     };
     $scope.cancel = function () {
@@ -493,7 +531,6 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
         $scope.new_sc.tipo_adeudo_id = $scope.new_sc.tipo_adeudo.value;
         adminService.addSubConcepto($scope.new_sc).then(function (data) {
             $scope.$parent.isBusy = false;
-            //console.log(data);
             if (!data.error) {
                 $scope.subconceptos.push(data.respuesta);
                 $scope.alerts = [];
@@ -545,7 +582,6 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         $scope.get_scp();
         _PeriodosReady();
     }, function (err) {
-        ////console.log(err);
     });
     var _PeriodosReady = function () {
         adminService.getconceptos().then(function (data) {
@@ -554,18 +590,15 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
                 $scope.model.concepto = $scope.conceptos[0];
                 $scope.getSubconceptos();
             }
-            ////console.log(data);
         });
     };
     $scope.getSubconceptos = function () {
-        //console.log($scope.model);
         var t_sc = $scope.model;
         adminService.getSubConceptos(t_sc.concepto.id, t_sc.periodo.idperiodo, t_sc.nivel).then(function (data) {
             if (data.respuesta.data) {
                 $scope.subconceptos = data.respuesta.data;
                 $scope.model.subconcepto = $scope.subconceptos[0];
             }
-            //console.log(data);
         });
     };
     adminService.getNiveles().then(function (data) {
@@ -573,19 +606,16 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         $scope.model.nivel = Object.keys(data.respuesta.data)[0];
     });
     $scope.AddSCPaquete = function () {
-        //console.log($scope.scp);
         $scope.scp.push(angular.fromJson(angular.toJson($scope.model.subconcepto)));
         $scope.filldataSC();
         $scope.scp_show = true;
     };
     $scope.SaveSCPaquete = function () {
-        //console.log($scope.scp.length);
         if ($scope.scp.length == 0) {
             return;
         }
         $scope.$parent.isBusy = true;
         var dataSCPaquete = [];
-        //console.log(datos_paquete);
         dataSCPaquete['paquete_id'] = datos_paquete.id;
         dataSCPaquete['sub_concepto'] = {};
         var temp_count = 0;
@@ -605,7 +635,6 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         dataSCPaquete['tipos_pago'] = $scope.model.tipos_pago;
         adminService.addSCPaquete(dataSCPaquete).then(function (data) {
             $scope.$parent.isBusy = false;
-            //console.log(data);
         });
     };
     $scope.tipo_adeudo = [
@@ -630,7 +659,6 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         $scope.model.tipos_pago = false;
         adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo).then(function (data) {
             if (!data.error) {
-                //console.log(data);
                 datos_paquete = data.respuesta.paquete;
                 $scope.pqt_exists = true;
                 $scope.scp_show = true;
@@ -644,7 +672,6 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
                             $scope.model.tipos_pago = JSON.parse(val.tipos_pago);
                         }
                     });
-                    //console.log($scope.model.tipos_pago);
                     if (!$scope.model.tipos_pago) {
                         $scope.model.tipos_pago = [1];
                     }
@@ -671,7 +698,6 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
 
 UPapp.controller('Modal_NewConcepto', function ($scope, adminService, $rootScope) {
     $scope.$parent.isBusy = false;
-    ////console.log($scope.$parent.return_data);
     $scope.$parent.return_data = [{'test': 'test'}];
 
     $scope.add_new = function () {
@@ -680,7 +706,6 @@ UPapp.controller('Modal_NewConcepto', function ($scope, adminService, $rootScope
             $scope.$parent.isBusy = false;
             $rootScope.$broadcast('custom_response', data.respuesta.data);
             $scope.$parent.isBusy = false;
-            ////console.log(data);
         });
     };
 });
@@ -688,14 +713,12 @@ UPapp.controller('Modal_NewConcepto', function ($scope, adminService, $rootScope
 UPapp.controller('Modal_NewPlan', function ($scope, adminService, $rootScope) {
     $scope.model = [];
     adminService.getAgrupaciones().then(function (data) {
-        ////console.log(data);
         $scope.agrupaciones = data;
         $scope.model.agrupacion = $scope.agrupaciones[0];
     });
     $scope.add_newPlan = function () {
         $scope.$parent.isBusy = true;
         adminService.addPlandePago($scope.model).then(function (data) {
-            ////console.log(data);
             $scope.$parent.isBusy = false;
             $rootScope.$broadcast('custom_response', data);
         });
@@ -707,7 +730,6 @@ UPapp.controller('Modal_NewBanco', function ($scope, adminService, $rootScope) {
     $scope.addNewBanco = function () {
         $scope.$parent.isBusy = true;
         adminService.addBanco($scope.model).then(function (data) {
-            //console.log(data);
             $scope.$parent.isBusy = false;
             $rootScope.$broadcast('custom_response', data.respuesta.data);
         });
@@ -727,32 +749,31 @@ UPapp.controller('Modal_ModifyBanco', function ($scope, adminService, $rootScope
             MResponse['modificado'] = true;
             MResponse['data'] = data.respuesta.data;
             $rootScope.$broadcast('custom_response', MResponse);
+            $scope.alerts = [
+                {type: 'success', msg: 'Los datos del banco han sido Modificados.'}
+            ];
         });
     };
 });
 
 UPapp.controller('Modal_ModifyBeca', function ($scope, adminService, $rootScope) {
     $scope.model = [];
-    //console.log($scope.data_modal);
     $scope.model['id'] = $scope.data_modal['id'];
     $scope.model['importe'] = $scope.data_modal['importe'];
     $scope.model['abreviatura'] = $scope.data_modal['abreviatura'];
     $scope.model['descripcion'] = $scope.data_modal['descripcion'];
     adminService.getCatalogos().then(function (data) {
-        //console.log(data);
         if (data.respuesta.data) {
             $scope.model['periodicidades_id'] = $scope.data_modal['periodicidades_id'];
             $scope.model['tipo_importe_id'] = $scope.data_modal['tipo_importe_id'];
             $scope.model['subcidios_id'] = $scope.data_modal['subcidios_id'];
             $scope.catalogos = data.respuesta.data;
             $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
-            //console.log($scope.catalogos.tipo_importe);
         }
     });
     $scope.Modify = function () {
         $scope.$parent.isBusy = true;
         adminService.ModifyBeca($scope.model).then(function (data) {
-            //console.log(data);
             var MResponse = [];
             $scope.$parent.isBusy = false;
             if (data.respuesta.data) {
@@ -765,18 +786,50 @@ UPapp.controller('Modal_ModifyBeca', function ($scope, adminService, $rootScope)
 });
 
 
-UPapp.controller('Modal_cuentasBanco', function ($scope, adminService, $rootScope) {
+UPapp.controller('Modal_cuentasBanco', function ($scope, adminService, $q) {
+    $scope.$parent.isBusy = true;
     $scope.model = [];
-    //console.log($scope.data_modal);
-    $scope.cuentas = $scope.data_modal.cuentas;
     $scope.model['bancos_id'] = $scope.data_modal.banco.id;
     $scope.AddCuenta = function () {
         $scope.$parent.isBusy = true;
         adminService.addCuentaBanco($scope.model).then(function (data) {
             $scope.$parent.isBusy = false;
             $scope.cuentas.push(data.respuesta.data);
+            $scope.alerts = [
+                {type: 'success', msg: 'La cuenta a sido agregada correctamente.'}
+            ];
         });
     };
+    var CPB = function (id) {
+        var CuentaData = [];
+        Cuentas.forEach(function (val, key) {
+            if (val.bancos_id == id) {
+                CuentaData.push(val);
+            }
+        });
+        return CuentaData;
+    };
+    var get_cuentas = function () {
+        var deferred = $q.defer();
+        adminService.getCuentasBanco().then(function (response) {
+            $scope.$parent.isBusy = false;
+            Cuentas = response.respuesta.data;
+            $scope.cuentas = CPB($scope.data_modal.banco.id);
+            deferred.resolve(true);
+        });
+        return deferred.promise;
+    };
+    $scope.ActivarCta = function (Cta) {
+        $scope.$parent.isBusy = true;
+        adminService.activarCuentaBanco(Cta.id).then(function (data) {
+            get_cuentas().then(function () {
+                $scope.alerts = [
+                    {type: 'success', msg: 'Se a Cambiado la cuenta activa correctamente.'}
+                ];
+            });
+        });
+    };
+    get_cuentas();
 });
 
 UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminService, $rootScope, $modal) {
@@ -788,7 +841,6 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
                 grado: null
             }
         };
-        ////console.log(data);
         $scope.alumnos = data;
         $scope.carreras = [];
         $scope.grupos = [];
@@ -812,7 +864,6 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
 
             }
         });
-        //console.log($scope.grados);
         $scope.model.filter.carrera = $scope.carreras[0];
         //$scope.model.filter.grupo = $scope.grupos[0];
         //$scope.model.filter.grado = $scope.grados[0];
@@ -835,6 +886,7 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
 
 UPapp.controller('Administracion_Generales_single_adeudo', function ($scope, adminService, $rootScope, $modal) {
     adminService.getalumnos().then(function (data) {
+
         $scope.model = {
             filter: {
                 carrera: false,
@@ -842,7 +894,6 @@ UPapp.controller('Administracion_Generales_single_adeudo', function ($scope, adm
                 grado: false
             }
         };
-        ////console.log(data);
         $scope.alumnos = data;
         $scope.carreras = [];
         $scope.grupos = [];
@@ -866,7 +917,6 @@ UPapp.controller('Administracion_Generales_single_adeudo', function ($scope, adm
 
             }
         });
-        //console.log($scope.grados);
         $scope.model.filter.carrera = $scope.carreras[0];
         //$scope.model.filter.grupo = $scope.grupos[0];
         //$scope.model.filter.grado = $scope.grados[0];
@@ -887,24 +937,19 @@ UPapp.controller('Administracion_Generales_single_adeudo', function ($scope, adm
     };
 });
 
-UPapp.controller('Modal_generarAdeudos', function ($scope, adminService, $rootScope) {
+UPapp.controller('Modal_generarAdeudos', function ($scope, adminService) {
     $scope.model = [];
     $scope.model.id_persona = $scope.data_modal.idpersonas;
     $scope.getSubconceptos = function () {
-        //console.log($scope.model);
         var t_sc = $scope.model;
         adminService.getSubConceptos(t_sc.concepto.id, t_sc.periodo.idperiodo, t_sc.nivel).then(function (data) {
             $scope.subconceptos = data.respuesta.data;
             $scope.model.subconcepto = $scope.subconceptos[0];
-            //console.log(data);
         });
     };
     $scope.getAdeudos = function () {
-        //console.log($scope.model);
         adminService.getAdeudosAlumno($scope.model).then(function (data) {
-            //console.log(data);
             $scope.adeudos = data.respuesta;
-            //console.log($scope.adeudos);
         }, function (err) {
         });
     };
@@ -938,7 +983,6 @@ UPapp.controller('Modal_generarAdeudos', function ($scope, adminService, $rootSc
         });
     };
     $scope.AddAdeudoalumno = function () {
-        //console.log($scope.model);
         adminService.addAdeudosimple($scope.model).then(function (data) {
             $scope.adeudos.push(data.respuesta);
         });
@@ -958,18 +1002,14 @@ UPapp.controller('Modal_generarAdeudos', function ($scope, adminService, $rootSc
 UPapp.controller('Modal_NewBeca', function ($scope, adminService, $rootScope) {
     $scope.model = [];
     adminService.getCatalogos().then(function (data) {
-        //console.log(data);
         if (data.respuesta.data) {
             $scope.catalogos = data.respuesta.data;
             $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
-            //console.log($scope.catalogos.tipo_importe);
         }
     });
     $scope.addNewBeca = function () {
-        //console.log($scope.model);
         $scope.$parent.isBusy = true;
         adminService.addNuevaBeca($scope.model).then(function (data) {
-            //console.log(data);
             $scope.$parent.isBusy = false;
             if (data.respuesta.data) {
                 $rootScope.$broadcast('custom_response', data.respuesta.data);
@@ -982,18 +1022,15 @@ UPapp.controller('Modal_NewBeca', function ($scope, adminService, $rootScope) {
 UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope) {
     $scope.model = [];
     $scope.model['idbeca'] = $scope.data_modal['id'];
-    //console.log($scope.data_modal);
     var alm_insc = false;
     var alm_insc_car = [];
     var alm_noinsc = false;
     var alm_noinsc_car = [];
     $scope.show_alumnos = true;
-    //$scope.carreras = [];
     $scope.$parent.isBusy = true;
     adminService.getPeriodos().then(function (data) {
         $scope.$parent.isBusy = true;
         $scope.periodos = data;
-        //console.log(data);
         data.forEach(function (val, key) {
             if (val.actual == 1) {
                 $scope.model.periodo = $scope.periodos[key];
@@ -1014,13 +1051,10 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
     };
     var _NivelesReady = function () {
         $scope.$parent.isBusy = true;
-        //console.log($scope.model);
         adminService.getAlumnosBecas($scope.model).then(function (data) {
             $scope.$parent.isBusy = false;
             if (data.respuesta) {
                 if (data.respuesta.data) {
-                    //$scope.alumnos = data.respuesta.data;
-                    //console.log(data);
                     alm_insc = data.respuesta.data;
                     angular.forEach(data.respuesta.data, function (value, genre) {
                         if (alm_insc_car.indexOf(value.carrera) == -1)
@@ -1032,10 +1066,8 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
             }
         });
         adminService.getAlumnosNoBecas($scope.model).then(function (datanoinsc) {
-            //console.log(datanoinsc);
             if (datanoinsc.respuesta) {
                 if (datanoinsc.respuesta.data) {
-                    //console.log(datanoinsc);
                     alm_noinsc = datanoinsc.respuesta.data;
                     angular.forEach(datanoinsc.respuesta.data, function (value, genre) {
                         if (alm_noinsc_car.indexOf(value.carrera) == -1)
@@ -1062,10 +1094,8 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
             $scope.carreras = alm_noinsc_car;
             $scope.alumno_filter.carrera = alm_noinsc_car[0];
         }
-        //console.log($scope.carreras);
     };
     $scope.add = function () {
-        //console.log($scope.model);
         $scope.$parent.isBusy = true;
         adminService.addNIAlumnosBeca($scope.model).then(function (data) {
             $scope.$parent.isBusy = false;
@@ -1083,7 +1113,6 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
     };
     $scope.activate = function () {
         $scope.$parent.isBusy = true;
-        //console.log($scope.model);
         adminService.reactivarBecaAlumno($scope.model).then(function (data) {
             $scope.$parent.isBusy = false;
             if (data.respuesta.data) {
@@ -1122,13 +1151,11 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
 
 UPapp.controller('Modal_ModifyPlan', function ($scope, adminService, $rootScope) {
     $scope.model = [];
-    //console.log($scope.data_modal);
     $scope.model['id'] = $scope.data_modal['id'];
     $scope.model['clave_plan'] = $scope.data_modal['clave_plan'];
     $scope.model['descripcion'] = $scope.data_modal['descripcion'];
     $scope.$parent.isBusy = true;
     adminService.getAgrupaciones().then(function (data) {
-        //console.log(data);
         $scope.$parent.isBusy = false;
         $scope.agrupaciones = data;
         $scope.model['agrupacion'] = $scope.data_modal['id_agrupaciones'];
@@ -1136,7 +1163,6 @@ UPapp.controller('Modal_ModifyPlan', function ($scope, adminService, $rootScope)
     $scope.Modify = function () {
         $scope.$parent.isBusy = true;
         adminService.ModifyPlanePago($scope.model).then(function (data) {
-            //console.log(data);
             var MResponse = [];
             $scope.$parent.isBusy = false;
             if (data.respuesta.data) {
@@ -1151,15 +1177,12 @@ UPapp.controller('Modal_ModifyPlan', function ($scope, adminService, $rootScope)
 
 UPapp.controller('Modal_ModifyConcepto', function ($scope, adminService, $rootScope) {
     $scope.concepto = [];
-    //console.log($scope.data_modal);
     $scope.concepto['id'] = $scope.data_modal['id'];
     $scope.concepto['nombre'] = $scope.data_modal['concepto'];
     $scope.concepto['descripcion'] = $scope.data_modal['descripcion'];
     $scope.Modify = function () {
         $scope.$parent.isBusy = true;
-        //console.log($scope.concepto);
         adminService.ModifyConcepto($scope.concepto).then(function (data) {
-            //console.log(data);
             var MResponse = [];
             $scope.$parent.isBusy = false;
             if (data.respuesta.data) {
@@ -1180,7 +1203,6 @@ UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope
                 grado: false
             }
         };
-        ////console.log(data);
         $scope.alumnos = data;
         $scope.carreras = [];
         $scope.grupos = [];
@@ -1204,7 +1226,6 @@ UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope
 
             }
         });
-        //console.log($scope.grados);
         $scope.model.filter.carrera = $scope.carreras[0];
         //$scope.model.filter.grupo = $scope.grupos[0];
         //$scope.model.filter.grado = $scope.grados[0];
@@ -1227,10 +1248,6 @@ UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope
 
 UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
     $scope.model = [];
-    var ref_count = 0;
-    var anp = {};
-    var total_referencias = {};
-    //console.log($scope.data_modal);
     $scope.model['id_persona'] = $scope.data_modal['idpersonas'];
     adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
@@ -1244,12 +1261,77 @@ UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
     });
     $scope.Mostrar_Referencia = function () {
         ref_count = 0;
-        //console.log($scope.model);
         adminService.getAdeudosAlumno($scope.model).then(function (data) {
-            //console.log(data);
             if (data.respuesta) {
                 $scope.adeudos = data.respuesta;
             }
+        }, function (err) {
+        });
+    };
+});
+
+UPapp.controller('Caja_Caja', function ($scope, adminService, $filter, $q) {
+    var promises = [];
+    $scope.model = [];
+    var alumnos = false;
+    var data_alumno = [];
+    $scope.isBusy = true;
+    $scope.model = [];
+    $scope.formas = [{"id": "Efectivo"}];
+    waitingDialog.show();
+    promises.push(adminService.getPeriodos().then(function (data) {
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+        return true;
+    }, function (err) {
+    }));
+    promises.push(adminService.getAllalumnos().then(function (data) {
+        alumnos = data;
+        return true;
+    }, function (err) {
+    }));
+    $q.all(promises).then(function (data) {
+        $scope.isBusy = false;
+        waitingDialog.hide();
+    });
+    $scope.student_found = false;
+    $scope.Alumno_Buscar = function () {
+        var found = $filter('getByProperty')('matricula', $scope.model.matricula, alumnos);
+        if (found) {
+            $scope.student_found = true;
+            $scope.alerts = [];
+            $scope.model.alumno_data = found;
+            get_adeudos_alumno();
+        } else {
+            $scope.student_found = false;
+            $scope.model.alumno_data = [];
+            $scope.alerts = [
+                {type: 'danger', msg: 'La matricula especificada no se pudo encontrar.'}
+            ];
+        }
+    };
+    $scope.adeudo_confirm = [];
+    $scope.Pagar_Adeudos = function () {
+        $scope.isBusy = true;
+        angular.forEach($scope.adeudo_confirm.add, function (value) {
+            adminService.updateAdeudostatus(value).then(function (data) {
+            }, function (err) {
+            });
+        });
+        $scope.adeudo_confirm = [];
+        get_adeudos_alumno();
+    };
+    var get_adeudos_alumno = function () {
+        $scope.isBusy = true;
+        data_alumno['id_persona'] = $scope.model.alumno_data.idpersonas;
+        data_alumno['periodo'] = $scope.model.periodo;
+        adminService.getAdeudosAlumno(data_alumno).then(function (data) {
+            $scope.isBusy = false;
+            $scope.adeudos = data.respuesta;
         }, function (err) {
         });
     };

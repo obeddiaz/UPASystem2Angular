@@ -1,7 +1,9 @@
 <div class="modal-header">
+    <label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
     <h4 class="modal-title">{{data_modal.banco.banco}}</h4>
 </div>
 <div class="modal-body" ng-controller="Modal_cuentasBanco">
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}">{{alert.msg}}</alert>
     <form ng-submit="AddCuenta()">
         <div class="row form-group">
             <div class="col-md-12">
@@ -11,30 +13,27 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-12 pull-right">
-            <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+        <div class="col-md-4 pull-right">
+            <button ng-disabled="isBusy" type="submit" class="btn btn-primary btn-md btn-block col-md-4">
                 Agregar cuenta
             </button>
         </div>
     </form>
-    <div class="table-responsive" ng-if="cuentas">
-        <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
-            <thead>
-            <th>Cuenta</th>
-            </thead>
-            <tr ng-repeat="cuenta in cuentas">
-                <td data-title="'Concepto'">{{cuenta.cuenta}}</td>
-            </tr>
-        </table>
-    </div>
+    <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+        <thead>
+        <th>Cuenta</th>
+        <th>Activar</th>
+        </thead>
+        <tr ng-repeat="cuenta in cuentas">
+            <td data-title="'Concepto'">{{cuenta.cuenta}}</td>
+            <td data-title="'Concepto'"><button ng-disabled="isBusy" class="btn" ng-if="cuenta.activo_cobros == 0" ng-click="ActivarCta(cuenta)">Activar</button></td>
+        </tr>
+    </table>
 </div>
 <div class="modal-footer" style="border-top: 0px;">
-    <div class="col-md-12 pull-right">
+    <div class="col-md-4 pull-right">
         <button class="btn btn-warning btn-md btn-block col-md-4" ng-click="cancel()">
             Cancelar
         </button>
-    </div>
-    <div class="col-md-3 pull-left">
-        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
     </div>
 </div>

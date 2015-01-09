@@ -6,11 +6,9 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
         };
 
         var _login = function (loginData) {
-            //console.log(loginData);
             var deferred = $q.defer();
             $http.post(serviceBase + '/user/login', {'u': loginData.userName, 'p': loginData.password}).
                     success(function (data, status) {
-                        //console.log(data);
                         if (!data.error) {
                             var response_data = data.respuesta[0];
                             var persona = response_data.user.persona;
@@ -19,7 +17,6 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
                             _authentication.isAuth = true;
                             _authentication.token = ('token', response_data._token);
                             _authentication.persona = ('persona', persona);
-                            console.log(persona.profesor_activo);
                             if (parseInt(persona.admin_activo) === 1) {
                                 _authentication.user_type = 'administrador';
                                 $window.sessionStorage.setItem('user_type', 'administrador');

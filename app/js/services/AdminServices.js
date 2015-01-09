@@ -21,7 +21,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.delete(serviceBase + '/administracion/generales/planes_de_pago/eliminar', {params: {id: id}
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -37,7 +36,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 id_agrupaciones: dataplan.agrupacion,
                 descripcion: dataplan.descripcion
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -49,7 +47,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.get(serviceBase + '/administracion/agrupaciones')
                     .success(function (data) {
-                        //console.log(data);
                         if (!data.error) {
                             deferred.resolve(data.respuesta.data);
                         }
@@ -65,7 +62,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.get(serviceBase + '/administracion/generales/planes_de_pago/todos_agrupaciones', {params: {id_agrupaciones: id}})
                     .success(function (data) {
-                        //console.log(data);
                         if (!data.error) {
                             deferred.resolve(data.respuesta.data);
                         }
@@ -83,7 +79,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 deferred.resolve(cache);
             }
             else {
-                $http.get(serviceBase + '/alumnos')
+                $http.get(serviceBase + '/alumnostodos')
                         .success(function (data) {
                             if (!data.error) {
                                 cacheService.put('alumnos', data.respuesta.data);
@@ -99,13 +95,33 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
+        var _getAllalumnos = function () {
+            var deferred = $q.defer();
+            var cache = cacheService.get('alumnos');
+            if (cache) {
+                deferred.resolve(cache);
+            }
+            else {
+                $http.get(serviceBase + '/alumnostodos')
+                        .success(function (data) {
+                            if (!data.error) {
+                                cacheService.put('alumnos', data.respuesta.data);
+                                deferred.resolve(data.respuesta.data);
+                            }
+                        }).
+                        error(function (err, status) {
+                            deferred.reject(err);
+                        });
+            }
+            return deferred.promise;
+
+        };
+
         var _setAdeudosalumno = function (paquete_id, id_personas) {
             var deferred = $q.defer();
-            console.log(paquete_id);
-            console.log(id_personas);
             $http.post(serviceBase + '/administracion/agrupaciones/alumnos_paquete/agregar', {"paquete_id": paquete_id, "id_personas": id_personas})
                     .success(function (data) {
-                        console.log(data);
+                        deferred.resolve(data);
                     }).
                     error(function (err) {
                         deferred.reject(err);
@@ -116,11 +132,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         var _setAdeudosalumno = function (paquete_id, id_personas) {
             var deferred = $q.defer();
-            console.log(paquete_id);
-            console.log(id_personas);
             $http.post(serviceBase + '/administracion/agrupaciones/alumnos_paquete/agregar', {"paquete_id": paquete_id, "id_personas": id_personas})
                     .success(function (data) {
-                        console.log(data);
+                        deferred.resolve(data);
                     }).
                     error(function (err) {
                         deferred.reject(err);
@@ -137,7 +151,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             else {
                 $http.get(serviceBase + '/periodos')
                         .success(function (data) {
-                            console.log(data);
                             cacheService.put('periodos', data.respuesta.data);
                             deferred.resolve(data.respuesta.data);
                         }).
@@ -151,11 +164,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         var _getAlumnosPaquete = function (id_periodo, plan_pago) {
             var deferred = $q.defer();
-            console.log(id_periodo);
-            console.log(plan_pago);
             $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo}})
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     }).
                     error(function (err, status) {
@@ -168,7 +178,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.get(serviceBase + '/caja/conceptos/conceptos')
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     }).
                     error(function (err, status) {
@@ -181,7 +190,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.get(serviceBase + '/caja/subconceptos/subconceptos', {params: {conceptos_id: conceptos_id, periodo: periodo, nivel_id: nivel_id}})
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     }).
                     error(function (err, status) {
@@ -201,7 +209,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 tipo_adeudo: sc_data.tipo_adeudo_id
             })
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     }).
                     error(function (err, status) {
@@ -232,12 +239,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
 
         var _getSubConceptosPlan = function (plan, periodo) {
-            console.log(plan);
-            console.log(periodo);
             var deferred = $q.defer();
             $http.get(serviceBase + '/administracion/generales/planes_de_pago/subconceptos', {params: {id: plan, periodo: periodo}})
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     }).
                     error(function (err, status) {
@@ -247,11 +251,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         };
 
         var _addConcepto = function (concepto) {
-            console.log(concepto);
             var deferred = $q.defer();
             $http.post(serviceBase + '/caja/conceptos/conceptos/agregar', {concepto: concepto.nombre, descripcion: concepto.descripcion})
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     }).
                     error(function (err, status) {
@@ -267,7 +269,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 concepto: dataconcepto.nombre,
                 descripcion: dataconcepto.descripcion
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -282,7 +283,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 clave_plan: data_plan.clave_plan,
                 id_agrupaciones: data_plan.agrupacion.id
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data.respuesta.data);
             }).
                     error(function (err, status) {
@@ -301,7 +301,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 recargo: 0,
                 recargo_inscripcion: 0
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data.respuesta.data);
             }).
                     error(function (err, status) {
@@ -313,7 +312,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         //administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos
 
         var _addSCPaquete = function (dataSCPaquete) {
-            console.log(dataSCPaquete);
             var deferred = $q.defer();
             $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar_subconceptos', {
                 paquete_id: dataSCPaquete.paquete_id,
@@ -322,7 +320,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 tipo_recargo: dataSCPaquete.tipo_recargo,
                 tipos_pago: dataSCPaquete.tipos_pago
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data.respuesta.data);
             }).
                     error(function (err, status) {
@@ -335,7 +332,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.get(serviceBase + '/bancos')
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     })
                     .error(function (err, status) {
@@ -350,7 +346,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 banco: databanco.banco,
                 descripcion: databanco.descripcion
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -365,7 +360,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 banco: databanco.banco,
                 descripcion: databanco.descripcion
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -377,7 +371,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.delete(serviceBase + '/bancos/eliminar', {params: {id: databanco}
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -389,7 +382,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.get(serviceBase + '/cuentas')
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     })
                     .error(function (err, status) {
@@ -404,7 +396,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 bancos_id: dataCuenta.bancos_id,
                 cuenta: dataCuenta.cuenta
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -414,10 +405,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         var _getAdeudosAlumno = function (dataalumno) {
             var deferred = $q.defer();
-            console.log({
-                id_persona: dataalumno.id_persona,
-                periodo: dataalumno.periodo.idperiodo
-            });
             $http.get(serviceBase + '/adeudos/alumno',
                     {params: {
                             id_persona: dataalumno.id_persona,
@@ -425,26 +412,17 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         }
                     })
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     })
                     .error(function (err, status) {
                         deferred.reject(err);
                     });
-            //console.log(deferred.promise);
             return deferred.promise;
 
         };
 
         var _addAdeudosimple = function (dataadeudo) {
             var deferred = $q.defer();
-            console.log([{
-                    subconcepto_id: dataadeudo.subconcepto.id,
-                    periodo: dataadeudo.periodo.idperiodo,
-                    id_personas: dataadeudo.id_persona,
-                    fecha_limite: dataadeudo.fecha,
-                    tipos_pago: dataadeudo.tipos_pago
-                }]);
             $http.post(serviceBase + '/adeudos/agregar_subconcepto',
                     {
                         subconcepto_id: dataadeudo.subconcepto.id,
@@ -454,13 +432,11 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         tipos_pago: dataadeudo.tipos_pago
                     })
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     })
                     .error(function (err, status) {
                         deferred.reject(err);
                     });
-            //console.log(deferred.promise);
             return deferred.promise;
 
         };
@@ -469,10 +445,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.get(serviceBase + '/administracion/generales/becas')
                     .success(function (data) {
-                        console.log(data);
-                        // if (!data.error) {
                         deferred.resolve(data);
-                        //}
                     }).
                     error(function (err, status) {
                         deferred.reject(err);
@@ -491,10 +464,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         }
                     })
                     .success(function (data) {
-                        console.log(data);
-                        // if (!data.error) {
                         deferred.resolve(data);
-                        //}
                     }).
                     error(function (err, status) {
                         deferred.reject(err);
@@ -513,10 +483,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         }
                     })
                     .success(function (data) {
-                        console.log(data);
-                        // if (!data.error) {
                         deferred.resolve(data);
-                        //}
                     }).
                     error(function (err, status) {
                         deferred.reject(err);
@@ -536,10 +503,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         descripcion: dataBeca.descripcion
                     })
                     .success(function (data) {
-                        console.log(data);
-                        // if (!data.error) {
                         deferred.resolve(data);
-                        //}
                     })
                     .error(function (err, status) {
                         deferred.reject(err);
@@ -558,10 +522,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         id_persona: dataBeca.idpersona
                     })
                     .success(function (data) {
-                        console.log(data);
-                        // if (!data.error) {
                         deferred.resolve(data);
-                        //}
                     })
                     .error(function (err, status) {
                         deferred.reject(err);
@@ -579,10 +540,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         periodo: dataBeca.periodo.idperiodo
                     })
                     .success(function (data) {
-                        console.log(data);
-                        // if (!data.error) {
                         deferred.resolve(data);
-                        //}
                     })
                     .error(function (err, status) {
                         deferred.reject(err);
@@ -600,10 +558,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         periodo: dataBeca.periodo.idperiodo
                     })
                     .success(function (data) {
-                        console.log(data);
-                        // if (!data.error) {
                         deferred.resolve(data);
-                        //}
                     })
                     .error(function (err, status) {
                         deferred.reject(err);
@@ -623,7 +578,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 descripcion: dataBeca.descripcion,
                 tipobeca: dataBeca.tipobeca
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -635,7 +589,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             var deferred = $q.defer();
             $http.delete(serviceBase + '/administracion/generales/becas/eliminar', {params: {id: databeca}
             }).success(function (data) {
-                console.log(data);
                 deferred.resolve(data);
             }).error(function (err, status) {
                 deferred.reject(err);
@@ -676,7 +629,6 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         }
                     })
                     .success(function (data) {
-                        console.log(data);
                         deferred.resolve(data);
                     })
                     .error(function (err, status) {
@@ -684,14 +636,12 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
+
         var _getAdeudos = function (persona, periodo) {
             var deferred = $q.defer();
-            //console.log(serviceBase);
             $http.get(serviceBase + '/estado_de_cuenta/adeudos', {params: {id_persona: persona, periodo: periodo}})
                     .success(function (data) {
                         deferred.resolve(data.respuesta);
-                        console.log(data);
                     }).
                     error(function (err, status) {
                         deferred.reject(err);
@@ -701,10 +651,38 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
+        var _updateAdeudostatus = function (adeudoID) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/adeudos/status', {
+                id: adeudoID,
+                status_adeudo: 1
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
+
+
+        var _activarCuentaBanco = function (cuentaID) {
+            var deferred = $q.defer();
+            $http.put(serviceBase + '/cuentas/activar', {
+                id: cuentaID
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
         adminServiceFactory.getalumnos = _getalumnos;
+        adminServiceFactory.getAllalumnos = _getAllalumnos;
         adminServiceFactory.getPeriodos = _getPeriodos;
         adminServiceFactory.getAlumnosPaquete = _getAlumnosPaquete;
         adminServiceFactory.getconceptos = _getconceptos;
@@ -737,6 +715,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.ModifyBeca = _ModifyBeca;
         adminServiceFactory.ModifyPlanePago = _ModifyPlanePago;
         adminServiceFactory.ModifyConcepto = _ModifyConcepto;
+        adminServiceFactory.activarCuentaBanco = _activarCuentaBanco;
 
         adminServiceFactory.DeleteBanco = _DeleteBanco;
         adminServiceFactory.DeleteBeca = _DeleteBeca;
@@ -744,6 +723,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         adminServiceFactory.reactivarBecaAlumno = _reactivarBecaAlumno;
         adminServiceFactory.desactivarBecaAlumno = _desactivarBecaAlumno;
+
+        adminServiceFactory.updateAdeudostatus = _updateAdeudostatus;
 
         return adminServiceFactory;
     }]);

@@ -13,7 +13,7 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
                     if (Auth_Service.authentication.isAuth) {
                         config.headers.Authorization = $window.sessionStorage.getItem('token');
                     } else {
-                        //$location.path('/login');
+                        $location.path('/login');
                     }
                     return config || $q.when(config);
                 },

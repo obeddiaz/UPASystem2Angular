@@ -10,7 +10,7 @@
             </div>
         </div>
     </form>
-    <div class="table-responsive" ng-if="adeudos">
+    <div class="table-responsive">
         <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
             <thead>
             <th>Descripción</th>
@@ -30,7 +30,7 @@
                 <td data-title="'Beca'">{{adeudo.beca}}</td>
                 <td data-title="'Total'">{{adeudo.importe}}</td>
                 <td data-title="'Generar'">
-                    <button ng-if="adeudo.status_adeudo == 0" ng-click="Generareferencia(adeudo.ref_counter);">Generar</button>
+                    <button ng-repeat="tp in adeudo.tipos_pago" ng-if="(adeudo.status_adeudo == null || adeudo.status_adeudo == 0) && tp.tipo_pago_id == 1" ng-click="Generareferencia(adeudo.ref_counter);">Generar</button>
                 </td>
             </tr>
         </table>
