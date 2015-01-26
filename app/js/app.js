@@ -45,7 +45,7 @@ UPapp.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/login', {
             templateUrl: 'partials/login/index.html'
         });
-        //$routeProvider.otherwise({redirectTo: '/login'});
+        $routeProvider.otherwise({redirectTo: '/login'});
     }]);
 UPapp.run(['authService', function (authService) {
         authService.fillAuthData();

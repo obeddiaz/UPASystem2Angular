@@ -29,6 +29,7 @@ UPapp.factory('studentService', ['$http', '$q', '$window', function ($http, $q, 
         };
         var _setReferencias = function (referencias) {
             var deferred = $q.defer();
+            console.log(referencias);
             $http.post(serviceBase + '/estado_de_cuenta/referencias', {adeudos: referencias})
                     .success(function (data) {
                         deferred.resolve(data.respuesta);

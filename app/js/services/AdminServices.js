@@ -320,7 +320,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 tipo_recargo: dataSCPaquete.tipo_recargo,
                 tipos_pago: dataSCPaquete.tipos_pago
             }).success(function (data) {
-                deferred.resolve(data.respuesta.data);
+                deferred.resolve(data);
             }).
                     error(function (err, status) {
                         deferred.reject(err);
@@ -678,6 +678,58 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
+        var _getAllSubConceptos = function (conceptos_id) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/caja/subconceptos/subconceptos_by_id', {params: {conceptos_id: conceptos_id}})
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        //Get Sub Conceptos Paquete
+//        var _getSC_Paquete = function (data_paquete) {
+//            var deferred = $q.defer();
+//            $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar', {
+//                id_plandepago: data_paquete.id_plandepago,
+//                idnivel: data_paquete.nivel,
+//                nivel: 'LICENCIATURA',
+//                periodo: data_paquete.periodo.idperiodo,
+//                recargo: 0,
+//                recargo_inscripcion: 0
+//            }).success(function (data) {
+//                deferred.resolve(data.respuesta.data);
+//            }).
+//                    error(function (err, status) {
+//                        deferred.reject(err);
+//                    });
+//            return deferred.promise;
+//            var deferred = $q.defer();
+//            $http.get(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/sc_plan', {params: {id: persona, periodo: periodo}})
+//                    .success(function (data) {
+//                        deferred.resolve(data.respuesta);
+//                    }).
+//                    error(function (err, status) {
+//                        deferred.reject(err);
+//                    });
+//
+//            return deferred.promise;
+//        };
+//        var _getSubConceptosPlan = function (plan, periodo) {
+//            var deferred = $q.defer();
+//            $http.get(serviceBase + '/administracion/generales/planes_de_pago/subconceptos', {params: {id: plan, periodo: periodo}})
+//                    .success(function (data) {
+//                        deferred.resolve(data);
+//                    }).
+//                    error(function (err, status) {
+//                        deferred.reject(err);
+//                    });
+//            return deferred.promise;
+//        };
+
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -689,6 +741,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getNiveles = _getNiveles;
         adminServiceFactory.getSubConceptos = _getSubConceptos;
         adminServiceFactory.getSubConceptosPlan = _getSubConceptosPlan;
+        adminServiceFactory.getAllSubConceptos = _getAllSubConceptos;
         adminServiceFactory.getBancos = _getBancos;
         adminServiceFactory.getCuentasBanco = _getCuentasBanco;
         adminServiceFactory.getAdeudosAlumno = _getAdeudosAlumno;

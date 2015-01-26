@@ -262,7 +262,13 @@ UPapp.controller('Administracion_Generales_becas', function ($scope, adminServic
 UPapp.controller('Administracion_Generales_fileReferencias', function ($scope, adminService, $modal) {
     $scope.model = [];
     $scope.upload_file = function () {
+        $scope.isBusy = true;
         adminService.SubirReferencias($scope.model.file).then(function (data) {
+            $scope.isBusy = false;
+            console.log(data);
+            $scope.alerts = [
+                {type: 'success', msg: 'Los Adeudos del archivo fueron validados correctamente.'}
+            ];
         });
     };
 
@@ -451,6 +457,7 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         $scope.isBusy = true;
         if ($scope.paquete_periodo) {
             adminService.setAdeudosalumno($scope.paquete_periodo.id, $scope.alumno_assign.add).then(function (data) {
+                console.log(data);
                 $scope.isBusy = false;
                 $scope.aif();
                 $scope.alertsAdded = [
@@ -594,7 +601,8 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
     };
     $scope.getSubconceptos = function () {
         var t_sc = $scope.model;
-        adminService.getSubConceptos(t_sc.concepto.id, t_sc.periodo.idperiodo, t_sc.nivel).then(function (data) {
+        adminService.getAllSubConceptos(t_sc.concepto.id).then(function (data) {
+            console.log(data);
             if (data.respuesta.data) {
                 $scope.subconceptos = data.respuesta.data;
                 $scope.model.subconcepto = $scope.subconceptos[0];
@@ -623,6 +631,10 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             dataSCPaquete['sub_concepto'][temp_count] = {};
             dataSCPaquete['sub_concepto'][temp_count]['fecha'] = val.fecha_de_vencimiento;
             dataSCPaquete['sub_concepto'][temp_count]['id'] = val.id;
+            dataSCPaquete['sub_concepto'][temp_count]['idsub_paqueteplan'] = val.scpp_id;
+            dataSCPaquete['sub_concepto'][temp_count]['digito_referencia'] = val.digito_referencia;
+            dataSCPaquete['sub_concepto'][temp_count]['descripcion_sc'] = val.descripcion_sc;
+            //console.log(val);
             temp_count++;
         });
 
@@ -633,8 +645,11 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             dataSCPaquete['tipo_recargo'][x] = $scope.data_subconcepto[x].tipo_recargo;
         }
         dataSCPaquete['tipos_pago'] = $scope.model.tipos_pago;
+        //console.log(dataSCPaquete);
         adminService.addSCPaquete(dataSCPaquete).then(function (data) {
             $scope.$parent.isBusy = false;
+            $scope.get_scp();
+            console.log(data);
         });
     };
     $scope.tipo_adeudo = [
@@ -645,12 +660,13 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         $scope.data_subconcepto = {};
         $scope.scp.forEach(function (val, key) {
             $scope.scp[key].opened = false;
+            $scope.scp[key].digito_referencia = parseInt($scope.scp[key].digito_referencia);
             if (!$scope.data_subconcepto[val.id])
             {
                 $scope.data_subconcepto[val.id] = [];
                 $scope.data_subconcepto[val.id]['nombre'] = val.sub_concepto;
-                $scope.data_subconcepto[val.id]['tipo_recargo'] = val.tipo_recargo;
-                $scope.data_subconcepto[val.id]['recargo'] = val.recargo;
+                $scope.data_subconcepto[val.id]['tipo_recargo'] = parseInt(val.tipo_recargo);
+                $scope.data_subconcepto[val.id]['recargo'] = parseInt(val.recargo);
             }
         });
     };
@@ -658,6 +674,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
     $scope.get_scp = function () {
         $scope.model.tipos_pago = false;
         adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo).then(function (data) {
+            console.log(data);
             if (!data.error) {
                 datos_paquete = data.respuesta.paquete;
                 $scope.pqt_exists = true;

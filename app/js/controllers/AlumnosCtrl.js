@@ -20,6 +20,7 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $l
     $scope.Mostrar_Referencia = function () {
         ref_count = 0;
         studentService.getAdeudos(curr_user.idpersonas, $scope.Modelo_Periodo.idperiodo).then(function (data) {
+            console.log(data);
             $scope.adeudos = data;
             data.forEach(function (val, key) {
                 var banco_allow = false;

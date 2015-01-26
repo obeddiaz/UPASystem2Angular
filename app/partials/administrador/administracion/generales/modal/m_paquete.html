@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div class="col-md-4 pull-right">
-                    <button class="btn btn-primary btn-md btn-block col-md-4" ng-click="AddSCPaquete()">
+                    <button ng-disabled="model.subconcepto == '' || model.subconcepto == undefined || model.subconcepto == null" class="btn btn-primary btn-md btn-block col-md-4" ng-click="AddSCPaquete()">
                         Añadir a Paquete
                     </button>
                 </div>
@@ -84,12 +84,16 @@
                     <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
                         <thead>
                         <th>Sub Concepto</th>
+                        <th>Numero Periodo</th>
+                        <th>Mes/Descripcion</th>
                         <th>Fecha de Vencimiento</th>
                         <th>Importe</th>
                         <th>Eliminar</th>
                         </thead>
                         <tr ng-repeat="single in scp track by $index">
                             <td data-title="'Sub_Concepto'">{{single.sub_concepto}}</td>
+                            <td data-title="num_periodo"><input type="number" ng-model="single.digito_referencia"/></td>
+                            <td data-title="num_periodo"><input type="text" ng-model="single.descripcion_sc"/></td>
                             <td class="col-md-4" data-title="'Fecha'">
                                 <p class="input-group">
                                     <input required myformat type="text" class="form-control" datepicker-popup="{{format}}" ng-model="single.fecha_de_vencimiento" is-open="single.opened" readonly="readonly" datepicker-options="dateOptions"  ng-required="true" close-text="Close" />
@@ -105,7 +109,7 @@
                 </div>
                 <div class="col-md-3 pull-right">
                     <button type="submit"  ng-disabled="scp.length == 0 || model.tipos_pago.length == 0" class="btn btn-primary btn-md btn-block col-md-4">
-                        Añadir
+                        Guardar
                     </button>
                 </div>
             </div>
