@@ -88,6 +88,7 @@
                         <th>Mes/Descripcion</th>
                         <th>Fecha de Vencimiento</th>
                         <th>Importe</th>
+                        <th>Recargo Acumulado</th>
                         <th>Eliminar</th>
                         </thead>
                         <tr ng-repeat="single in scp track by $index">
@@ -103,6 +104,7 @@
                                 </p>
                             </td>
                             <td data-title="'Importe'">{{single.importe}}</td>
+                            <td data-title="'Importe'"><input type="checkbox" ng-model="single.recargo_acumulado" ng-true-value="1" ng-false-value="0"></td>
                             <td><button type="button" ng-click="dropSC($index)" class="btn">Eliminar</button></td>
                         </tr>
                     </table>

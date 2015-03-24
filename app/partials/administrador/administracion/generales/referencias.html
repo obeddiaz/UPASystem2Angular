@@ -1,0 +1,36 @@
+<div class="col-md-12" ng-controller="Administracion_Generales_traductor_referencia">
+    <h2><span class="glyphicon glyphicon-user"></span> Traductor de Referencias</h2>
+    <hr>
+    <!--input type="text" ng-model="model.referencia"/-->
+    <form ng-submit="obtener_datos()" class="ng-pristine ng-invalid ng-invalid-required">
+        <div class="row form-group">
+            <div class="col-md-12">
+                <label>Referencias(Separe cada referencia por Coma)</label>
+                <textarea class="form-control ng-pristine ng-invalid ng-invalid-required" ng-model="model.referencia" rows="3" style="resize:none;" required=""></textarea>
+            </div>
+        </div>
+        <div class="col-md-3 pull-right">
+            <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                Traducir Referencias
+            </button>
+        </div>
+    </form>
+    <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+        <thead>
+        <th>Referencia</th>
+        <th>Matricula</th>
+        <th>Nombre</th>
+        <th>Consultar</th>
+        </thead>
+        <tr ng-repeat="referencia in datos_referencia">
+            <td data-title="'Descripcion'">{{referencia.referencia}}</td>
+            <td data-title="'Descripcion'">{{referencia.matricula}}</td>
+            <td data-title="'Nombre'">{{referencia.nom + " " + referencia.appat + " " + referencia.apmat}}</td>
+            <td data-title="'adeudo'">
+                <button class="btn" ng-click="Consultar('m_referencia_data', referencia)">
+                    Consultar
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>

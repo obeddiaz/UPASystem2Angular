@@ -651,6 +651,24 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
+        var _getDatosReferencia = function (datosReferencia) {
+            var deferred = $q.defer();
+            //var datos=[datosReferencia];
+            $http.post(serviceBase + '/referencias/traducir',
+                    {
+                        referencias: datosReferencia
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
+
         var _updateAdeudostatus = function (adeudoID) {
             var deferred = $q.defer();
             $http.put(serviceBase + '/adeudos/status', {
@@ -690,6 +708,24 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
+        var _getAdeudosReporte = function (dataAdeudos) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/adeudos/adeudos_reporte', {
+                params: {
+                    fecha_desde: dataAdeudos.fecha_desde,
+                    fecha_hasta: dataAdeudos.fecha_hasta,
+                    periodo: dataAdeudos.periodo.idperiodo
+                }
+            })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
         //Get Sub Conceptos Paquete
 //        var _getSC_Paquete = function (data_paquete) {
 //            var deferred = $q.defer();
@@ -750,6 +786,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getAlumnosBecas = _getAlumnosBecas;
         adminServiceFactory.getAlumnosNoBecas = _getAlumnosNoBecas;
         adminServiceFactory.getAdeudos = _getAdeudos;
+        adminServiceFactory.getAdeudosReporte = _getAdeudosReporte;
+        adminServiceFactory.getDatosReferencia = _getDatosReferencia;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;

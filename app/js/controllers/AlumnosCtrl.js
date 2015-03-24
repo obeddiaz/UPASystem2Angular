@@ -3,23 +3,31 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $l
     var ref_count = 0;
     var anp = {};
     var total_referencias = {};
-    studentService.getPeriodos().then(function (data) {
-        $scope.periodos = data;
-        data.forEach(function (val, key) {
-            if (val.actual == 1) {
-                $scope.Modelo_Periodo = $scope.periodos[key];
-                $scope.Mostrar_Referencia();
-            }
+    $scope.isBusy = false;
+    var _Periodos = function () {
+        $scope.isBusy = true;
+        studentService.getPeriodos().then(function (data) {
+            $scope.isBusy = false;
+            $scope.periodos = data;
+            data.forEach(function (val, key) {
+                if (val.actual == 1) {
+                    $scope.Modelo_Periodo = $scope.periodos[key];
+                    $scope.Mostrar_Referencia();
+                }
+            });
+        }, function (err) {
+            $scope.alerts = [
+                {type: 'danger', msg: 'Usuario o contraseña incorrectos'}
+            ];
+            $scope.message = err.error_description;
         });
-    }, function (err) {
-        $scope.alerts = [
-            {type: 'danger', msg: 'Usuario o contraseña incorrectos'}
-        ];
-        $scope.message = err.error_description;
-    });
+    };
+
     $scope.Mostrar_Referencia = function () {
+        $scope.isBusy = true;
         ref_count = 0;
         studentService.getAdeudos(curr_user.idpersonas, $scope.Modelo_Periodo.idperiodo).then(function (data) {
+            $scope.isBusy = false;
             console.log(data);
             $scope.adeudos = data;
             data.forEach(function (val, key) {
@@ -43,15 +51,18 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $l
         });
     };
     $scope.Generareferencia = function (a) {
+        $scope.isBusy = true;
         for (var c = 0; c < a; c++) {
             total_referencias[c] = anp[c];
         }
         studentService.setReferencias(total_referencias).then(function (data) {
+            $scope.isBusy = false;
             $window.sessionStorage.setItem('recibo', JSON.stringify(data));
             $location.path('/home/alumno/recibo');
         }, function (err) {
         });
     };
+    _Periodos();
 });
 
 UPapp.controller('ReciboCtrl', function ($scope, $window, studentService) {

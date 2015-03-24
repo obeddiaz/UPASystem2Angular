@@ -6,7 +6,9 @@ UPapp.controller('Administracion_Generales', function ($scope) {
         {title: 'Adeudo Simple', click: 'single_adeudo'},
         {title: 'Archivo Referencias', click: 'subir_referencias'},
         {title: 'Becas', click: 'becas'},
-        //{title: 'Descuentos', click: 'descuentos'}
+        {title: 'Reportes', click: 'reportes'},
+        {title: 'Traducir Referencia', click: 'referencias'}
+        //{title: 'Ingresos', click: 'ingresos'}
     ];
     $scope.active = 'planes_de_pago';
     $scope.subPageTemplate = 'partials/administrador/administracion/generales/planes_de_pago.html';
@@ -79,8 +81,87 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
 });
 
 
-UPapp.controller('Administracion_Generales_adeudos', function ($scope, $routeParams, adminService, $modal) {
-    //adminService
+UPapp.controller('Administracion_Generales_reportes', function ($scope, $routeParams, adminService, $modal) {
+    $scope.model = [];
+    $scope.sort_reporte = [];
+    $scope.sort_title = [];
+    $scope.format = 'dd-MMMM-yyyy';
+    $scope.isBusy = true;
+    adminService.getPeriodos().then(function (data) {
+        $scope.isBusy = false;
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+    }, function (err) {
+    });
+//    $scope.toggleMin = function () {
+//        $scope.minDate = $scope.minDate ? null : new Date();
+//    };
+    $scope.$watchCollection('model.fecha_desde', function (newNames, oldNames) {
+        $scope.minDate = $scope.minDate ? null : newNames;
+    });
+    $scope.openfrom = function ($event) {
+        $scope.model.datefrom = [];
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.model.datefrom.opened = true;
+    };
+    $scope.opento = function ($event) {
+        $scope.model.dateto = [];
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.model.dateto.opened = true;
+    };
+    $scope.obtener_adeudos = function () {
+        console.log($scope.model);
+        $scope.isBusy = true;
+        adminService.getAdeudosReporte($scope.model).then(function (data) {
+            $scope.isBusy = false;
+            //console.log(data);
+            console.log(data.respuesta.data.length);
+            $scope.bigTotalItems = data.respuesta.data.length;
+            $scope.bigCurrentPage = 1;
+            $scope.maxSize = 10;
+            $scope.items_per_page=30;
+            $scope.Adeudos = data.respuesta.data;
+        });
+    };
+
+    $scope.$watchCollection('bigCurrentPage', function () {
+        if ($scope.bigCurrentPage) {
+            var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                    , end = begin + $scope.items_per_page;
+
+            $scope.filteredTodos = $scope.Adeudos.slice(begin, end);
+            //console.log($scope.filteredTodos);
+        }
+    });
+
+    $scope.add_new = function (data, title) {
+        var index = $scope.sort_reporte.indexOf(data);
+        var index_title = $scope.sort_title.indexOf(title);
+        if (index > -1) {
+            $scope.sort_reporte.splice(index, 1);
+        } else {
+            $scope.sort_reporte.push(data);
+        }
+        if (index_title > -1) {
+            $scope.sort_title.splice(index_title, 1);
+        } else {
+            $scope.sort_title.push(title);
+        }
+        console.log($scope.sort_reporte);
+    };
+
+//    adminService.getAlladeudos().then(function (data) {
+//        console.log(data);
+//        $scope.Adeudos = data.respuesta;
+//    });
+
+
 });
 
 UPapp.controller('Administracion_Generales_bancos', function ($scope, $routeParams, adminService, $modal) {
@@ -634,6 +715,12 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             dataSCPaquete['sub_concepto'][temp_count]['idsub_paqueteplan'] = val.scpp_id;
             dataSCPaquete['sub_concepto'][temp_count]['digito_referencia'] = val.digito_referencia;
             dataSCPaquete['sub_concepto'][temp_count]['descripcion_sc'] = val.descripcion_sc;
+            if (parseInt(val.recargo_acumulado)==1){
+                dataSCPaquete['sub_concepto'][temp_count]['recargo_acumulado'] = parseInt(val.recargo_acumulado);
+            }else{
+                dataSCPaquete['sub_concepto'][temp_count]['recargo_acumulado'] = 0;
+            }
+            
             //console.log(val);
             temp_count++;
         });
@@ -661,6 +748,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         $scope.scp.forEach(function (val, key) {
             $scope.scp[key].opened = false;
             $scope.scp[key].digito_referencia = parseInt($scope.scp[key].digito_referencia);
+            $scope.scp[key].recargo_acumulado = parseInt($scope.scp[key].recargo_acumulado);
             if (!$scope.data_subconcepto[val.id])
             {
                 $scope.data_subconcepto[val.id] = [];
@@ -680,6 +768,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
                 $scope.pqt_exists = true;
                 $scope.scp_show = true;
                 $scope.scp = data.respuesta.data;
+                console.log(data.respuesta.data);
                 $scope.filldataSC();
                 $scope.alerts = [];
                 if (data.respuesta.data) {
@@ -1286,6 +1375,58 @@ UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
         });
     };
 });
+
+
+
+UPapp.controller('Administracion_Generales_traductor_referencia', function ($scope, adminService, $modal) {
+    $scope.model = [];
+    $scope.obtener_datos = function () {
+        console.log($scope.model);
+        console.log($scope.model.referencia.split(","));
+        adminService.getDatosReferencia($scope.model.referencia.split(",")).then(function (data) {
+            console.log(data);
+            $scope.datos_referencia = data.respuesta;
+        });
+    };
+    $scope.Consultar = function (html, data) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
+});
+
+
+//UPapp.controller('Administracion_Generales_m_traductor_referencia', function ($scope, adminService, $modal) {
+//    $scope.model = [];
+//    $scope.obtener_datos = function () {
+//        console.log($scope.model);
+//        console.log($scope.model.referencia.split(","));
+//        adminService.getDatosReferencia($scope.model.referencia.split(",")).then(function (data) {
+//            console.log(data);
+//            $scope.datos_referencia = data.respuesta;
+//        });
+//    };
+//    $scope.Consultar = function (html, data) {
+//        $modal.open({
+//            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+//            controller: 'ModalInstanceCtrl',
+//            size: 'md',
+//            resolve: {
+//                custom_data: function () {
+//                    return data;
+//                }
+//            }
+//        });
+//    };
+//});
+
 
 UPapp.controller('Caja_Caja', function ($scope, adminService, $filter, $q) {
     var promises = [];

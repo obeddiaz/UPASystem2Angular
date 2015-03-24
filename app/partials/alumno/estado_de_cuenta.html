@@ -8,6 +8,9 @@
                     </select>
                 </div>
             </div>
+            <div class="col-md-8">
+                <label class="pull-right" ng-show="isBusy" style="font-size: 22px;"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
+            </div>
         </div>
     </form>
     <div class="table-responsive">
@@ -30,7 +33,7 @@
                 <td data-title="'Beca'">{{adeudo.beca}}</td>
                 <td data-title="'Total'">{{adeudo.importe}}</td>
                 <td data-title="'Generar'">
-                    <button ng-repeat="tp in adeudo.tipos_pago" ng-if="(adeudo.status_adeudo == null || adeudo.status_adeudo == 0) && tp.tipo_pago_id == 1" ng-click="Generareferencia(adeudo.ref_counter);">Generar</button>
+                    <button ng-repeat="tp in adeudo.tipos_pago" class="btn" ng-disabled="isBusy" ng-if="(adeudo.status_adeudo == null || adeudo.status_adeudo == 0) && tp.tipo_pago_id == 1" ng-click="Generareferencia(adeudo.ref_counter);">Generar</button>
                 </td>
             </tr>
         </table>
