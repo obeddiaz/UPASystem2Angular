@@ -104,10 +104,12 @@
                                 </p>
                             </td>
                             <td data-title="'Importe'">{{single.importe}}</td>
-                            <td data-title="'Importe'"><input type="checkbox" ng-model="single.recargo_acumulado" ng-true-value="1" ng-false-value="0"></td>
+                            <td data-title="'Importe'"><input type="checkbox" ng-model="single.recargo_acumulado" ng-checked="single.recargo_acumulado == 1" ng-true-value="1" ng-false-value="0"></td>
                             <td><button type="button" ng-click="dropSC($index)" class="btn">Eliminar</button></td>
                         </tr>
+                        
                     </table>
+                    <pre>{{scp}}</pre>
                 </div>
                 <div class="col-md-3 pull-right">
                     <button type="submit"  ng-disabled="scp.length == 0 || model.tipos_pago.length == 0" class="btn btn-primary btn-md btn-block col-md-4">

@@ -81,12 +81,16 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
 });
 
 
-UPapp.controller('Administracion_Generales_reportes', function ($scope, $routeParams, adminService, $modal) {
+UPapp.controller('Administracion_Generales_reportes', function ($scope, $routeParams, adminService, $filter) {
     $scope.model = [];
+    $scope.carreras = [];
+    $scope.sub_conceptos = [];
+    $scope.descripcion_sc=[];
     $scope.sort_reporte = [];
     $scope.sort_title = [];
     $scope.format = 'dd-MMMM-yyyy';
     $scope.isBusy = true;
+    var found = [];
     adminService.getPeriodos().then(function (data) {
         $scope.isBusy = false;
         $scope.periodos = data;
@@ -115,30 +119,77 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
         $event.stopPropagation();
         $scope.model.dateto.opened = true;
     };
+    var adeudos = [];
     $scope.obtener_adeudos = function () {
         console.log($scope.model);
         $scope.isBusy = true;
         adminService.getAdeudosReporte($scope.model).then(function (data) {
             $scope.isBusy = false;
-            //console.log(data);
+            console.log(data.respuesta);
             console.log(data.respuesta.data.length);
             $scope.bigTotalItems = data.respuesta.data.length;
             $scope.bigCurrentPage = 1;
             $scope.maxSize = 10;
-            $scope.items_per_page=30;
-            $scope.Adeudos = data.respuesta.data;
+            $scope.items_per_page = 30;
+            adeudos = data.respuesta.data;
+            found = data.respuesta.data;
+            $scope.carreras = [];
+            angular.forEach(data.respuesta.data, function (value, genre) {
+                if ($scope.carreras.indexOf(value.carrera) == -1)
+                {
+                    $scope.carreras.push(value.carrera);
+                }
+                if ($scope.sub_conceptos.indexOf(value.sub_concepto) == -1)
+                {
+                    $scope.sub_conceptos.push(value.sub_concepto);
+                }
+                if ($scope.descripcion_sc.indexOf(value.descripcion_sc) == -1)
+                {
+                    $scope.descripcion_sc.push(value.descripcion_sc);
+                }
+            });
         });
     };
+    $scope.download_csv = function () {
+        var csvContent = "data:text/csv;charset=utf-8,";
+        var dataString = [];
+        var dataCsv = '';
+        dataCsv = $scope.sort_title.join(",");
+        csvContent += dataCsv + "\n";
+        console.log($scope.sort_title);
+        found.forEach(function (infoArray, index) {
+            dataString = [];
+            $scope.sort_reporte.forEach(function (v, in_k) {
+                dataString[in_k] = infoArray[v];
+            });
+            dataCsv = dataString.join(",");
+            csvContent += index < found.length ? dataCsv + "\n" : dataCsv;
 
+        });
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "reporte_alumnos.csv");
+        link.click();
+    };
     $scope.$watchCollection('bigCurrentPage', function () {
         if ($scope.bigCurrentPage) {
-            var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
-                    , end = begin + $scope.items_per_page;
-
-            $scope.filteredTodos = $scope.Adeudos.slice(begin, end);
-            //console.log($scope.filteredTodos);
+            render_table();
         }
     });
+    $scope.make_filters = function () {
+        found = $filter('getAllByProperty')('carrera', $scope.model.filter.carrera, adeudos);
+        found = $filter('getAllByProperty')('sub_concepto', $scope.model.filter.sub_concepto, found);
+        found = $filter('getAllByProperty')('descripcion_sc', $scope.model.filter.descripcion_sc, found);
+        $scope.bigTotalItems = found.length;
+        $scope.bigCurrentPage = 1;
+        render_table();
+    };
+    var render_table = function () {
+        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                , end = begin + $scope.items_per_page;
+        $scope.filteredTodos = found.slice(begin, end);
+    };
 
     $scope.add_new = function (data, title) {
         var index = $scope.sort_reporte.indexOf(data);
@@ -715,13 +766,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             dataSCPaquete['sub_concepto'][temp_count]['idsub_paqueteplan'] = val.scpp_id;
             dataSCPaquete['sub_concepto'][temp_count]['digito_referencia'] = val.digito_referencia;
             dataSCPaquete['sub_concepto'][temp_count]['descripcion_sc'] = val.descripcion_sc;
-            if (parseInt(val.recargo_acumulado)==1){
-                dataSCPaquete['sub_concepto'][temp_count]['recargo_acumulado'] = parseInt(val.recargo_acumulado);
-            }else{
-                dataSCPaquete['sub_concepto'][temp_count]['recargo_acumulado'] = 0;
-            }
-            
-            //console.log(val);
+            dataSCPaquete['sub_concepto'][temp_count]['recargo_acumulado'] = val.recargo_acumulado;
             temp_count++;
         });
 
