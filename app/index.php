@@ -50,3 +50,4 @@
         <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
     </body>
 </html>
+

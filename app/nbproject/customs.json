@@ -1,0 +1,11 @@
+{
+    "attributes": {
+        "checklist-model": {
+            "context": "input"
+        },
+        "isteven-multi-select": {
+            "context": "div"
+        }
+    },
+    "elements": {}
+}

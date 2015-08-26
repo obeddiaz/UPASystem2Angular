@@ -27,5 +27,40 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
                 }
             };
         }]);
+
+    $provide.factory('isloggedinHttpInterceptor', ['$q', '$location', '$injector', function ($q, $location, $injector) {
+            return {
+                response: function (response) {
+                    // do something on success
+//                console.log(response.data);
+//               if (IsJsonString(JSON.stringify(response.data))){
+//                    console.log(response);
+//               }
+                    var Auth_Service = $injector.get('authService');
+
+                    if (response.headers()['content-type'] === "application/json; charset=utf-8" || (response.headers()['content-type'] === "application/json")) {
+                        // Validate response, if not ok rejectresponse.headers()['content-type'] === "application/json; charset=utf-8"||
+                        //var data = examineJSONResponse(response); // assumes this function is available
+                        //console.log(response.data);
+                        if (response.data.error) {
+                            waitingDialog.hide();
+                            //console.log(response.data);
+                            if (response.data.message == "Usuario no autenticado" || response.data.message == "Bad Token at filter") {
+                                //console.log(response.data);
+                                Auth_Service.logOut();
+                                $location.path('/login');
+                            }
+                        }
+                        //console.log(response.data);
+                    }
+                    return response;
+                },
+                responseError: function (response) {
+                    // do something on error
+                    return $q.reject(response);
+                }
+            };
+        }]);
     $httpProvider.interceptors.push('AuthInterceptor');
+    $httpProvider.interceptors.push('isloggedinHttpInterceptor');
 });

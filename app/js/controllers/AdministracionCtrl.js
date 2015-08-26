@@ -25,7 +25,7 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
         waitingDialog.hide();
         $scope.planes = data;
     }, function (err) {
-
+        waitingDialog.hide();
     });
     $scope.Eliminar = function (id) {
         adminService.deletePlanePago(id).then(function (data) {
@@ -81,14 +81,15 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
 });
 
 
-UPapp.controller('Administracion_Generales_reportes', function ($scope, $routeParams, adminService, $filter) {
+UPapp.controller('Administracion_Generales_reportes', function ($scope, $routeParams, adminService, $filter, $window) {
     $scope.model = [];
     $scope.carreras = [];
     $scope.sub_conceptos = [];
-    $scope.descripcion_sc=[];
+    $scope.descripcion_sc = [];
     $scope.sort_reporte = [];
     $scope.sort_title = [];
     $scope.format = 'dd-MMMM-yyyy';
+    var key_service;
     $scope.isBusy = true;
     var found = [];
     adminService.getPeriodos().then(function (data) {
@@ -121,66 +122,82 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
     };
     var adeudos = [];
     $scope.obtener_adeudos = function () {
-        console.log($scope.model);
+        //console.log($scope.model);
         $scope.isBusy = true;
         adminService.getAdeudosReporte($scope.model).then(function (data) {
             $scope.isBusy = false;
-            console.log(data.respuesta);
-            console.log(data.respuesta.data.length);
-            $scope.bigTotalItems = data.respuesta.data.length;
+            console.log(data);
+            key_service = data.respuesta.data.key;
+            console.log(data.respuesta.data.data.alumnos);
+            adeudos = array_map(data.respuesta.data.data.alumnos);
+            found = adeudos;
+            $scope.bigTotalItems = adeudos.length;
             $scope.bigCurrentPage = 1;
             $scope.maxSize = 10;
             $scope.items_per_page = 30;
-            adeudos = data.respuesta.data;
-            found = data.respuesta.data;
-            $scope.carreras = [];
-            angular.forEach(data.respuesta.data, function (value, genre) {
-                if ($scope.carreras.indexOf(value.carrera) == -1)
-                {
-                    $scope.carreras.push(value.carrera);
-                }
-                if ($scope.sub_conceptos.indexOf(value.sub_concepto) == -1)
-                {
-                    $scope.sub_conceptos.push(value.sub_concepto);
-                }
-                if ($scope.descripcion_sc.indexOf(value.descripcion_sc) == -1)
-                {
-                    $scope.descripcion_sc.push(value.descripcion_sc);
-                }
-            });
+            //console.log(found);
+            $scope.carreras = data.respuesta.data.data.filtros.carreras;
+            $scope.sub_conceptos = data.respuesta.data.data.filtros.sub_conceptos;
+            $scope.descripcion_sc = data.respuesta.data.data.filtros.descripcion_sc;
         });
     };
-    $scope.download_csv = function () {
-        var csvContent = "data:text/csv;charset=utf-8,";
-        var dataString = [];
-        var dataCsv = '';
-        dataCsv = $scope.sort_title.join(",");
-        csvContent += dataCsv + "\n";
-        console.log($scope.sort_title);
-        found.forEach(function (infoArray, index) {
-            dataString = [];
-            $scope.sort_reporte.forEach(function (v, in_k) {
-                dataString[in_k] = infoArray[v];
-            });
-            dataCsv = dataString.join(",");
-            csvContent += index < found.length ? dataCsv + "\n" : dataCsv;
 
-        });
-        var encodedUri = encodeURI(csvContent);
-        var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "reporte_alumnos.csv");
-        link.click();
-    };
     $scope.$watchCollection('bigCurrentPage', function () {
+        console.log($scope.bigCurrentPage);
         if ($scope.bigCurrentPage) {
             render_table();
         }
     });
+
+
+    var array_map = function (data) {
+        return $.map(data, function (value, index) {
+            console.log(value);
+            return [value];
+        });
+    };
+
+    $scope.show_data = [
+        {name: "id_persona", selected: false, full_name: "ID Alumno"},
+        {name: "matricula", selected: false, full_name: "Matricula"},
+        {name: "nom", selected: false, full_name: "Nombre"},
+        {name: "appat", selected: false, full_name: "Apellido Paterno"},
+        {name: "apmat", selected: false, full_name: "Apellido Materno"},
+        {name: "idperiodo", selected: false, full_name: "Periodo"},
+        {name: "pe", selected: false, full_name: "Año Periodo"},
+        {name: "nc", selected: false, full_name: "Nombre de Cuenta"},
+        {name: "carrera", selected: false, full_name: "Carrera"},
+        {name: "clave", selected: false, full_name: "Clave"},
+        {name: "curp", selected: false, full_name: "CURP"},
+        {name: "grado", selected: false, full_name: "Grado"},
+        {name: "grupo", selected: false, full_name: "Grupo"},
+        {name: "estatus_admin", selected: false, full_name: "Status"},
+        {name: "fecha_nac", selected: false, full_name: "Fecha de Nacimiento"}
+    ];
+
+    $scope.descargar_reporte = function () {
+        if (key_service && ($scope.sort_reporte_adeudo || $scope.sort_reporte)) {
+            var filters = $scope.sort_reporte.concat($scope.sort_reporte_adeudo);
+            var url = serviceBase + '/adeudos/crear_reporte?key=' + key_service + '&filters=' + JSON.stringify(filters);
+            $window.open(
+                    url,
+                    '_blank'
+                    );
+        }
+    };
+
+    $scope.show_data_adeudos = [
+        {name: "fecha_limite", selected: false, full_name: "Fecha Limite"},
+        {name: "meses_retraso", selected: false, full_name: "Meses de Retraso"},
+        {name: "periodo", selected: false, full_name: "Periodo"},
+        {name: "aplica_beca", selected: false, full_name: "Beca"},
+        {name: "descripcion_sc", selected: false, full_name: "Descripcion Sub Concepto"},
+        {name: "sub_concepto", selected: false, full_name: "Sub Concepto"}
+
+    ];
+
     $scope.make_filters = function () {
-        found = $filter('getAllByProperty')('carrera', $scope.model.filter.carrera, adeudos);
-        found = $filter('getAllByProperty')('sub_concepto', $scope.model.filter.sub_concepto, found);
-        found = $filter('getAllByProperty')('descripcion_sc', $scope.model.filter.descripcion_sc, found);
+        found = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, adeudos);
         $scope.bigTotalItems = found.length;
         $scope.bigCurrentPage = 1;
         render_table();
@@ -188,6 +205,8 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
     var render_table = function () {
         var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
                 , end = begin + $scope.items_per_page;
+        //console.log();
+        //console.log(adeudos.length);
         $scope.filteredTodos = found.slice(begin, end);
     };
 
@@ -204,7 +223,7 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
         } else {
             $scope.sort_title.push(title);
         }
-        console.log($scope.sort_reporte);
+        //console.log($scope.sort_reporte);
     };
 
 //    adminService.getAlladeudos().then(function (data) {
@@ -214,7 +233,6 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
 
 
 });
-
 UPapp.controller('Administracion_Generales_bancos', function ($scope, $routeParams, adminService, $modal) {
     var BTemp = false;
     waitingDialog.show();
@@ -397,7 +415,7 @@ UPapp.controller('Administracion_Generales_fileReferencias', function ($scope, a
         $scope.isBusy = true;
         adminService.SubirReferencias($scope.model.file).then(function (data) {
             $scope.isBusy = false;
-            console.log(data);
+            //console.log(data);
             $scope.alerts = [
                 {type: 'success', msg: 'Los Adeudos del archivo fueron validados correctamente.'}
             ];
@@ -442,7 +460,6 @@ UPapp.controller('Administracion_Agrupaciones_agrupaciones', function ($scope, $
         waitingDialog.hide();
         $scope.agrupaciones = data;
     }, function (err) {
-
     });
     $scope.subPageLoad = function (html, data, type) {
         $scope.subPageRigth(html, data, type);
@@ -537,7 +554,7 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         adminService.getAlumnosPaquete($scope.model.periodo.idperiodo, $scope.data_plan.id).then(function (data) {
             $scope.isBusy = false;
             if (!data.error) {
-                console.log(data);
+                //console.log(data);
                 alumnos.Inscritos = data.respuesta.data;
                 $scope.paquete_periodo = data.respuesta.paquete;
                 carreras.Inscritos = [];
@@ -601,7 +618,6 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         }
     };
 });
-
 UPapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, custom_data, $rootScope) {
     $scope.data_modal = custom_data;
     $scope.isBusy = false;
@@ -623,8 +639,7 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
     $scope.subconceptos = [];
     $scope.model = [];
     $scope.tipo_adeudo = [{
-            name: 'Monetario', value: 1
-        }, {
+            name: 'Monetario', value: 1}, {
             name: 'No Monetario', value: 2
         }];
     $scope.new_sc.tipo_adeudo = $scope.tipo_adeudo[0];
@@ -701,8 +716,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         $scope.scp[idx].opened = true;
     };
     $scope.dateOptions = {
-        formatYear: 'yy',
-        startingDay: 1
+        formatYear: 'yy', startingDay: 1
     };
     var datos_paquete = [];
     $scope.model = [];
@@ -860,7 +874,6 @@ UPapp.controller('Modal_NewConcepto', function ($scope, adminService, $rootScope
         });
     };
 });
-
 UPapp.controller('Modal_NewPlan', function ($scope, adminService, $rootScope) {
     $scope.model = [];
     adminService.getAgrupaciones().then(function (data) {
@@ -875,7 +888,6 @@ UPapp.controller('Modal_NewPlan', function ($scope, adminService, $rootScope) {
         });
     };
 });
-
 UPapp.controller('Modal_NewBanco', function ($scope, adminService, $rootScope) {
     $scope.model = [];
     $scope.addNewBanco = function () {
@@ -1149,7 +1161,6 @@ UPapp.controller('Modal_generarAdeudos', function ($scope, adminService) {
     };
     $scope.format = 'dd-MMMM-yyyy';
 });
-
 UPapp.controller('Modal_NewBeca', function ($scope, adminService, $rootScope) {
     $scope.model = [];
     adminService.getCatalogos().then(function (data) {
@@ -1170,13 +1181,16 @@ UPapp.controller('Modal_NewBeca', function ($scope, adminService, $rootScope) {
 });
 
 
-UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope) {
+UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter) {
     $scope.model = [];
     $scope.model['idbeca'] = $scope.data_modal['id'];
     var alm_insc = false;
     var alm_insc_car = [];
     var alm_noinsc = false;
     var alm_noinsc_car = [];
+    var filter = [];
+    $scope.maxSize = 10;
+    $scope.items_per_page = 30;
     $scope.show_alumnos = true;
     $scope.$parent.isBusy = true;
     adminService.getPeriodos().then(function (data) {
@@ -1215,6 +1229,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
                     });
                 }
             }
+            $scope.insc_noinsc();
         });
         adminService.getAlumnosNoBecas($scope.model).then(function (datanoinsc) {
             if (datanoinsc.respuesta) {
@@ -1229,21 +1244,49 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
                 }
             }
         });
-        $scope.insc_noinsc();
+        
+    };
+    var render_table = function () {
+        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                , end = begin + $scope.items_per_page;
+        //console.log(filter.slice(begin, end));
+        if (filter) {
+            $scope.filteredTodos = filter.slice(begin, end);
+        }
+    };
+
+    $scope.$watchCollection('bigCurrentPage', function () {
+        //console.log($scope.bigCurrentPage);
+        if ($scope.bigCurrentPage) {
+            render_table();
+        }
+    });
+
+    $scope.make_filters = function () {
+        
+        filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
+        $scope.bigTotalItems = filter.length;
+        $scope.bigCurrentPage = 1;
+        console.log($scope.alumnos);
+        render_table();
+
     };
     $scope.insc_noinsc = function () {
         $scope.alumno_filter = [];
         $scope.carreras = false;
+        console.log($scope.show_alumnos);
         if ($scope.show_alumnos) {
             $scope.show_alumnos = false;
             $scope.alumnos = alm_insc;
             $scope.carreras = alm_insc_car;
             $scope.alumno_filter.carrera = alm_insc_car[0];
+            $scope.make_filters();
         } else {
             $scope.show_alumnos = true;
             $scope.alumnos = alm_noinsc;
             $scope.carreras = alm_noinsc_car;
             $scope.alumno_filter.carrera = alm_noinsc_car[0];
+            $scope.make_filters();
         }
     };
     $scope.add = function () {
@@ -1293,8 +1336,9 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $rootScope
                     }
                 });
                 $scope.model.idpersona = [];
-                $scope.alumnos = alm_noinsc;
+                $scope.alumnos = alm_insc;
                 $scope.alumno_filter.carrera = alm_noinsc_car[0];
+                $scope.make_filters();
             }
         });
     };
@@ -1422,7 +1466,6 @@ UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
 });
 
 
-
 UPapp.controller('Administracion_Generales_traductor_referencia', function ($scope, adminService, $modal) {
     $scope.model = [];
     $scope.obtener_datos = function () {
@@ -1470,8 +1513,7 @@ UPapp.controller('Administracion_Generales_traductor_referencia', function ($sco
 //            }
 //        });
 //    };
-//});
-
+//}); 
 
 UPapp.controller('Caja_Caja', function ($scope, adminService, $filter, $q) {
     var promises = [];

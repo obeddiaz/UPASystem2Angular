@@ -79,7 +79,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 deferred.resolve(cache);
             }
             else {
-                $http.get(serviceBase + '/alumnostodos')
+                $http.get(serviceBase + '/alumnos_todos')
                         .success(function (data) {
                             if (!data.error) {
                                 cacheService.put('alumnos', data.respuesta.data);
@@ -151,6 +151,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             else {
                 $http.get(serviceBase + '/periodos')
                         .success(function (data) {
+                            console.log(data);
                             cacheService.put('periodos', data.respuesta.data);
                             deferred.resolve(data.respuesta.data);
                         }).
@@ -726,6 +727,19 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
 
         };
+
+        var _createAdeudosReporte = function (dataAdeudos) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/adeudos/crear_reporte?adeudos_ids=[376,381,382]&adeudos_campos=["importe","recargo"]')
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
         //Get Sub Conceptos Paquete
 //        var _getSC_Paquete = function (data_paquete) {
 //            var deferred = $q.defer();
@@ -766,6 +780,104 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 //            return deferred.promise;
 //        };
 
+
+
+        var _getDevoluciones = function (data) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/devoluciones')
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        
+        var _getExpediente = function (data) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/devoluciones')
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        
+        var _getDevolucionesAlumno = function (data) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/devoluciones')
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        
+        var _getDevolucionesPersona = function (data) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/devoluciones')
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        
+        var _getDevolucionesPersona = function (data) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/devoluciones')
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        
+        var _agregarDevolucion = function (datosReferencia) {
+            var deferred = $q.defer();
+            //var datos=[datosReferencia];
+            $http.post(serviceBase + '/referencias/traducir',
+                    {
+                        referencias: datosReferencia
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
+        
+        var _eliminarDevolucion = function (datosReferencia) {
+            var deferred = $q.defer();
+            //var datos=[datosReferencia];
+            $http.post(serviceBase + '/referencias/traducir',
+                    {
+                        referencias: datosReferencia
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
+        
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -814,6 +926,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         adminServiceFactory.reactivarBecaAlumno = _reactivarBecaAlumno;
         adminServiceFactory.desactivarBecaAlumno = _desactivarBecaAlumno;
+
+        adminServiceFactory.createAdeudosReporte = _createAdeudosReporte;
 
         adminServiceFactory.updateAdeudostatus = _updateAdeudostatus;
 
