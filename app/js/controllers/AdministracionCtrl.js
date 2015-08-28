@@ -126,11 +126,14 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
         $scope.isBusy = true;
         adminService.getAdeudosReporte($scope.model).then(function (data) {
             $scope.isBusy = false;
-            console.log(data);
+            $scope.datos_filtros = [];
+            //console.log(data);
             key_service = data.respuesta.data.key;
-            console.log(data.respuesta.data.data.alumnos);
+            //console.log(data.respuesta.data.data.alumnos);
             adeudos = array_map(data.respuesta.data.data.alumnos);
+            console.log($scope.datos_filtros);
             found = adeudos;
+            //console.log(found);
             $scope.bigTotalItems = adeudos.length;
             $scope.bigCurrentPage = 1;
             $scope.maxSize = 10;
@@ -148,11 +151,56 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
             render_table();
         }
     });
-
+    var used_keys=[];
 
     var array_map = function (data) {
         return $.map(data, function (value, index) {
-            console.log(value);
+            //console.log(value);
+            angular.forEach(value, function (val, key) {
+                if (typeof val === 'object') {
+                    angular.forEach(val, function (valobj, keyobj) {
+                        angular.forEach(valobj, function (valsingle_adeudo, key_single_adeudo) {
+                            if (!$scope.datos_filtros[key_single_adeudo])
+                            {
+                                //console.log(key_single_adeudo + " " + valsingle_adeudo);
+                                $scope.datos_filtros[key_single_adeudo] = [];
+                                used_keys[key_single_adeudo] = [];
+                                used_keys[key_single_adeudo].push(valsingle_adeudo);
+                                $scope.datos_filtros[key_single_adeudo].push({name: key_single_adeudo, selected: false, full_name: valsingle_adeudo});
+                                //$scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
+                            } else {
+                                //console.log(key + " " + val);
+                               // $scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
+                                if (used_keys[key_single_adeudo].indexOf(valsingle_adeudo) == -1)
+                                {
+                                    used_keys[key_single_adeudo].push(valsingle_adeudo);
+                                    $scope.datos_filtros[key_single_adeudo].push({name: key_single_adeudo, selected: false, full_name: valsingle_adeudo});
+                                    //$scope.datos_filtros[key_single_adeudo].push({name:key_single_adeudo,selected:false,full_name:valsingle_adeudo});
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    if (!$scope.datos_filtros[key])
+                    {
+                        //console.log(key + " " + val);
+                        $scope.datos_filtros[key] = [];
+                        used_keys[key] = [];
+                        used_keys[key].push(val);
+                        //$scope.datos_filtros[key][val] = {name: key, selected: false, full_name: val};
+                        $scope.datos_filtros[key].push({name: key, selected: false, full_name: val});
+                    } else {
+                        //console.log(key + " " + val);
+                        //$scope.datos_filtros[key][val] = {name: key, selected: false, full_name: val};
+                        if (used_keys[key].indexOf(val) == -1)
+                        {
+                            used_keys[key].push(val);
+                            //{name: "id_persona", selected: false, full_name: "ID Alumno"}
+                            $scope.datos_filtros[key].push({name: key, selected: false, full_name: val});
+                        }
+                    }
+                }
+            });
             return [value];
         });
     };
@@ -1244,7 +1292,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter) {
                 }
             }
         });
-        
+
     };
     var render_table = function () {
         var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
@@ -1263,7 +1311,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter) {
     });
 
     $scope.make_filters = function () {
-        
+
         filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
         $scope.bigTotalItems = filter.length;
         $scope.bigCurrentPage = 1;

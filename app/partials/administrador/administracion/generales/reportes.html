@@ -318,11 +318,21 @@
     <div class="table-responsive">
         <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
             <thead>
-            <th ng-repeat="acomodo in sort_title">{{acomodo}}</th>
+            <th ng-repeat="acomodo in sort_reporte">
+            <div isteven-multi-select
+                 input-model="datos_filtros[acomodo]"
+                 output-model="outputBrowsers1"
+                 title-button="{{acomodo}}"
+                 button-label="full_name"
+                 item-label="full_name"
+                 helper-elements="filter"
+                 tick-property="selected">
+            </div>
+            </th>
             <th ng-repeat="acomodo in sort_title_adeudo">{{acomodo}}</th>
             </thead>
             <tbody>
-                <tr ng-if="adeudo['adeudos'].length!=0" ng-repeat-start="adeudo in filteredTodos">
+                <tr ng-if="adeudo['adeudos'].length != 0" ng-repeat-start="adeudo in filteredTodos">
                     <td rowspan="{{(adeudo['adeudos'].length) + 1}}" ng-repeat="reporte in sort_reporte">{{adeudo[reporte]}}</td>
                 </tr>
                 <tr ng-repeat-end ng-repeat="single_adeudo in adeudo['adeudos']">
