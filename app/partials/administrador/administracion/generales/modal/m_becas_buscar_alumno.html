@@ -1,0 +1,46 @@
+<div ng-controller="Modal_BuscarAlumnoBeca">
+    <div class="modal-header">
+        <h4 class="modal-title">Buscar Alumno en Becas</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row form-group">
+            <div class="col-sm-3">
+                <span>Apellido Paterno</span>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" ng-model="model.apellido_paterno"/>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-sm-3">
+                <span>Apellido Materno</span>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" ng-model="model.apellido_materno"/>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-sm-3">
+                <span>Nombre</span>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" ng-model="model.nombre"/>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer" style="border-top: 0px;">
+        <div class="row form-group">
+            <div class="col-sm-offset-5 col-sm-3">
+                <button class="btn btn-default btn-md btn-block col-md-4" ng-click="cancelar()">
+                    Cerrar
+                </button>
+            </div>
+            <div class="col-sm-4">
+                <button class="btn btn-block btn-primary" ng-click="buscar()">
+                    Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -36,6 +36,7 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
 //               if (IsJsonString(JSON.stringify(response.data))){
 //                    console.log(response);
 //               }
+                    var Modals = $injector.get('$modalStack');
                     var Auth_Service = $injector.get('authService');
 
                     if (response.headers()['content-type'] === "application/json; charset=utf-8" || (response.headers()['content-type'] === "application/json")) {
@@ -47,6 +48,7 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
                             //console.log(response.data);
                             if (response.data.message == "Usuario no autenticado" || response.data.message == "Bad Token at filter") {
                                 //console.log(response.data);
+                                Modals.dismissAll();
                                 Auth_Service.logOut();
                                 $location.path('/login');
                             }
