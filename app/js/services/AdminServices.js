@@ -422,6 +422,24 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
+        var _getAdeudosAlumnoNew = function (id_persona, id_periodo) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/adeudos/alumno',
+                    {params: {
+                            id_persona: id_persona,
+                            periodo: id_periodo
+                        }
+                    })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
+
         var _addAdeudosimple = function (dataadeudo) {
             var deferred = $q.defer();
             $http.post(serviceBase + '/adeudos/agregar_subconcepto',
@@ -793,7 +811,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
+
         var _getExpediente = function (data) {
             var deferred = $q.defer();
             $http.get(serviceBase + '/devoluciones')
@@ -805,7 +823,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
+
         var _getDevolucionesAlumno = function (data) {
             var deferred = $q.defer();
             $http.get(serviceBase + '/devoluciones')
@@ -817,7 +835,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
+
         var _getDevolucionesPersona = function (data) {
             var deferred = $q.defer();
             $http.get(serviceBase + '/devoluciones')
@@ -829,7 +847,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
+
         var _getDevolucionesPersona = function (data) {
             var deferred = $q.defer();
             $http.get(serviceBase + '/devoluciones')
@@ -841,7 +859,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
+
         var _agregarDevolucion = function (datosReferencia) {
             var deferred = $q.defer();
             //var datos=[datosReferencia];
@@ -859,7 +877,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
 
         };
-        
+
         var _eliminarDevolucion = function (datosReferencia) {
             var deferred = $q.defer();
             //var datos=[datosReferencia];
@@ -877,7 +895,28 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
 
         };
-        
+
+
+        var _suspenderBeca = function (id_adeudo, id_persona, periodo, aplica_beca) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/becas/suspender_mes',
+                    {params: {
+                            id_adeudo: id_adeudo,
+                            id_persona: id_persona,
+                            periodo: periodo,
+                            aplica_beca: aplica_beca  // 0 bloquear 1 desbloquear
+                        }})
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        //http://localhost/UPASystem2/public/indexapi.php/administracion/generales/becas/suspender_mes es
+
         adminServiceFactory.getPlanesPago = _getPlanesPago;
         adminServiceFactory.getAgrupaciones = _getAgrupaciones;
         adminServiceFactory.getPlanesPagoAgrupacion = _getPlanesPagoAgrupacion;
@@ -893,6 +932,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getBancos = _getBancos;
         adminServiceFactory.getCuentasBanco = _getCuentasBanco;
         adminServiceFactory.getAdeudosAlumno = _getAdeudosAlumno;
+        adminServiceFactory.getAdeudosAlumnoNew = _getAdeudosAlumnoNew;
         adminServiceFactory.getBecas = _getBecas;
         adminServiceFactory.getCatalogos = _getCatalogos;
         adminServiceFactory.getAlumnosBecas = _getAlumnosBecas;
@@ -900,6 +940,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getAdeudos = _getAdeudos;
         adminServiceFactory.getAdeudosReporte = _getAdeudosReporte;
         adminServiceFactory.getDatosReferencia = _getDatosReferencia;
+
+
+        adminServiceFactory.suspenderBeca =_suspenderBeca;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;

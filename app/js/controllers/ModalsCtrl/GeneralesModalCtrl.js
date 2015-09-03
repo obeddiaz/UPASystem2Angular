@@ -80,13 +80,11 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
     });
 
     $scope.make_filters = function () {
-
         filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
         $scope.bigTotalItems = filter.length;
         $scope.bigCurrentPage = 1;
         console.log($scope.alumnos);
         render_table();
-
     };
     $scope.insc_noinsc = function () {
         $scope.alumno_filter = [];
@@ -177,6 +175,19 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
             //$scope.selected = selectedItem;
         });
     };
+
+    $scope.consultar_adeudos = function (html, alumno_data) {
+        var ConsultarInstance = $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            resolve: {
+                custom_data: function () {
+                    return {alumno_data: alumno_data, periodo_data: $scope.model.periodo};
+                }
+            }
+        });
+    };
 });
 
 
@@ -187,8 +198,58 @@ UPapp.controller('Modal_BuscarAlumnoBeca', function ($scope, $rootScope, adminSe
             $scope.$parent.ok();
         }
     };
-    $scope.cancelar = function () {
-        $scope.$parent.cancel();
+});
+
+UPapp.controller('Modal_ConsultarAdeudosBeca', function ($scope, adminService) {
+    console.log($scope.$parent.data_modal);
+    var idpersona = $scope.$parent.data_modal.alumno_data.idpersonas;
+    var idperiodo = $scope.$parent.data_modal.periodo_data.idperiodo;
+    adminService.getAdeudosAlumnoNew(idpersona, idperiodo).then(function (data) {
+        console.log(data);
+        if (data.respuesta) {
+            $scope.adeudos_alumno = data.respuesta;
+        } else {
+            $scope.adeudos_alumno = false;
+        }
+    }, function (err) {
+    });
+    $scope.beca_activar_suspender = function (id_adeudo, aplica_beca) {
+        adminService.suspenderBeca(id_adeudo, idpersona, idperiodo, aplica_beca).then(function (data) {
+            if (data.respuesta) {
+                $scope.adeudos_alumno = data.respuesta.data;
+            } else {
+                $scope.adeudos_alumno = false;
+            }
+        }, function (err) {
+        });
     };
 });
 
+
+UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
+    $scope.model = [];
+    $scope.model['id_persona'] = $scope.data_modal['idpersonas'];
+    adminService.getPeriodos().then(function (data) {
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+                $scope.Mostrar_Referencia();
+            }
+        });
+    }, function (err) {
+    });
+
+
+
+    $scope.Mostrar_Referencia = function () {
+        ref_count = 0;
+        console.log($scope.model);
+        adminService.getAdeudosAlumno($scope.model).then(function (data) {
+            if (data.respuesta) {
+                $scope.adeudos = data.respuesta;
+            }
+        }, function (err) {
+        });
+    };
+});

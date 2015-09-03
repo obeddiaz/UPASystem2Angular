@@ -1,0 +1,55 @@
+<div ng-controller="Modal_ConsultarAdeudosBeca">
+    <div class="modal-header">
+        <h4 class="modal-title">Adeudos de Alumno</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row-fluid">
+            <div class="col-sm-2">
+                <strong>Alumno</strong>
+            </div>
+            <div class="col-sm-10">
+                {{$parent.data_modal.alumno_data.nom + " " + $parent.data_modal.alumno_data.appat + " " + $parent.data_modal.alumno_data.apmat}}
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="col-sm-2">
+                <strong>Periodo</strong>
+            </div>
+            <div class="col-sm-10">
+                {{$parent.data_modal.periodo_data.periodo}}
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Sub-Concepto</th>
+                        <th>Descripcion/Mes</th>
+                        <th>Fecha Limite</th>
+                        <th>Activar/Suspender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="adeudo in adeudos_alumno">
+                        <td>{{adeudo.sub_concepto}}</td>
+                        <td>{{adeudo.descripcion_sc}}</td>
+                        <td>{{adeudo.fecha_limite}}</td>
+                        <td ng-switch on="adeudo.aplica_beca">
+                            <button class="btn btn-default" ng-switch-when="0" ng-click="beca_activar_suspender(adeudo.id, 1)">Activar</button>
+                            <button class="btn btn-default" ng-switch-when="1" ng-click="beca_activar_suspender(adeudo.id, 0)">Suspender</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer" style="border-top: 0px;">
+        <div class="row form-group">
+            <div class="col-sm-offset-9 col-sm-3">
+                <button class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

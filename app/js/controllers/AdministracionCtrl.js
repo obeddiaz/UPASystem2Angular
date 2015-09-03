@@ -1251,30 +1251,6 @@ UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope
     };
 });
 
-UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
-    $scope.model = [];
-    $scope.model['id_persona'] = $scope.data_modal['idpersonas'];
-    adminService.getPeriodos().then(function (data) {
-        $scope.periodos = data;
-        data.forEach(function (val, key) {
-            if (val.actual == 1) {
-                $scope.model.periodo = $scope.periodos[key];
-                $scope.Mostrar_Referencia();
-            }
-        });
-    }, function (err) {
-    });
-    $scope.Mostrar_Referencia = function () {
-        ref_count = 0;
-        adminService.getAdeudosAlumno($scope.model).then(function (data) {
-            if (data.respuesta) {
-                $scope.adeudos = data.respuesta;
-            }
-        }, function (err) {
-        });
-    };
-});
-
 
 UPapp.controller('Administracion_Generales_traductor_referencia', function ($scope, adminService, $modal) {
     $scope.model = [];
