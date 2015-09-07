@@ -3,19 +3,18 @@
         background-color: #ccc;
     }
 </style>
-<!--<div ng-if="visible" ng-include="main_template" ng-controller="Control_loginCtrl">-->
 <div class="modal-dialog" ng-controller="Control_loginCtrl" >
     <div class="modal-content">
         <div class="modal-header">
             <h1 class="text-center">Inicia Sesión</h1>
         </div>
         <div class="modal-body">
-            <form class="col-md-12 center-block" ng-submit="login()">
+            <form class="col-md-12 center-block" ng-submit="login()" autocomplete="on">
                 <div class="form-group">
-                    <input type="text" ng-model="loginData.userName" placeholder="Usuario" class="form-control" required>
+                    <input  ng-disabled="isBusy" autocomplete="on" type="text" ng-model="loginData.userName" placeholder="Usuario" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" ng-model="loginData.password" placeholder="contraseña" class="form-control" required>
+                    <input  ng-disabled="isBusy" autocomplete="on" type="password" ng-model="loginData.password" placeholder="contraseña" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <button ng-disabled="isBusy" class="btn btn-lg btn-primary btn-block" type="submit">

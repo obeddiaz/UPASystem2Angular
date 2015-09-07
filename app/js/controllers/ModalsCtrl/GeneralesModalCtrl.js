@@ -80,10 +80,15 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
     });
 
     $scope.make_filters = function () {
-        filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
+        // console.log($scope.alumno_filter.carrera);
+        if ($scope.alumno_filter.carrera) {
+            filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
+        } else {
+            filter = $scope.alumnos;
+        }
         $scope.bigTotalItems = filter.length;
         $scope.bigCurrentPage = 1;
-        console.log($scope.alumnos);
+        //console.log($scope.alumnos);
         render_table();
     };
     $scope.insc_noinsc = function () {
@@ -94,13 +99,13 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
             $scope.show_alumnos = false;
             $scope.alumnos = alm_insc;
             $scope.carreras = alm_insc_car;
-            $scope.alumno_filter.carrera = alm_insc_car[0];
+            //$scope.alumno_filter.carrera = alm_insc_car[0];
             $scope.make_filters();
         } else {
             $scope.show_alumnos = true;
             $scope.alumnos = alm_noinsc;
             $scope.carreras = alm_noinsc_car;
-            $scope.alumno_filter.carrera = alm_noinsc_car[0];
+            //$scope.alumno_filter.carrera = alm_noinsc_car[0];
             $scope.make_filters();
         }
     };
@@ -172,7 +177,27 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
 
         SearchInstance.result.then(function (searchParams) {
             console.log(searchParams);
-            //$scope.selected = selectedItem;
+            if ($scope.alumno_filter.carrera) {
+                filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
+            } else {
+                filter = $scope.alumnos;
+            }
+            filter = $filter('filter')(filter, {appat: searchParams.appat});
+            filter = $filter('filter')(filter, {apmat: searchParams.apmat});
+            filter = $filter('filter')(filter, {nom: searchParams.nom});
+            filter = $filter('filter')(filter, {matricula: searchParams.matricula});
+            console.log(filter);
+            $scope.bigTotalItems = filter.length;
+            $scope.bigCurrentPage = 1;
+
+//            filter = $filter('getAllObjectsByProperty')('appat', searchParams.apellido_paterno, filter);
+//            filter = $filter('getAllObjectsByProperty')('apmat', searchParams.apellido_materno, filter);
+//            filter = $filter('getAllObjectsByProperty')('nom', searchParams.nombre, filter);
+//            filter = $filter('getAllObjectsByProperty')('matricula', searchParams.matricula, filter);
+            //console.log(filter);
+            render_table();
+            //$scope.make_filters();
+            //filter = $filter('getAllObjectsByProperty')('carrera', searchParams, filter);
         });
     };
 
@@ -253,3 +278,24 @@ UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
         });
     };
 });
+
+function contains(src, value, except) {
+    var key;
+    switch (typeof src) {
+        case 'string':
+        case 'number':
+        case 'boolean':
+            return String(src).indexOf(value) > -1;
+        case 'object':
+            except = except || [];
+            for (key in src) {
+                if (src.hasOwnProperty(key) &&
+                        except.indexOf(key) < 0 &&
+                        contains(src[key], value, except)
+                        ) {
+                    return true;
+                }
+            }
+    }
+    return false;
+}
