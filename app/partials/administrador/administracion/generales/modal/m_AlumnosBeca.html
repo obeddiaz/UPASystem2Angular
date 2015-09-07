@@ -9,7 +9,7 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon">Ciclo</span>
-                        <select class="form-control" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos">
+                        <select class="form-control" ng-change="NivelesReady()" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos">
                         </select>
                     </div>
                 </div>

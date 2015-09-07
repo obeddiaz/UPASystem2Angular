@@ -27,15 +27,16 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
             if (data.respuesta.data) {
                 $scope.niveles = data.respuesta.data;
                 $scope.model.nivel = Object.keys(data.respuesta.data)[0];
-                _NivelesReady();
+                $scope.NivelesReady();
             }
         });
     };
-    var _NivelesReady = function () {
+    $scope.NivelesReady = function () {
         $scope.$parent.isBusy = true;
         adminService.getAlumnosBecas($scope.model).then(function (data) {
             $scope.$parent.isBusy = false;
             if (data.respuesta) {
+                alm_insc_car = [];
                 if (data.respuesta.data) {
                     alm_insc = data.respuesta.data;
                     angular.forEach(data.respuesta.data, function (value, genre) {
@@ -50,6 +51,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
         });
         adminService.getAlumnosNoBecas($scope.model).then(function (datanoinsc) {
             if (datanoinsc.respuesta) {
+                alm_noinsc_car = [];
                 if (datanoinsc.respuesta.data) {
                     alm_noinsc = datanoinsc.respuesta.data;
                     angular.forEach(datanoinsc.respuesta.data, function (value, genre) {
@@ -275,6 +277,75 @@ UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
                 $scope.adeudos = data.respuesta;
             }
         }, function (err) {
+        });
+    };
+});
+
+UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
+    $scope.isBusy = true;
+    $scope.new_sc = [];
+    $scope.subconceptos = [];
+    $scope.model = [];
+    $scope.tipo_adeudo = [{
+            name: 'Monetario', value: 1}, {
+            name: 'No Monetario', value: 2
+        }];
+    $scope.new_sc.tipo_adeudo = $scope.tipo_adeudo[0];
+    adminService.getPeriodos().then(function (data) {
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+        adminService.getNiveles().then(function (data) {
+            $scope.niveles = data.respuesta.data;
+            $scope.model.nivel = Object.keys(data.respuesta.data)[0];
+            $scope.getSubConceptos();
+        });
+
+    }, function (err) {
+    });
+    $scope.getSubConceptos = function () {
+        $scope.$parent.isBusy = true;
+        adminService.getSubConceptos($scope.data_modal.id, $scope.model.periodo.idperiodo, $scope.model.nivel).then(function (data) {
+            $scope.$parent.isBusy = false;
+            if (!data.error) {
+                var arr_length = data.respuesta.data.length;
+                if (arr_length >= 1) {
+                    $scope.subconceptos = data.respuesta.data;
+                    $scope.alerts = [];
+                } else {
+                    $scope.subconceptos = [];
+                    $scope.alerts = [
+                        {type: 'danger', msg: 'No Existe ningun Subconcepto para este ciclo'}
+                    ];
+                }
+            }
+
+        });
+    };
+    $scope.Nuevo_Subconcepto = function () {
+        $scope.$parent.isBusy = true;
+        $scope.new_sc.nivel_id = $scope.model.nivel;
+        $scope.new_sc.periodo = $scope.model.periodo.idperiodo;
+        $scope.new_sc.conceptos_id = $scope.data_modal.id;
+        $scope.new_sc.tipo_adeudo_id = $scope.new_sc.tipo_adeudo.value;
+        adminService.addSubConcepto($scope.new_sc).then(function (data) {
+            $scope.$parent.isBusy = false;
+            if (!data.error) {
+                $scope.subconceptos.push(data.respuesta);
+                $scope.alerts = [];
+            }
+        });
+    };
+    $scope.delete_sc = function (id) {
+        $scope.$parent.isBusy = true;
+        adminService.DeleteSubConcepto(id).then(function (data) {
+            $scope.$parent.isBusy = false;
+            if (!data.error) {
+                $scope.getSubConceptos();
+            }
         });
     };
 });

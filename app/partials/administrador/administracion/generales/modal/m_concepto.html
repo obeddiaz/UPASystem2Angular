@@ -1,73 +1,90 @@
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">×</button>
-    <h4 class="modal-title">{{data_modal.concepto}}</h4>
-</div>
-<div class="modal-body" ng-controller="Modal_conceptosCtrl">
-    <div class="row form-group">
-        <div class="col-lg-4">
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">Ciclo</span>
-                <select class="form-control" ng-model="model.periodo" ng-change="getSubConceptos()" ng-options="periodo.periodo for periodo in periodos"></select>
+<div ng-controller="Modal_conceptosCtrl">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">×</button>
+        <h4 class="modal-title">{{$parent.data_modal.concepto}}</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row form-group">
+            <div class="col-lg-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Ciclo</span>
+                    <select class="form-control" ng-model="model.periodo" ng-change="getSubConceptos()" ng-options="periodo.periodo for periodo in periodos"></select>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Nivel</span>
+                    <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles"></select>
+                </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">Nivel</span>
-                <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles"></select>
+        <form ng-submit="Nuevo_Subconcepto()">
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Nuevo</span>
+                        <input type='text' class="form-control" ng-model="new_sc.sub_concepto" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Importe</span>
+                        <input type='text' class="form-control" ng-model="new_sc.importe" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Tipo Importe</span>
+                        <select class="form-control" ng-model="new_sc.tipo_adeudo" ng-options="tipo.name for tipo in tipo_adeudo" required></select>
+                    </div>
+                </div>
             </div>
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <input type="checkbox" ng-model="new_sc.aplica_beca" ng-true-value="1" ng-false-value="0" id="upp_aplicabeca"> <label for="upp_aplicabeca">Aplica Beca</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="checkbox" ng-model="new_sc.locker_manager" ng-true-value="1" ng-false-value="0" id="upp_lockermanager"> <label for="upp_lockermanager">Inscripcion</label>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Descripcion</label>
+                    <textarea class="form-control"  ng-model="new_sc.descripcion" rows="3" style="resize:none;" required></textarea>
+                </div>
+            </div>
+            <div class="col-md-3 pull-right">
+                <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                    Añadir
+                </button>
+            </div>
+        </form>
+        <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
+            <thead>
+            <th>Sub Concepto</th>
+            <th>Descripcion</th>
+            <th>Importe</th>
+            <th>Eliminar</th>
+            </thead>
+            <tr ng-repeat="subconcepto in subconceptos">
+                <td data-title="'Concepto'">{{subconcepto.sub_concepto}}</td>
+                <td data-title="'Importe'">{{subconcepto.descripcion}}</td>
+                <td data-title="'Recargo'"><strong>{{subconcepto.importe| currency}}</strong></td>
+                <td data-title="'Recargo'"><button class="btn btn-default btn-block" ng-click="delete_sc(subconcepto.id)"><i class="fa fa-times"></i> Borrar</button></td>
+            </tr>
+        </table>
+        <div class="form-group">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
         </div>
     </div>
-    <form ng-submit="Nuevo_Subconcepto()">
-        <div class="row form-group">
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Nuevo</span>
-                    <input type='text' class="form-control" ng-model="new_sc.sub_concepto" required>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Importe</span>
-                    <input type='text' class="form-control" ng-model="new_sc.importe" required>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Tipo Importe</span>
-                    <select class="form-control" ng-model="new_sc.tipo_adeudo" ng-options="tipo.name for tipo in tipo_adeudo" required></select>
-                </div>
-            </div>
+    <div class="modal-footer">
+        <div class="col-md-2">
+            <label ng-show="$parent.isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
         </div>
-        <div class="row form-group">
-            <div class="col-md-12">
-                <label>Descripcion</label>
-                <textarea class="form-control"  ng-model="new_sc.descripcion" rows="3" style="resize:none;" required></textarea>
-            </div>
-        </div>
-        <div class="col-md-3 pull-right">
-            <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
-                Añadir
+        <div class="col-md-offset-7 col-md-3">
+            <button class="btn btn-default btn-block" ng-click="$parent.cancel()">
+                Cerrar
             </button>
         </div>
-    </form>
-    <table id="tableEdo" ng-table="tableParams" class="table table-condensed table-hover">
-        <thead>
-        <th>Sub Concepto</th>
-        <th>Descripcion</th>
-        <th>Importe</th>
-        </thead>
-        <tr ng-repeat="subconcepto in subconceptos">
-            <td data-title="'Concepto'">{{subconcepto.sub_concepto}}</td>
-            <td data-title="'Importe'">{{subconcepto.descripcion}}</td>
-            <td data-title="'Recargo'"><strong>{{subconcepto.importe| currency}}</strong></td>
-        </tr>
-    </table>
-    <div class="form-group">
-        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-    </div>
-</div>
-<div class="modal-footer">
-    <div class="col-md-2 pull-right">
-        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
     </div>
 </div>

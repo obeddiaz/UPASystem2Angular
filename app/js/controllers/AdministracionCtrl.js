@@ -607,66 +607,6 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
     };
 });
 
-UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
-    $scope.isBusy = true;
-    $scope.new_sc = [];
-    $scope.subconceptos = [];
-    $scope.model = [];
-    $scope.tipo_adeudo = [{
-            name: 'Monetario', value: 1}, {
-            name: 'No Monetario', value: 2
-        }];
-    $scope.new_sc.tipo_adeudo = $scope.tipo_adeudo[0];
-    adminService.getPeriodos().then(function (data) {
-        $scope.periodos = data;
-        data.forEach(function (val, key) {
-            if (val.actual == 1) {
-                $scope.model.periodo = $scope.periodos[key];
-            }
-        });
-        adminService.getNiveles().then(function (data) {
-            $scope.niveles = data.respuesta.data;
-            $scope.model.nivel = Object.keys(data.respuesta.data)[0];
-            $scope.getSubConceptos();
-        });
-
-    }, function (err) {
-    });
-    $scope.getSubConceptos = function () {
-        $scope.$parent.isBusy = true;
-        adminService.getSubConceptos($scope.data_modal.id, $scope.model.periodo.idperiodo, $scope.model.nivel).then(function (data) {
-            $scope.$parent.isBusy = false;
-            if (!data.error) {
-                var arr_length = data.respuesta.data.length;
-                if (arr_length >= 1) {
-                    $scope.subconceptos = data.respuesta.data;
-                    $scope.alerts = [];
-                } else {
-                    $scope.subconceptos = [];
-                    $scope.alerts = [
-                        {type: 'danger', msg: 'No Existe ningun Subconcepto para este ciclo'}
-                    ];
-                }
-            }
-
-        });
-    };
-    $scope.Nuevo_Subconcepto = function () {
-        $scope.$parent.isBusy = true;
-        $scope.new_sc.nivel_id = $scope.model.nivel;
-        $scope.new_sc.periodo = $scope.model.periodo.idperiodo;
-        $scope.new_sc.conceptos_id = $scope.data_modal.id;
-        $scope.new_sc.tipo_adeudo_id = $scope.new_sc.tipo_adeudo.value;
-        adminService.addSubConcepto($scope.new_sc).then(function (data) {
-            $scope.$parent.isBusy = false;
-            if (!data.error) {
-                $scope.subconceptos.push(data.respuesta);
-                $scope.alerts = [];
-            }
-        });
-    };
-});
-
 UPapp.directive('myformat', function (dateFilter) {
     return {
         require: 'ngModel',

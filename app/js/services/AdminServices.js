@@ -198,6 +198,18 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
+
+        var _DeleteSubConcepto = function (id) {
+            var deferred = $q.defer();
+            $http.delete(serviceBase + '/caja/subconceptos/subconceptos/eliminar', {params: {id: id}
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
         var _addSubConcepto = function (sc_data) {
             var deferred = $q.defer();
             $http.post(serviceBase + '/caja/subconceptos/subconceptos/agregar', {
@@ -207,7 +219,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 importe: sc_data.importe,
                 periodo: sc_data.periodo,
                 nivel_id: sc_data.nivel_id,
-                tipo_adeudo: sc_data.tipo_adeudo_id
+                tipo_adeudo: sc_data.tipo_adeudo_id,
+                locker_manager: sc_data.locker_manager,
+                aplica_beca: sc_data.aplica_beca
             })
                     .success(function (data) {
                         deferred.resolve(data);
@@ -942,7 +956,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getDatosReferencia = _getDatosReferencia;
 
 
-        adminServiceFactory.suspenderBeca =_suspenderBeca;
+        adminServiceFactory.suspenderBeca = _suspenderBeca;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;
@@ -966,6 +980,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.DeleteBanco = _DeleteBanco;
         adminServiceFactory.DeleteBeca = _DeleteBeca;
         adminServiceFactory.deletePlanePago = _deletePlanePago;
+        adminServiceFactory.DeleteSubConcepto = _DeleteSubConcepto;
 
         adminServiceFactory.reactivarBecaAlumno = _reactivarBecaAlumno;
         adminServiceFactory.desactivarBecaAlumno = _desactivarBecaAlumno;
