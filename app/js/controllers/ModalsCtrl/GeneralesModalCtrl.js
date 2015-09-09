@@ -331,6 +331,7 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
         $scope.new_sc.periodo = $scope.model.periodo.idperiodo;
         $scope.new_sc.conceptos_id = $scope.data_modal.id;
         $scope.new_sc.tipo_adeudo_id = $scope.new_sc.tipo_adeudo.value;
+//        console.log($scope.new_sc);
         adminService.addSubConcepto($scope.new_sc).then(function (data) {
             $scope.$parent.isBusy = false;
             if (!data.error) {
@@ -349,6 +350,42 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
         });
     };
 });
+
+
+
+
+UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminService) {
+    $scope.model = [];
+    $scope.isBusy=true;
+    adminService.getPeriodos().then(function (data) {
+        $scope.isBusy=false;
+        $scope.$parent.isBusy = true;
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+        $scope.getAdeudos();
+    }, function (err) {
+    });
+    $scope.getAdeudos = function () {
+        $scope.isBusy=true;
+        console.log($scope.model.periodo);
+        adminService.getAdeudosAlumnoNew($scope.$parent.data_modal.idpersonas, $scope.model.periodo.idperiodo).then(function (data) {
+            console.log(data);
+            $scope.isBusy=false;
+            if (data.respuesta) {
+                $scope.adeudos_alumno = data.respuesta;
+            } else {
+                $scope.adeudos_alumno = false;
+            }
+        }, function (err) {
+        });
+    };
+    
+});
+
 
 function contains(src, value, except) {
     var key;

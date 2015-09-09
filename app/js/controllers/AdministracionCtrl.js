@@ -7,7 +7,8 @@ UPapp.controller('Administracion_Generales', function ($scope) {
         {title: 'Archivo Referencias', click: 'subir_referencias'},
         {title: 'Becas', click: 'becas'},
         {title: 'Reportes', click: 'reportes'},
-        {title: 'Traducir Referencia', click: 'referencias'}
+        {title: 'Traducir Referencia', click: 'referencias'},
+        {title: 'Descuentos', click: 'descuentos'}
         //{title: 'Ingresos', click: 'ingresos'}
     ];
     $scope.active = 'planes_de_pago';
@@ -151,7 +152,7 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
             render_table();
         }
     });
-    var used_keys=[];
+    var used_keys = [];
 
     var array_map = function (data) {
         return $.map(data, function (value, index) {
@@ -170,7 +171,7 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
                                 //$scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
                             } else {
                                 //console.log(key + " " + val);
-                               // $scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
+                                // $scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
                                 if (used_keys[key_single_adeudo].indexOf(valsingle_adeudo) == -1)
                                 {
                                     used_keys[key_single_adeudo].push(valsingle_adeudo);
@@ -240,8 +241,9 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
         {name: "periodo", selected: false, full_name: "Periodo"},
         {name: "aplica_beca", selected: false, full_name: "Beca"},
         {name: "descripcion_sc", selected: false, full_name: "Descripcion Sub Concepto"},
-        {name: "sub_concepto", selected: false, full_name: "Sub Concepto"}
-
+        {name: "sub_concepto", selected: false, full_name: "Sub Concepto"},
+        {name: "importe", selected: false, full_name: "Cantidad"},
+        {name: "recargo", selected: false, full_name: "Recargo"},
     ];
 
     $scope.make_filters = function () {
@@ -909,7 +911,10 @@ UPapp.controller('Modal_cuentasBanco', function ($scope, adminService, $q) {
     get_cuentas();
 });
 
-UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminService, $rootScope, $modal) {
+UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminService, $modal, $filter) {
+
+    $scope.maxSize = 10;
+    $scope.items_per_page = 50;
     adminService.getalumnos().then(function (data) {
         $scope.model = {
             filter: {
@@ -941,13 +946,22 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
 
             }
         });
-        $scope.model.filter.carrera = $scope.carreras[0];
-        //$scope.model.filter.grupo = $scope.grupos[0];
-        //$scope.model.filter.grado = $scope.grados[0];
+        filteredAlumnos = $scope.alumnos;
+        $scope.bigTotalItems = $scope.alumnos.length;
+        $scope.bigCurrentPage = 1;
+        $scope.model.filter.carrera = null;
     }, function (err) {
 
     });
-    $scope.Agregaradeudo = function (html, data) {
+    var filteredAlumnos = [];
+
+    $scope.$watchCollection('bigCurrentPage', function () {
+        //console.log($scope.bigCurrentPage);
+        if ($scope.bigCurrentPage) {
+            render_table();
+        }
+    });
+    $scope.VerAdeudos = function (html, data) {
         $modal.open({
             templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
             controller: 'ModalInstanceCtrl',
@@ -957,6 +971,54 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
                     return data;
                 }
             }
+        });
+    };
+    $scope.model=[];
+    $scope.make_filters = function () {
+        console.log($scope.model);
+        filteredAlumnos = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+        filteredAlumnos = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filteredAlumnos);
+        filteredAlumnos = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filteredAlumnos);
+        $scope.bigTotalItems = filteredAlumnos.length;
+        $scope.bigCurrentPage = 1;
+        render_table();
+        // console.log(filteredAlumnos);
+    };
+
+
+    var render_table = function () {
+        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                , end = begin + $scope.items_per_page;
+        //console.log(filter.slice(begin, end));
+        if (filteredAlumnos) {
+            $scope.filteredAlumnos = filteredAlumnos.slice(begin, end);
+        }
+    };
+    $scope.Buscar_alumno = function (html) {
+        var SearchInstance = $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return false;
+                }
+            }
+        });
+
+        SearchInstance.result.then(function (searchParams) {
+            //console.log(searchParams);
+            filteredAlumnos = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+            filteredAlumnos = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filteredAlumnos);
+            filteredAlumnos = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filteredAlumnos);
+            filteredAlumnos = $filter('filter')(filteredAlumnos, {appat: searchParams.appat});
+            filteredAlumnos = $filter('filter')(filteredAlumnos, {apmat: searchParams.apmat});
+            filteredAlumnos = $filter('filter')(filteredAlumnos, {nom: searchParams.nom});
+            filteredAlumnos = $filter('filter')(filteredAlumnos, {matricula: searchParams.matricula});
+            console.log(filteredAlumnos);
+            $scope.bigTotalItems = filteredAlumnos.length;
+            $scope.bigCurrentPage = 1;
+            render_table();
         });
     };
 });
