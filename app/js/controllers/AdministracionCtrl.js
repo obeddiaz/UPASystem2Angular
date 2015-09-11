@@ -456,18 +456,21 @@ UPapp.controller('Administracion_Agrupaciones_agrupaciones', function ($scope, $
     };
 });
 
-UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $routeParams, adminService, $q, $timeout) {
+UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $modal, adminService, $q, $filter) {
     var promises = [];
     var alumnos = [];
     var carreras = [];
     var grados = [];
     var grupos = [];
+    var filter = [];
     $scope.paquete_periodo = false;
     $scope.alumnos_show = true;
     $scope.alumnos_todos = false;
     $scope.alumnos_inscritos = true;
     $scope.model = [];
     $scope.isBusy = true;
+    $scope.maxSize = 10;
+    $scope.items_per_page = 50;
     waitingDialog.show();
     promises.push(adminService.getalumnos().then(function (data) {
         alumnos.NoInscritos = data;
@@ -511,34 +514,101 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         $scope.isBusy = false;
         $scope.aif();
     });
+
+
+    $scope.Buscar_alumno = function (html) {
+        var SearchInstance = $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return false;
+                }
+            }
+        });
+
+        SearchInstance.result.then(function (searchParams) {
+            console.log(searchParams);
+            filter = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+            filter = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filter);
+            filter = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filter);
+
+            filter = $filter('filter')(filter, {appat: searchParams.appat});
+            filter = $filter('filter')(filter, {apmat: searchParams.apmat});
+            filter = $filter('filter')(filter, {nom: searchParams.nom});
+            filter = $filter('filter')(filter, {matricula: searchParams.matricula});
+
+            $scope.bigTotalItems = filter.length;
+            $scope.bigCurrentPage = 1;
+//            console.log(filter);
+//            $scope.bigTotalItems = filter.length;
+//            $scope.bigCurrentPage = 1;
+            render_table();
+        });
+    };
+
+
     $scope.Insc_NoInsc = function () {
         $scope.model.filter = {
-            carrera: false,
-            grupo: false,
-            grado: false
+            carrera: null,
+            grupo: null,
+            grado: null
         };
         $scope.alumno_assign.add = [];
         if ($scope.alumnos_show) {
             $scope.alumnos_show = false;
             $scope.alumnos = alumnos.Inscritos;
+            filter = $scope.alumnos;
             $scope.carreras = carreras.Inscritos;
             $scope.grupos = grupos.Inscritos;
             $scope.grados = grados.Inscritos;
-            if ($scope.carreras) {
-                $scope.model.filter.carrera = $scope.carreras[0];
-            }
-
+            $scope.bigTotalItems = filter.length;
+            $scope.bigCurrentPage = 1;
+            render_table();
+            //if ($scope.carreras) {
+            //$scope.model.filter.carrera = $scope.carreras[0];
+            //}
         } else {
             $scope.alumnos_show = true;
             $scope.alumnos = alumnos.NoInscritos;
+            filter = $scope.alumnos;
             $scope.carreras = carreras.NoInscritos;
             $scope.grupos = grupos.NoInscritos;
             $scope.grados = grados.NoInscritos;
-            if ($scope.carreras) {
-                $scope.model.filter.carrera = $scope.carreras[0];
-            }
+            $scope.bigTotalItems = filter.length;
+            $scope.bigCurrentPage = 1;
+            render_table();
+            //if ($scope.carreras) {
+            //$scope.model.filter.carrera = $scope.carreras[0];
+            //}
         }
     };
+    $scope.$watchCollection('bigCurrentPage', function () {
+        if ($scope.bigCurrentPage) {
+            render_table();
+        }
+    });
+
+    var render_table = function () {
+        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                , end = begin + $scope.items_per_page;
+        //console.log(filter.slice(begin, end));
+        if (filter) {
+            $scope.filteredAlumnos = filter.slice(begin, end);
+        }
+    };
+
+    $scope.search_filters = function () {
+        filter = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+        filter = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filter);
+        filter = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filter);
+        $scope.bigTotalItems = filter.length;
+        $scope.bigCurrentPage = 1;
+        //console.log($scope.alumnos);
+        render_table();
+    };
+
     $scope.aif = function () {
         $scope.isBusy = true;
         adminService.getAlumnosPaquete($scope.model.periodo.idperiodo, $scope.data_plan.id).then(function (data) {
@@ -584,11 +654,18 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $r
         });
     };
     $scope.alumno_assign = [];
-    $scope.checkAll = function () {
+    $scope.checkAllPagina = function () {
         $scope.alumno_assign.add = $scope.filteredAlumnos.map(function (item) {
             return item.idpersonas;
         });
     };
+    $scope.checkAllBusqueda = function () {
+        $scope.alumno_assign.add = filter.map(function (item) {
+            return item.idpersonas;
+        });
+    };
+
+
     $scope.uncheckAll = function () {
         $scope.alumno_assign.add = [];
     };
@@ -973,7 +1050,7 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
             }
         });
     };
-    $scope.model=[];
+    $scope.model = [];
     $scope.make_filters = function () {
         console.log($scope.model);
         filteredAlumnos = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
@@ -1201,16 +1278,22 @@ UPapp.controller('Modal_ModifyConcepto', function ($scope, adminService, $rootSc
     };
 });
 
-UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope, $modal) {
+UPapp.controller('Alumnos_consultas', function ($scope, adminService, $filter, $modal) {
+    $scope.maxSize = 10;
+    $scope.items_per_page = 50;
+    var filter = [];
     adminService.getalumnos().then(function (data) {
         $scope.model = {
             filter: {
-                carrera: false,
-                grupo: false,
-                grado: false
+                carrera: null,
+                grupo: null,
+                grado: null
             }
         };
         $scope.alumnos = data;
+        filter = $scope.alumnos;
+        $scope.bigTotalItems = filter.length;
+        $scope.bigCurrentPage = 1;
         $scope.carreras = [];
         $scope.grupos = [];
         $scope.grados = [];
@@ -1233,9 +1316,7 @@ UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope
 
             }
         });
-        $scope.model.filter.carrera = $scope.carreras[0];
-        //$scope.model.filter.grupo = $scope.grupos[0];
-        //$scope.model.filter.grado = $scope.grados[0];
+        render_table();
     }, function (err) {
 
     });
@@ -1249,6 +1330,56 @@ UPapp.controller('Alumnos_consultas', function ($scope, adminService, $rootScope
                     return data;
                 }
             }
+        });
+    };
+
+    $scope.$watchCollection('bigCurrentPage', function () {
+        if ($scope.bigCurrentPage) {
+            render_table();
+        }
+    });
+
+    $scope.search_filters = function () {
+        filter = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+        filter = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filter);
+        filter = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filter);
+        filter = $filter('filter')(filter, {matricula: $scope.model.filter.matricula});
+        $scope.bigTotalItems = filter.length;
+        $scope.bigCurrentPage = 1;
+        //console.log($scope.alumnos);
+        render_table();
+    };
+    
+    var render_table = function () {
+        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                , end = begin + $scope.items_per_page;
+        //console.log(filter.slice(begin, end));
+        if (filter) {
+            $scope.filteredAlumnos = filter.slice(begin, end);
+        }
+    };
+    $scope.Buscar_alumno = function (html) {
+        var SearchInstance = $modal.open({
+            templateUrl: 'partials/administrador/alumnos/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return false;
+                }
+            }
+        });
+
+        SearchInstance.result.then(function (searchParams) {
+            filter = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+            filter = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filter);
+            filter = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filter);
+            filter = $filter('filter')(filter, {appat: searchParams.appat});
+            filter = $filter('filter')(filter, {apmat: searchParams.apmat});
+            filter = $filter('filter')(filter, {nom: searchParams.nom});
+            $scope.bigTotalItems = filter.length;
+            $scope.bigCurrentPage = 1;
+            render_table();
         });
     };
 });
