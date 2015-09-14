@@ -56,6 +56,7 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $l
             total_referencias[c] = anp[c];
         }
         studentService.setReferencias(total_referencias).then(function (data) {
+            console.log(data);
             $scope.isBusy = false;
             $window.sessionStorage.setItem('recibo', JSON.stringify(data));
             $location.path('/home/alumno/recibo');
@@ -68,6 +69,7 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $l
 UPapp.controller('ReciboCtrl', function ($scope, $window, studentService) {
     var recibo = $window.sessionStorage.getItem('recibo');
     recibo = JSON.parse(recibo);
+    $scope.datos_recibo = recibo;
     $scope.convenio = recibo.data.convenio;
     $scope.fecha_limite = recibo.data.fecha_limite;
     $scope.importe_total = recibo.data.importe_total;

@@ -1056,6 +1056,7 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
         filteredAlumnos = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
         filteredAlumnos = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filteredAlumnos);
         filteredAlumnos = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filteredAlumnos);
+        filteredAlumnos = $filter('filter')(filteredAlumnos, {matricula: $scope.model.filter.matricula});
         $scope.bigTotalItems = filteredAlumnos.length;
         $scope.bigCurrentPage = 1;
         render_table();
@@ -1091,7 +1092,6 @@ UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminS
             filteredAlumnos = $filter('filter')(filteredAlumnos, {appat: searchParams.appat});
             filteredAlumnos = $filter('filter')(filteredAlumnos, {apmat: searchParams.apmat});
             filteredAlumnos = $filter('filter')(filteredAlumnos, {nom: searchParams.nom});
-            filteredAlumnos = $filter('filter')(filteredAlumnos, {matricula: searchParams.matricula});
             console.log(filteredAlumnos);
             $scope.bigTotalItems = filteredAlumnos.length;
             $scope.bigCurrentPage = 1;
@@ -1349,7 +1349,7 @@ UPapp.controller('Alumnos_consultas', function ($scope, adminService, $filter, $
         //console.log($scope.alumnos);
         render_table();
     };
-    
+
     var render_table = function () {
         var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
                 , end = begin + $scope.items_per_page;
@@ -1453,7 +1453,7 @@ UPapp.controller('Caja_Caja', function ($scope, adminService, $filter, $q) {
         return true;
     }, function (err) {
     }));
-    promises.push(adminService.getAllalumnos().then(function (data) {
+    promises.push(adminService.getalumnos().then(function (data) {
         alumnos = data;
         return true;
     }, function (err) {

@@ -1,47 +1,98 @@
-<div class="modal-header">
-    <h4 class="modal-title">{{data_modal.matricula+": "+data_modal.nom+" "+data_modal.apmat+" "+data_modal.appat}}</h4>
-</div>
-<div class="modal-body" ng-controller="Modal_ConsultaAlumno">
-    <form class="form-horizontal">
+
+<div ng-controller="Modal_ConsultaAlumno">
+    <div class="modal-header">
+        <h4 class="modal-title">{{$parent.data_modal.matricula+": "+$parent.data_modal.nom+" "+$parent.data_modal.apmat+" "+$parent.data_modal.appat}}</h4>
+    </div>
+    <div class="modal-body">
         <div class="row form-group">
-            <div class="col-md-4">
+            <div class="col-sm-12" style="margin-bottom: 10px;">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Ciclo</span>
-                    <select class="form-control" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="Mostrar_Referencia()">
-                    </select>
+                    <span class="input-group-addon">
+                        <div style="width: 60px;">
+                            Carrera
+                        </div>
+                    </span>
+                    <span data-title="'grado'" class="form-control">{{$parent.data_modal.carrera}}</span>
                 </div>
             </div>
+            <div class="col-sm-6" style="margin-bottom: 10px;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">
+                        <div style="width: 60px;">
+                            Grado
+                        </div>
+                    </span>
+                    <span data-title="'grado'" class="form-control">{{$parent.data_modal.grado}}</span>
+                </div>
+            </div>
+            <div class="col-sm-6" style="margin-bottom: 10px;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">
+                        <div style="width: 60px;">
+                            Grupo
+                        </div>
+                    </span>
+                    <span data-title="'grado'" class="form-control">{{$parent.data_modal.grupo}}</span>
+                </div>
+            </div>
+            <div class="col-sm-6" style="margin-bottom: 10px;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">
+                        <div style="width: 60px;">
+                            Nivel
+                        </div>
+                    </span>
+                    <span data-title="'grado'" class="form-control">{{$parent.data_modal.nombre_nivel}}</span>
+                </div>
+            </div>
+
+
         </div>
-    </form>
-    <div class="table-responsive" ng-if="adeudos">
-        <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
-            <thead>
-            <th>Descripción</th>
-            <th>Importe</th>
-            <th>Recargos</th>
-            <th>Vence</th>
-            <th>Beca</th>
-            <th>Saldo</th>
-            </thead>
-            <tr ng-repeat="adeudo in adeudos" ng-class="{
+        <form class="form-horizontal">
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">
+                            <div style="width: 60px;">
+                                Ciclo
+                            </div>
+                        </span>
+                        <select class="form-control" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos" ng-change="Mostrar_Referencia()">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="table-responsive" ng-if="adeudos">
+            <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
+                <thead>
+                <th>Descripción</th>
+                <th>Importe</th>
+                <th>Recargos</th>
+                <th>Vence</th>
+                <th>Beca</th>
+                <th>Saldo</th>
+                </thead>
+                <tr ng-repeat="adeudo in adeudos" ng-class="{
                         'bg-success':adeudo.status_adeudo == 1}">
-                <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
-                <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>
-                <td data-title="'Recargo'">{{adeudo.recargo_total}}</td>
-                <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
-                <td data-title="'Beca'">{{adeudo.beca}}</td>
-                <td data-title="'Total'">{{adeudo.importe}}</td>
-            </tr>
-        </table>
+                    <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
+                    <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>
+                    <td data-title="'Recargo'">{{adeudo.recargo_total}}</td>
+                    <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
+                    <td data-title="'Beca'">{{adeudo.beca}}</td>
+                    <td data-title="'Total'">{{adeudo.importe}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
-</div>
-<div class="modal-footer" style="border-top: 0px;">
-    <div class="col-md-3 pull-right">
-        <button class="btn btn-warning btn-md btn-block col-md-4" ng-click="cancel()">
-            Cancelar
-        </button>
-    </div>
-    <div class="col-md-3 pull-left">
-        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
+    <div class="modal-footer" style="border-top: 0px;">
+        <div class="col-md-3 pull-right">
+            <button class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                Cancelar
+            </button>
+        </div>
+        <div class="col-md-3 pull-left">
+            <label ng-show="$parent.isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
+        </div>
     </div>
 </div>

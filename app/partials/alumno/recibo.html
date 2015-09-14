@@ -1,97 +1,296 @@
 
 <html>
-<head><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8">
-<title>Ficha de Dep&oacute;sito</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
+    <head><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8">
+        <title>Ficha de Dep&oacute;sito</title>
+        <link rel="stylesheet/less" type="text/css" href="bower_components/bootstrap/less/print.less" />
+        <link href="css/ventanadialogo.css" rel=stylesheet type=text/css>
+        <style>
+            .datos_alumno{
+                font-size: 11px;
+            }
+            @media print {
+                .col-md-1,
+                .col-md-2,
+                .col-md-3,
+                .col-md-4,
+                .col-md-5,
+                .col-md-6,
+                .col-md-7,
+                .col-md-8,
+                .col-md-9,
+                .col-md-10,
+                .col-md-11,
+                .col-md-12 {
+                    float: left;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .col-md-11 {
+                    width: 91.66666666666666%;
+                }
+                .col-md-10 {
+                    width: 83.33333333333334%;
+                }
+                .col-md-9 {
+                    width: 75%;
+                }
+                .col-md-8 {
+                    width: 66.66666666666666%;
+                }
+                .col-md-7 {
+                    width: 58.333333333333336%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-md-5 {
+                    width: 41.66666666666667%;
+                }
+                .col-md-4 {
+                    width: 33.33333333333333%;
+                }
+                .col-md-3 {
+                    width: 25%;
+                }
+                .col-md-2 {
+                    width: 16.666666666666664%;
+                }
+                .col-md-1 {
+                    width: 8.333333333333332%;
+                }
+                .col-md-pull-12 {
+                    right: 100%;
+                }
+                .col-md-pull-11 {
+                    right: 91.66666666666666%;
+                }
+                .col-md-pull-10 {
+                    right: 83.33333333333334%;
+                }
+                .col-md-pull-9 {
+                    right: 75%;
+                }
+                .col-md-pull-8 {
+                    right: 66.66666666666666%;
+                }
+                .col-md-pull-7 {
+                    right: 58.333333333333336%;
+                }
+                .col-md-pull-6 {
+                    right: 50%;
+                }
+                .col-md-pull-5 {
+                    right: 41.66666666666667%;
+                }
+                .col-md-pull-4 {
+                    right: 33.33333333333333%;
+                }
+                .col-md-pull-3 {
+                    right: 25%;
+                }
+                .col-md-pull-2 {
+                    right: 16.666666666666664%;
+                }
+                .col-md-pull-1 {
+                    right: 8.333333333333332%;
+                }
+                .col-md-pull-0 {
+                    right: 0;
+                }
+                .col-md-push-12 {
+                    left: 100%;
+                }
+                .col-md-push-11 {
+                    left: 91.66666666666666%;
+                }
+                .col-md-push-10 {
+                    left: 83.33333333333334%;
+                }
+                .col-md-push-9 {
+                    left: 75%;
+                }
+                .col-md-push-8 {
+                    left: 66.66666666666666%;
+                }
+                .col-md-push-7 {
+                    left: 58.333333333333336%;
+                }
+                .col-md-push-6 {
+                    left: 50%;
+                }
+                .col-md-push-5 {
+                    left: 41.66666666666667%;
+                }
+                .col-md-push-4 {
+                    left: 33.33333333333333%;
+                }
+                .col-md-push-3 {
+                    left: 25%;
+                }
+                .col-md-push-2 {
+                    left: 16.666666666666664%;
+                }
+                .col-md-push-1 {
+                    left: 8.333333333333332%;
+                }
+                .col-md-push-0 {
+                    left: 0;
+                }
+                .col-md-offset-12 {
+                    margin-left: 100%;
+                }
+                .col-md-offset-11 {
+                    margin-left: 91.66666666666666%;
+                }
+                .col-md-offset-10 {
+                    margin-left: 83.33333333333334%;
+                }
+                .col-md-offset-9 {
+                    margin-left: 75%;
+                }
+                .col-md-offset-8 {
+                    margin-left: 66.66666666666666%;
+                }
+                .col-md-offset-7 {
+                    margin-left: 58.333333333333336%;
+                }
+                .col-md-offset-6 {
+                    margin-left: 50%;
+                }
+                .col-md-offset-5 {
+                    margin-left: 41.66666666666667%;
+                }
+                .col-md-offset-4 {
+                    margin-left: 33.33333333333333%;
+                }
+                .col-md-offset-3 {
+                    margin-left: 25%;
+                }
+                .col-md-offset-2 {
+                    margin-left: 16.666666666666664%;
+                }
+                .col-md-offset-1 {
+                    margin-left: 8.333333333333332%;
+                }
+                .col-md-offset-0 {
+                    margin-left: 0;
+                }
+            }
+        </style>
+    </head>
+    <body bgcolor="#FFFFFF" text="#000000">
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <img src="img/logoencabezado.gif">
+                    </div>
+                    <div class="col-xs-8" style="text-align: center; font-size: 12px;">
+                        <p style="margin-bottom: 0;">UNIVERSIDAD POLIT&Eacute;CNICA DE AGUASCALIENTES</p>
+                        <p style="margin-bottom: 0;">CALLE PASEO SAN GERARDO NO. 207.</p>
+                        <p style="margin-bottom: 0;"> FRACC. SAN GERARDO. C.P. 20342.</p>
+                        <p style="margin-bottom: 0;">TEL.  01 (449) 442-14-00 </p>
+                    </div>
+                    <div class="col-xs-2">
+                        <img src="img/logoBBVA.gif" width="140" height="40">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-5 datos_alumno">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="text-align: center; background-color: #B9B9B9;">
+                                        <strong>Matricula</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;">
+                                        {{datos_recibo.data.persona[0].matricula}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;background-color: #B9B9B9;">
+                                        <strong>Alumno</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;">
+                                        {{datos_recibo.data.persona[0].nom + " " + datos_recibo.data.persona[0].appat + " " + datos_recibo.data.persona[0].apmat}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;background-color: #B9B9B9;">
+                                        <strong>Ciclo</strong>
+                                    </td>
+                                    <td style="text-align: center;background-color: #B9B9B9;">
+                                        <strong>Convenio</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">
+                                        20{{datos_recibo.data.persona[0].idperiodo}}
+                                    </td>
+                                    <td style="text-align: center;">
+                                        CIE {{datos_recibo.data.convenio}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style=" text-align: center;background-color: #B9B9B9;">
+                                        <strong>Su Pago</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style=" text-align: center;">
+                                        <h4>$ {{datos_recibo.data.importe_total}}</h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-7 datos_adeudo">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr style="background-color: #B9B9B9;">
+                                    <td colspan="4">
+                                        <strong>Referencias</strong>
+                                    </td>
+                                </tr>
+                                <tr style="background-color: #B9B9B9;">
+                                    <td>
+                                        <strong>Concepto</strong>
+                                    </td>
+                                    <td>
+                                        <strong>Descripcion</strong>
+                                    </td>
+                                    <td>
+                                        <strong>Importe</strong>
+                                    </td>
+                                    <td>
+                                        <strong>Referencia</strong>
+                                    </td>
+                                </tr>
+                                <tr ng-repeat="referencia in datos_recibo.data.referencias">
+                                    <td>{{ referencia.sub_concepto}}</td>
+                                    <td>Descripcion</td>
+                                    <td>{{ referencia.importe | currency:MDX}}</td>
+                                    <td>{{ referencia.referencia}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <p align="justify"><b>NOTA PARA EL BANCO / IMPORTANTE:</b><br>Al asentar los pagos de este documento, deberá registrase por separado cada una de las referencias por sus respectivos montos.
+                    Ejemplo: Para dos referencias, registrar dos pagos por separado.</p>
+            </div>
+        </div>
 
-<LINK href="css/ventanadialogo.css" rel=stylesheet type=text/css>
-
-
-
-<body bgcolor="#FFFFFF" text="#000000">
-<table width="614" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-    <td width="141"><img src="img/logoencabezado.gif"></td>
-    <td width="341" class="texto_box"> 
-      <div align="center">UNIVERSIDAD POLIT&Eacute;CNICA DE AGUASCALIENTES<br>
-      CALLE PASEO SAN GERARDO NO. 207.  <br>
-    FRACC. SAN GERARDO. C.P. 20342. <br>
-      AGUASCALIENTES, AGS. <br>
-      TEL.  01 (449) 442-14-00 <br>
-      </div>
-    </td>
-    <td width="132">&nbsp; 
-      
-    </td>
-  </tr>
-</table>
-<table width="615" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-    <td width="121">&nbsp;</td>
-    <td colspan="3">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="121" class="texto_general">Alumno</td>
-    <td colspan="3" class="texto_box">{{matricula}} - {{appat + " "+ apmat + " " + nom}}</td>
-  </tr>
-
-  <tr> 
-    <td width="121" class="texto_general">Fecha Vencimiento</td>
-    <td width="267" class="texto_box">{{ fecha_limite }}</td>
-    <td width="62" class="texto_general"> 
-      <div align="center">Ciclo</div>    </td>
-    <td width="148" class="texto_box">20{{periodo}}</td>
-  </tr>
-  <tr>
-    <td class="texto_general">&nbsp;</td>
-    <td colspan="3" class="texto_box">&nbsp;</td>
- 
-  </tr>
-  <tr> 
-    <td width="121" class="texto_general">Convenio</td>
-    <td colspan="3" class="texto_box">CIE {{ convenio }}</td>
-  </tr>
-  <tr> 
-    <td colspan="4" class="texto_general">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td colspan="4" class="">
-  <table wisth=615 border=0>
-  <tr class="texto_general" align="center"><td width=350>Concepto</td><td width=15>&nbsp;</td><td width=80>Importe</td><td width="170">Referencia</td>
-  </tr>
-  
-  <tr ng-repeat="referencia in referencias" class="texto_box" >
-    <td width=350>{{ referencia.sub_concepto }}</td>
-    <td width=15 align="right"></td>
-    <td width=80 align="right" style="font-decoration:light;">{{ referencia.importe | currency:MDX}}</td>
-    <td width="170" align="center">{{ referencia.referencia }}</td>
-  </tr>
-  
-  <tr class="texto_box">
-    <td colspan=4><hr></td>
-  </tr>
-  <tr class="texto_general">
-    <td width=350>Importe Total</td>
-    <td width=15 align="right"></td>
-    <td width=80 align="right">{{ importe_total | currency:MDX}}</td>
-    <td width="170" align="center">&nbsp;</td>
-  </tr>
-  <tr class="texto_box">
-    <td colspan=4>&nbsp;</td>
-  </tr>
-  </table>
-  </td>
-  </tr>
-  <tr> 
-    <td colspan="3" class="texto_normal">
-<p align="justify"><b>NOTA PARA EL BANCO / IMPORTANTE:</b><br>Al asentar los pagos de este documento, deberá registrase por separado cada una de las referencias por sus respectivos montos.
-Ejemplo: Para dos referencias, registrar dos pagos por separado.</p>
-</td>
-   <td class="texto_box" width="148"><img src="img/logoBBVA.gif" width="140" height="40"></td>
-  </tr>
-</table>
-</body>
+    </body>
 </html>
 
 
