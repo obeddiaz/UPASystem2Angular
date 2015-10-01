@@ -1,56 +1,65 @@
-<div class="modal-header">
-    <h4 class="modal-title">Añadir Nueva Beca</h4>
-</div>
-<div class="modal-body" ng-controller="Modal_NewBeca">
+<div ng-controller="Modal_NewBeca">
     <form ng-submit="addNewBeca()">
-        <div class="row form-group">
-            <div class="col-md-6">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Abreviatura</span>
-                    <input type='text' class="form-control" ng-model="model.abreviatura" required>
+        <div class="modal-header">
+            <h4 class="modal-title">Añadir Nueva Beca</h4>
+        </div>
+        <div class="modal-body">
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Abreviatura</span>
+                        <input type='text' class="form-control" ng-model="model.abreviatura" required>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Importe</span>
-                    <input type="number" class="form-control" ng-model="model.importe" required>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Aplicacion</span>
+                        <select required class="form-control" ng-model="model.tipo_importe_id" ng-options="tipo.id as tipo.nombre for tipo in catalogos.tipo_importe" required></select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon" ng-switch on="model.tipo_importe_id">
+                            <span ng-switch-when="2">$</span>
+                            <span ng-switch-when="1">%</span>
+                            <span ng-switch-default>-</span>
+                        </div>
+                        <input type="number" class="form-control" ng-model="model.importe" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-lg-6" style="display:none;">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Subsidios</span>
+                        <select required class="form-control" ng-model="model.subcidios_id" ng-options="subsidio.id as subsidio.nombre for subsidio in catalogos.subcidios" required></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Descripcion</label>
+                    <textarea class="form-control"  ng-model="model.descripcion" rows="3" style="resize:none;" required></textarea>
                 </div>
             </div>
         </div>
-        <div class="row form-group">
-            <div class="col-lg-6">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Tipo Importe</span>
-                    <select required class="form-control" ng-model="model.tipo_importe_id" ng-options="tipo.id as tipo.nombre for tipo in catalogos.tipo_importe" required></select>
-                </div>
+        <div class="modal-footer row" style="border-top: 0px;">
+            <div class="col-md-3 ">
+                <label ng-show="$parent.isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
             </div>
-            <div class="col-lg-6">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Subsidios</span>
-                    <select required class="form-control" ng-model="model.subcidios_id" ng-options="subsidio.id as subsidio.nombre for subsidio in catalogos.subcidios" required></select>
-                </div>
+            <div class="col-md-3 col-md-offset-3">
+                <button type="button" class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                    Cancelar
+                </button>
             </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-md-12">
-                <label>Descripcion</label>
-                <textarea class="form-control"  ng-model="model.descripcion" rows="3" style="resize:none;" required></textarea>
+            <div class="col-md-3 ">
+                <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                    Añadir
+                </button>
             </div>
-        </div>
-        <div class="col-md-3 pull-right">
-            <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
-                Añadir
-            </button>
         </div>
     </form>
-</div>
-<div class="modal-footer" style="border-top: 0px;">
-    <div class="col-md-3 pull-right">
-        <button class="btn btn-warning btn-md btn-block col-md-4" ng-click="cancel()">
-            Cancelar
-        </button>
-    </div>
-    <div class="col-md-3 pull-left">
-        <label ng-show="isBusy"><i class="fa fa-circle-o-notch fa-spin"></i> Cargando</label>
-    </div>
 </div>

@@ -747,15 +747,14 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 params: {
                     fecha_desde: dataAdeudos.fecha_desde,
                     fecha_hasta: dataAdeudos.fecha_hasta,
-                    periodo: dataAdeudos.periodo.idperiodo
+                    periodo: dataAdeudos.periodo.idperiodo,
+                    status: dataAdeudos.status
                 }
-            })
-                    .success(function (data) {
-                        deferred.resolve(data);
-                    })
-                    .error(function (err, status) {
-                        deferred.reject(err);
-                    });
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
             return deferred.promise;
 
         };
@@ -929,6 +928,25 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
+        var _addDescuento = function (p1, p2, p3) {
+            var deferred = $q.defer();
+            //p1 tipo importe id
+            //p2 adeudo id
+            //p3 importe
+            $http.post(serviceBase + '/caja/descuentos/agregar', {
+                tipo_importe_id: p1,
+                adeudos_id: p2,
+                importe: p3
+            })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
         //http://localhost/UPASystem2/public/indexapi.php/administracion/generales/becas/suspender_mes es
 
         adminServiceFactory.getPlanesPago = _getPlanesPago;
@@ -970,6 +988,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addNuevaBeca = _addNuevaBeca;
         adminServiceFactory.SubirReferencias = _SubirReferencias;
         adminServiceFactory.addNIAlumnosBeca = _addNIAlumnosBeca;
+
+        adminServiceFactory.addDescuento = _addDescuento;
 
         adminServiceFactory.Modifybanco = _Modifybanco;
         adminServiceFactory.ModifyBeca = _ModifyBeca;

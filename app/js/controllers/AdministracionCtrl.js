@@ -8,8 +8,8 @@ UPapp.controller('Administracion_Generales', function ($scope) {
         {title: 'Becas', click: 'becas'},
         {title: 'Reportes', click: 'reportes'},
         {title: 'Traducir Referencia', click: 'referencias'},
-        {title: 'Descuentos', click: 'descuentos'}
-        //{title: 'Ingresos', click: 'ingresos'}
+        {title: 'Descuentos', click: 'descuentos'},
+        {title: 'Prorrogas', click: 'prorrogas'}
     ];
     $scope.active = 'planes_de_pago';
     $scope.subPageTemplate = 'partials/administrador/administracion/generales/planes_de_pago.html';
@@ -91,6 +91,40 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
     $scope.sort_title = [];
     $scope.format = 'dd-MMMM-yyyy';
     var key_service;
+
+
+    /**
+     * 
+     * @type Arrayvar data = [
+     ["", "Ford", "Volvo", "Toyota", "Honda"],
+     ["2014", 10, 11, 12, 13],
+     ["2015", 20, 11, 14, 13],
+     ["2016", 30, 15, 12, 13]
+     
+     ];
+     */
+//    var data = [
+//        ["UP100", "test", "test2", "testadeudo", "testadeudo", "testadeudo", "testadeudo"],
+//        ["", "", "", "", "testadeudo", "testadeudo", "testadeudo", "testadeudo"],
+//        ["", "", "", "", "testadeudo", "testadeudo", "testadeudo", "testadeudo"],
+//        ["", "", "", "", "testadeudo", "testadeudo", "testadeudo", "testadeudo"]
+//    ];
+//    var container2 = document.getElementById('example'),
+//            hot2;
+//
+//    hot3 = new Handsontable(container2, {
+//        data: data,
+//        //colWidths: [47, 47, 47, 47, 47, 47, 47], // can also be a number or a function
+//        rowHeaders: true,
+//        colHeaders: true,
+//        stretchH: 'all',
+//        contextMenu: true,
+//        mergeCells: [
+//            {row: 0, col: 0, rowspan: 4, colspan: 1}
+//        ]
+//    });
+    console.log($scope.datos_filtros);
+
     $scope.isBusy = true;
     var found = [];
     adminService.getPeriodos().then(function (data) {
@@ -128,11 +162,38 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
         adminService.getAdeudosReporte($scope.model).then(function (data) {
             $scope.isBusy = false;
             $scope.datos_filtros = [];
-            //console.log(data);
             key_service = data.respuesta.data.key;
-            //console.log(data.respuesta.data.data.alumnos);
             adeudos = array_map(data.respuesta.data.data.alumnos);
-            console.log($scope.datos_filtros);
+            var temp_array = [];
+            
+            var col_headers=[];
+            col_headers=["Matricula", "Nombre", "Apellido Paterno", "Apellido Materno","Carrera","Clave","Fecha de Nacimiento","Grado","Sub Concepto","Sub Concepto ID"]
+            //temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado, val.adeudos[0].sub_concepto, val.adeudos[0].sub_concepto_id]);
+            angular.forEach(adeudos, function (val, key) {
+                temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado, val.adeudos[0].sub_concepto, val.adeudos[0].sub_concepto_id]);
+                val.adeudos.splice(0, 1);
+                angular.forEach(val.adeudos, function (val2, key2) {
+                    temp_array.push(["", "", "", "", "", "", "", "", "", val2.sub_concepto, val2.sub_concepto_id]);
+                });
+            });
+            var container = document.getElementById('alumnos_data_container');
+            container.innerHTML = "";
+            var hot = new Handsontable(container, {
+                data: temp_array,
+                minSpareRows: 1,
+                rowHeaders: true,
+                contextMenu: false,
+                colHeaders: col_headers,
+                //mergeCells: merge_cells,
+                manualColumnMove: true,
+                manualColumnResize: true,
+                cells: function (row, col, prop) {
+                    var cellProperties = {};
+                    cellProperties.readOnly = true;
+                    return cellProperties;
+                }
+            });
+            //console.log($scope.datos_filtros);
             found = adeudos;
             //console.log(found);
             $scope.bigTotalItems = adeudos.length;
@@ -147,7 +208,7 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
     };
 
     $scope.$watchCollection('bigCurrentPage', function () {
-        console.log($scope.bigCurrentPage);
+        //console.log($scope.bigCurrentPage);
         if ($scope.bigCurrentPage) {
             render_table();
         }
@@ -1214,25 +1275,6 @@ UPapp.controller('Modal_generarAdeudos', function ($scope, adminService) {
     };
     $scope.format = 'dd-MMMM-yyyy';
 });
-UPapp.controller('Modal_NewBeca', function ($scope, adminService, $rootScope) {
-    $scope.model = [];
-    adminService.getCatalogos().then(function (data) {
-        if (data.respuesta.data) {
-            $scope.catalogos = data.respuesta.data;
-            $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
-        }
-    });
-    $scope.addNewBeca = function () {
-        $scope.$parent.isBusy = true;
-        adminService.addNuevaBeca($scope.model).then(function (data) {
-            $scope.$parent.isBusy = false;
-            if (data.respuesta.data) {
-                $rootScope.$broadcast('custom_response', data.respuesta.data);
-            }
-        });
-    };
-});
-
 UPapp.controller('Modal_ModifyPlan', function ($scope, adminService, $rootScope) {
     $scope.model = [];
     $scope.model['id'] = $scope.data_modal['id'];

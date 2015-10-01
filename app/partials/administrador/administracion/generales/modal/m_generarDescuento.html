@@ -1,0 +1,39 @@
+<div ng-controller="Modal_DescuentoAdeudo">
+    <div class="modal-header">
+        <h4 class="modal-title"> Nuevo Descuento</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Descuento en</span>
+                    <select required class="form-control" ng-model="model.tipo_importe_id" ng-options="tipo.id as tipo.nombre for tipo in catalogos.tipo_importe" required></select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-addon" ng-switch on="model.tipo_importe_id">
+                        <span ng-switch-when="2">$</span>
+                        <span ng-switch-when="1">%</span>
+                        <span ng-switch-default>-</span>
+                    </div>
+                    <input type="number" class="form-control" ng-model="model.importe" required>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer" style="border-top: 0px;">
+        <div class="row form-group">
+            <div class="col-sm-offset-6 col-sm-3">
+                <button type="button" class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                    Cerrar
+                </button>
+            </div>
+            <div class="col-sm-3">
+                <button type="submit" ng-click="add_descuento()" class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                    Generar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

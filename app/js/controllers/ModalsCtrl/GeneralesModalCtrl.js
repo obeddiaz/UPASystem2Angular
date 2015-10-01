@@ -354,11 +354,11 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
 
 
 
-UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminService) {
+UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminService, $modal) {
     $scope.model = [];
-    $scope.isBusy=true;
+    $scope.isBusy = true;
     adminService.getPeriodos().then(function (data) {
-        $scope.isBusy=false;
+        $scope.isBusy = false;
         $scope.$parent.isBusy = true;
         $scope.periodos = data;
         data.forEach(function (val, key) {
@@ -370,11 +370,11 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
     }, function (err) {
     });
     $scope.getAdeudos = function () {
-        $scope.isBusy=true;
+        $scope.isBusy = true;
         console.log($scope.model.periodo);
         adminService.getAdeudosAlumnoNew($scope.$parent.data_modal.idpersonas, $scope.model.periodo.idperiodo).then(function (data) {
             console.log(data);
-            $scope.isBusy=false;
+            $scope.isBusy = false;
             if (data.respuesta) {
                 $scope.adeudos_alumno = data.respuesta;
             } else {
@@ -383,7 +383,91 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
         }, function (err) {
         });
     };
-    
+
+    $scope.generar_Descuento = function (html, adeudo) {
+        var SearchInstance = $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return adeudo;
+                }
+            }
+        });
+
+//        SearchInstance.result.then(function (searchParams) {
+//            console.log(searchParams);
+//            if ($scope.alumno_filter.carrera) {
+//                filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
+//            } else {
+//                filter = $scope.alumnos;
+//            }
+//            filter = $filter('filter')(filter, {appat: searchParams.appat});
+//            filter = $filter('filter')(filter, {apmat: searchParams.apmat});
+//            filter = $filter('filter')(filter, {nom: searchParams.nom});
+//            filter = $filter('filter')(filter, {matricula: searchParams.matricula});
+//            console.log(filter);
+//            $scope.bigTotalItems = filter.length;
+//            $scope.bigCurrentPage = 1;
+
+//            filter = $filter('getAllObjectsByProperty')('appat', searchParams.apellido_paterno, filter);
+//            filter = $filter('getAllObjectsByProperty')('apmat', searchParams.apellido_materno, filter);
+//            filter = $filter('getAllObjectsByProperty')('nom', searchParams.nombre, filter);
+//            filter = $filter('getAllObjectsByProperty')('matricula', searchParams.matricula, filter);
+        //console.log(filter);
+        //render_table();
+        //$scope.make_filters();
+        //filter = $filter('getAllObjectsByProperty')('carrera', searchParams, filter);
+        //});
+    };
+
+});
+
+//Modal_DescuentoAdeudo
+UPapp.controller('Modal_DescuentoAdeudo', function ($scope, adminService) {
+    $scope.model = [];
+    adminService.getCatalogos().then(function (data) {
+        if (data.respuesta.data) {
+            $scope.model.subcidios_id = 1;
+            $scope.catalogos = data.respuesta.data;
+            $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
+        }
+    });
+
+    $scope.add_descuento = function () {
+//        console.log($scope.model.tipo_importe_id);
+//        console.log($scope.$parent.data_modal.id);
+//        console.log($scope.model.importe);
+        adminService.addDescuento($scope.model.tipo_importe_id, $scope.$parent.data_modal.id, $scope.model.importe).then(function (data) {
+            if (data.respuesta.data) {
+                $scope.model.subcidios_id = 1;
+                $scope.catalogos = data.respuesta.data;
+                $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
+            }
+        });
+    };
+});
+
+
+UPapp.controller('Modal_NewBeca', function ($scope, adminService, $rootScope) {
+    $scope.model = [];
+    adminService.getCatalogos().then(function (data) {
+        if (data.respuesta.data) {
+            $scope.model.subcidios_id = 1;
+            $scope.catalogos = data.respuesta.data;
+            $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
+        }
+    });
+    $scope.addNewBeca = function () {
+        $scope.$parent.isBusy = true;
+        adminService.addNuevaBeca($scope.model).then(function (data) {
+            $scope.$parent.isBusy = false;
+            if (data.respuesta.data) {
+                $rootScope.$broadcast('custom_response', data.respuesta.data);
+            }
+        });
+    };
 });
 
 

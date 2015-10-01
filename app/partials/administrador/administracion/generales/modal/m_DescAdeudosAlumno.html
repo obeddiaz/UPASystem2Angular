@@ -3,7 +3,6 @@
         <h4 class="modal-title">Adeudos de Alumno: {{$parent.data_modal.matricula + " " + $parent.data_modal.nom + " " + $parent.data_modal.appat + " " + $parent.data_modal.apmat}}</h4>
     </div>
     <div class="modal-body">
-        <pre>{{$parent.data_modal}}</pre>
         <div class="row form-group">
             <div class="col-md-4">
                 <div class="input-group input-group-sm">
@@ -29,7 +28,7 @@
                         <td>{{adeudo.descripcion_sc}}</td>
                         <td>{{adeudo.fecha_limite}}</td>
                         <td>
-                            <button class="btn btn-default">Generar Descuento</button>
+                            <button ng-disabled="adeudo.descuento.length > 0" class="btn btn-default" ng-click="generar_Descuento('m_generarDescuento', adeudo)">Generar Descuento</button>
                         </td>
                     </tr>
                 </tbody>
