@@ -6,7 +6,8 @@ UPapp.controller('Administracion_Generales', function ($scope) {
         {title: 'Adeudo Simple', click: 'single_adeudo'},
         {title: 'Archivo Referencias', click: 'subir_referencias'},
         {title: 'Becas', click: 'becas'},
-        {title: 'Reportes', click: 'reportes'},
+        {title: 'Reporte Adeudos', click: 'reporte_adeudos'},
+        {title: 'Reporte Pagos', click: 'reporte_pagos'},
         {title: 'Traducir Referencia', click: 'referencias'},
         {title: 'Descuentos', click: 'descuentos'},
         {title: 'Prorrogas', click: 'prorrogas'}
@@ -81,8 +82,7 @@ UPapp.controller('Administracion_Generales_planes_pago', function ($scope, $rout
     };
 });
 
-
-UPapp.controller('Administracion_Generales_reportes', function ($scope, $routeParams, adminService, $filter, $window) {
+UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $routeParams, adminService, $filter, $window) {
     $scope.model = [];
     $scope.carreras = [];
     $scope.sub_conceptos = [];
@@ -92,37 +92,6 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
     $scope.format = 'dd-MMMM-yyyy';
     var key_service;
 
-
-    /**
-     * 
-     * @type Arrayvar data = [
-     ["", "Ford", "Volvo", "Toyota", "Honda"],
-     ["2014", 10, 11, 12, 13],
-     ["2015", 20, 11, 14, 13],
-     ["2016", 30, 15, 12, 13]
-     
-     ];
-     */
-//    var data = [
-//        ["UP100", "test", "test2", "testadeudo", "testadeudo", "testadeudo", "testadeudo"],
-//        ["", "", "", "", "testadeudo", "testadeudo", "testadeudo", "testadeudo"],
-//        ["", "", "", "", "testadeudo", "testadeudo", "testadeudo", "testadeudo"],
-//        ["", "", "", "", "testadeudo", "testadeudo", "testadeudo", "testadeudo"]
-//    ];
-//    var container2 = document.getElementById('example'),
-//            hot2;
-//
-//    hot3 = new Handsontable(container2, {
-//        data: data,
-//        //colWidths: [47, 47, 47, 47, 47, 47, 47], // can also be a number or a function
-//        rowHeaders: true,
-//        colHeaders: true,
-//        stretchH: 'all',
-//        contextMenu: true,
-//        mergeCells: [
-//            {row: 0, col: 0, rowspan: 4, colspan: 1}
-//        ]
-//    });
     console.log($scope.datos_filtros);
 
     $scope.isBusy = true;
@@ -159,21 +128,22 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
     $scope.obtener_adeudos = function () {
         //console.log($scope.model);
         $scope.isBusy = true;
+        $scope.model.status = 1;
         adminService.getAdeudosReporte($scope.model).then(function (data) {
             $scope.isBusy = false;
             $scope.datos_filtros = [];
             key_service = data.respuesta.data.key;
             adeudos = array_map(data.respuesta.data.data.alumnos);
             var temp_array = [];
-            
-            var col_headers=[];
-            col_headers=["Matricula", "Nombre", "Apellido Paterno", "Apellido Materno","Carrera","Clave","Fecha de Nacimiento","Grado","Sub Concepto","Sub Concepto ID"]
-            //temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado, val.adeudos[0].sub_concepto, val.adeudos[0].sub_concepto_id]);
+            $scope.model.status = 1;
+            var col_headers = [];
+            col_headers = ["Matricula", "Nombre", "Apellido Paterno", "Apellido Materno", "Carrera", "Clave", "CURP", "Fecha de Nacimiento", "Grado", "Grupo", "ID Persona", "Estatus Alumno", "Sub Concepto", "Descipcion-Mes", "Fecha Limite", "Periodo", "Sub Concepto ID"];
+            //temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado,val.grupo,val.idpersona,val.estatus_admin, val.adeudos[0].sub_concepto,val.adeudos[0].descripcion_sc,val.adeudos[0].fecha_limite,val.adeudos[0].periodo, val.adeudos[0].sub_concepto_id]);
             angular.forEach(adeudos, function (val, key) {
-                temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado, val.adeudos[0].sub_concepto, val.adeudos[0].sub_concepto_id]);
+                temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado, val.grupo, val.idpersona, val.estatus_admin, val.adeudos[0].sub_concepto, val.adeudos[0].descripcion_sc, val.adeudos[0].fecha_limite, val.adeudos[0].periodo, val.adeudos[0].sub_concepto_id]);
                 val.adeudos.splice(0, 1);
                 angular.forEach(val.adeudos, function (val2, key2) {
-                    temp_array.push(["", "", "", "", "", "", "", "", "", val2.sub_concepto, val2.sub_concepto_id]);
+                    temp_array.push(["", "", "", "", "", "", "", "", "", "", "", "", val2.sub_concepto, val2.descripcion_sc, val2.fecha_limite, val2.periodo, val2.sub_concepto_id]);
                 });
             });
             var container = document.getElementById('alumnos_data_container');
@@ -286,8 +256,250 @@ UPapp.controller('Administracion_Generales_reportes', function ($scope, $routePa
     ];
 
     $scope.descargar_reporte = function () {
+        var temp = sort_reporte = ["id_persona", "matricula", "nom", "apmat"];
+        console.log($scope.sort_reporte_adeudo);
+        console.log($scope.sort_reporte);
         if (key_service && ($scope.sort_reporte_adeudo || $scope.sort_reporte)) {
-            var filters = $scope.sort_reporte.concat($scope.sort_reporte_adeudo);
+//            var filters = $scope.sort_reporte.concat($scope.sort_reporte_adeudo);
+            var filters = temp.concat($scope.sort_reporte_adeudo);
+            var url = serviceBase + '/adeudos/crear_reporte?key=' + key_service + '&filters=' + JSON.stringify(filters);
+            $window.open(
+                    url,
+                    '_blank'
+                    );
+        }
+    };
+
+    $scope.show_data_adeudos = [
+        {name: "fecha_limite", selected: false, full_name: "Fecha Limite"},
+        {name: "meses_retraso", selected: false, full_name: "Meses de Retraso"},
+        {name: "periodo", selected: false, full_name: "Periodo"},
+        {name: "aplica_beca", selected: false, full_name: "Beca"},
+        {name: "descripcion_sc", selected: false, full_name: "Descripcion Sub Concepto"},
+        {name: "sub_concepto", selected: false, full_name: "Sub Concepto"},
+        {name: "importe", selected: false, full_name: "Cantidad"},
+        {name: "recargo", selected: false, full_name: "Recargo"},
+    ];
+
+    $scope.make_filters = function () {
+        found = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, adeudos);
+        $scope.bigTotalItems = found.length;
+        $scope.bigCurrentPage = 1;
+        render_table();
+    };
+    var render_table = function () {
+        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                , end = begin + $scope.items_per_page;
+        //console.log();
+        //console.log(adeudos.length);
+        $scope.filteredTodos = found.slice(begin, end);
+    };
+
+    $scope.add_new = function (data, title) {
+        var index = $scope.sort_reporte.indexOf(data);
+        var index_title = $scope.sort_title.indexOf(title);
+        if (index > -1) {
+            $scope.sort_reporte.splice(index, 1);
+        } else {
+            $scope.sort_reporte.push(data);
+        }
+        if (index_title > -1) {
+            $scope.sort_title.splice(index_title, 1);
+        } else {
+            $scope.sort_title.push(title);
+        }
+        //console.log($scope.sort_reporte);
+    };
+
+//    adminService.getAlladeudos().then(function (data) {
+//        console.log(data);
+//        $scope.Adeudos = data.respuesta;
+//    });
+
+
+});
+
+
+
+UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $routeParams, adminService, $filter, $window) {
+    $scope.model = [];
+    $scope.carreras = [];
+    $scope.sub_conceptos = [];
+    $scope.descripcion_sc = [];
+    $scope.sort_reporte = [];
+    $scope.sort_title = [];
+    $scope.format = 'dd-MMMM-yyyy';
+    var key_service;
+    console.log($scope.datos_filtros);
+
+    $scope.isBusy = true;
+    var found = [];
+    adminService.getPeriodos().then(function (data) {
+        $scope.isBusy = false;
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+    }, function (err) {
+    });
+//    $scope.toggleMin = function () {
+//        $scope.minDate = $scope.minDate ? null : new Date();
+//    };
+    $scope.$watchCollection('model.fecha_desde', function (newNames, oldNames) {
+        $scope.minDate = $scope.minDate ? null : newNames;
+    });
+    $scope.openfrom = function ($event) {
+        $scope.model.datefrom = [];
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.model.datefrom.opened = true;
+    };
+    $scope.opento = function ($event) {
+        $scope.model.dateto = [];
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.model.dateto.opened = true;
+    };
+    var adeudos = [];
+    $scope.obtener_adeudos = function () {
+        //console.log($scope.model);
+        $scope.isBusy = true;
+        $scope.model.status = 0;
+        adminService.getAdeudosReporte($scope.model).then(function (data) {
+            $scope.isBusy = false;
+            $scope.datos_filtros = [];
+            key_service = data.respuesta.data.key;
+            adeudos = array_map(data.respuesta.data.data.alumnos);
+            var temp_array = [];
+
+            var col_headers = [];
+            col_headers = ["Matricula", "Nombre", "Apellido Paterno", "Apellido Materno", "Carrera", "Clave", "CURP", "Fecha de Nacimiento", "Grado", "Grupo", "ID Persona", "Estatus Alumno", "Sub Concepto", "Descipcion-Mes", "Fecha Limite", "Periodo", "Sub Concepto ID"];
+            //temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado,val.grupo,val.idpersona,val.estatus_admin, val.adeudos[0].sub_concepto,val.adeudos[0].descripcion_sc,val.adeudos[0].fecha_limite,val.adeudos[0].periodo, val.adeudos[0].sub_concepto_id]);
+            angular.forEach(adeudos, function (val, key) {
+                temp_array.push([val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado, val.grupo, val.idpersona, val.estatus_admin, val.adeudos[0].sub_concepto, val.adeudos[0].descripcion_sc, val.adeudos[0].fecha_limite, val.adeudos[0].periodo, val.adeudos[0].sub_concepto_id]);
+                val.adeudos.splice(0, 1);
+                angular.forEach(val.adeudos, function (val2, key2) {
+                    temp_array.push(["", "", "", "", "", "", "", "", "", "", "", "", val2.sub_concepto, val2.descripcion_sc, val2.fecha_limite, val2.periodo, val2.sub_concepto_id]);
+                });
+            });
+            var container = document.getElementById('alumnos_data_container');
+            container.innerHTML = "";
+            var hot = new Handsontable(container, {
+                data: temp_array,
+                minSpareRows: 1,
+                rowHeaders: true,
+                contextMenu: false,
+                colHeaders: col_headers,
+                //mergeCells: merge_cells,
+                manualColumnMove: true,
+                manualColumnResize: true,
+                cells: function (row, col, prop) {
+                    var cellProperties = {};
+                    cellProperties.readOnly = true;
+                    return cellProperties;
+                }
+            });
+            //console.log($scope.datos_filtros);
+            found = adeudos;
+            //console.log(found);
+            $scope.bigTotalItems = adeudos.length;
+            $scope.bigCurrentPage = 1;
+            $scope.maxSize = 10;
+            $scope.items_per_page = 30;
+            //console.log(found);
+            $scope.carreras = data.respuesta.data.data.filtros.carreras;
+            $scope.sub_conceptos = data.respuesta.data.data.filtros.sub_conceptos;
+            $scope.descripcion_sc = data.respuesta.data.data.filtros.descripcion_sc;
+        });
+    };
+
+    $scope.$watchCollection('bigCurrentPage', function () {
+        //console.log($scope.bigCurrentPage);
+        if ($scope.bigCurrentPage) {
+            render_table();
+        }
+    });
+    var used_keys = [];
+
+    var array_map = function (data) {
+        return $.map(data, function (value, index) {
+            //console.log(value);
+            angular.forEach(value, function (val, key) {
+                if (typeof val === 'object') {
+                    angular.forEach(val, function (valobj, keyobj) {
+                        angular.forEach(valobj, function (valsingle_adeudo, key_single_adeudo) {
+                            if (!$scope.datos_filtros[key_single_adeudo])
+                            {
+                                //console.log(key_single_adeudo + " " + valsingle_adeudo);
+                                $scope.datos_filtros[key_single_adeudo] = [];
+                                used_keys[key_single_adeudo] = [];
+                                used_keys[key_single_adeudo].push(valsingle_adeudo);
+                                $scope.datos_filtros[key_single_adeudo].push({name: key_single_adeudo, selected: false, full_name: valsingle_adeudo});
+                                //$scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
+                            } else {
+                                //console.log(key + " " + val);
+                                // $scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
+                                if (used_keys[key_single_adeudo].indexOf(valsingle_adeudo) == -1)
+                                {
+                                    used_keys[key_single_adeudo].push(valsingle_adeudo);
+                                    $scope.datos_filtros[key_single_adeudo].push({name: key_single_adeudo, selected: false, full_name: valsingle_adeudo});
+                                    //$scope.datos_filtros[key_single_adeudo].push({name:key_single_adeudo,selected:false,full_name:valsingle_adeudo});
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    if (!$scope.datos_filtros[key])
+                    {
+                        //console.log(key + " " + val);
+                        $scope.datos_filtros[key] = [];
+                        used_keys[key] = [];
+                        used_keys[key].push(val);
+                        //$scope.datos_filtros[key][val] = {name: key, selected: false, full_name: val};
+                        $scope.datos_filtros[key].push({name: key, selected: false, full_name: val});
+                    } else {
+                        //console.log(key + " " + val);
+                        //$scope.datos_filtros[key][val] = {name: key, selected: false, full_name: val};
+                        if (used_keys[key].indexOf(val) == -1)
+                        {
+                            used_keys[key].push(val);
+                            //{name: "id_persona", selected: false, full_name: "ID Alumno"}
+                            $scope.datos_filtros[key].push({name: key, selected: false, full_name: val});
+                        }
+                    }
+                }
+            });
+            return [value];
+        });
+    };
+
+    $scope.show_data = [
+        {name: "id_persona", selected: false, full_name: "ID Alumno"},
+        {name: "matricula", selected: false, full_name: "Matricula"},
+        {name: "nom", selected: false, full_name: "Nombre"},
+        {name: "appat", selected: false, full_name: "Apellido Paterno"},
+        {name: "apmat", selected: false, full_name: "Apellido Materno"},
+        {name: "idperiodo", selected: false, full_name: "Periodo"},
+        {name: "pe", selected: false, full_name: "Año Periodo"},
+        {name: "nc", selected: false, full_name: "Nombre de Cuenta"},
+        {name: "carrera", selected: false, full_name: "Carrera"},
+        {name: "clave", selected: false, full_name: "Clave"},
+        {name: "curp", selected: false, full_name: "CURP"},
+        {name: "grado", selected: false, full_name: "Grado"},
+        {name: "grupo", selected: false, full_name: "Grupo"},
+        {name: "estatus_admin", selected: false, full_name: "Status"},
+        {name: "fecha_nac", selected: false, full_name: "Fecha de Nacimiento"}
+    ];
+    $scope.sort_reporte = ["id_persona", "matricula", "nom", "apmat"];
+    $scope.descargar_reporte = function () {
+        var temp = sort_reporte = ["id_persona", "matricula", "nom", "apmat"];
+        console.log($scope.sort_reporte_adeudo);
+        console.log($scope.sort_reporte);
+        if (key_service && ($scope.sort_reporte_adeudo || $scope.sort_reporte)) {
+            //var filters = $scope.sort_reporte.concat($scope.sort_reporte_adeudo);
+            var filters = temp.concat($scope.sort_reporte_adeudo);
             var url = serviceBase + '/adeudos/crear_reporte?key=' + key_service + '&filters=' + JSON.stringify(filters);
             $window.open(
                     url,
@@ -1050,6 +1262,117 @@ UPapp.controller('Modal_cuentasBanco', function ($scope, adminService, $q) {
 });
 
 UPapp.controller('Administracion_Generales_descuentos', function ($scope, adminService, $modal, $filter) {
+
+    $scope.maxSize = 10;
+    $scope.items_per_page = 50;
+    adminService.getalumnos().then(function (data) {
+        $scope.model = {
+            filter: {
+                carrera: false,
+                grupo: null,
+                grado: null
+            }
+        };
+        $scope.alumnos = data;
+        $scope.carreras = [];
+        $scope.grupos = [];
+        $scope.grados = [];
+        angular.forEach(data, function (value, genre) {
+            if ($scope.carreras.indexOf(value.carrera) == -1)
+            {
+                $scope.carreras.push(value.carrera);
+            }
+            if ($scope.grupos.indexOf(value.grupo) == -1)
+            {
+                if (value.grupo !== null) {
+                    $scope.grupos.push(value.grupo);
+                }
+            }
+            if ($scope.grados.indexOf(value.grado) == -1)
+            {
+                if (value.grado !== null) {
+                    $scope.grados.push(value.grado);
+                }
+
+            }
+        });
+        filteredAlumnos = $scope.alumnos;
+        $scope.bigTotalItems = $scope.alumnos.length;
+        $scope.bigCurrentPage = 1;
+        $scope.model.filter.carrera = null;
+    }, function (err) {
+
+    });
+    var filteredAlumnos = [];
+
+    $scope.$watchCollection('bigCurrentPage', function () {
+        //console.log($scope.bigCurrentPage);
+        if ($scope.bigCurrentPage) {
+            render_table();
+        }
+    });
+    $scope.VerAdeudos = function (html, data) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
+    $scope.model = [];
+    $scope.make_filters = function () {
+        console.log($scope.model);
+        filteredAlumnos = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+        filteredAlumnos = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filteredAlumnos);
+        filteredAlumnos = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filteredAlumnos);
+        filteredAlumnos = $filter('filter')(filteredAlumnos, {matricula: $scope.model.filter.matricula});
+        $scope.bigTotalItems = filteredAlumnos.length;
+        $scope.bigCurrentPage = 1;
+        render_table();
+        // console.log(filteredAlumnos);
+    };
+
+
+    var render_table = function () {
+        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
+                , end = begin + $scope.items_per_page;
+        //console.log(filter.slice(begin, end));
+        if (filteredAlumnos) {
+            $scope.filteredAlumnos = filteredAlumnos.slice(begin, end);
+        }
+    };
+    $scope.Buscar_alumno = function (html) {
+        var SearchInstance = $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return false;
+                }
+            }
+        });
+
+        SearchInstance.result.then(function (searchParams) {
+            //console.log(searchParams);
+            filteredAlumnos = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, $scope.alumnos);
+            filteredAlumnos = $filter('getAllObjectsByProperty')('grado', $scope.model.filter.grado, filteredAlumnos);
+            filteredAlumnos = $filter('getAllObjectsByProperty')('grupo', $scope.model.filter.grupo, filteredAlumnos);
+            filteredAlumnos = $filter('filter')(filteredAlumnos, {appat: searchParams.appat});
+            filteredAlumnos = $filter('filter')(filteredAlumnos, {apmat: searchParams.apmat});
+            filteredAlumnos = $filter('filter')(filteredAlumnos, {nom: searchParams.nom});
+            console.log(filteredAlumnos);
+            $scope.bigTotalItems = filteredAlumnos.length;
+            $scope.bigCurrentPage = 1;
+            render_table();
+        });
+    };
+});
+UPapp.controller('Administracion_Generales_prorrogas', function ($scope, adminService, $modal, $filter) {
 
     $scope.maxSize = 10;
     $scope.items_per_page = 50;

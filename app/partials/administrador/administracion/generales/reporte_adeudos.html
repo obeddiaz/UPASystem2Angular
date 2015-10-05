@@ -1,4 +1,4 @@
-<div class="col-md-12" ng-controller="Administracion_Generales_reportes">
+<div class="col-md-12" ng-controller="Administracion_Generales_reporte_adeudos">
 
     <style>
         @media only screen and (max-width: 800px) {
@@ -207,7 +207,7 @@
             margin:0
         }
     </style>
-    <h2><span class="glyphicon glyphicon-user"></span> Reportes<label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label></h2>
+    <h2><span class="glyphicon glyphicon-user"></span> Reporte Adeudos<label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label></h2>
     <hr>
     <div class="row ">
         <div class="col-sm-4" style="">
@@ -234,14 +234,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <select class="form-control" ng-model="model.status">
-                                <option value="">Estatus</option>
-                                <option value="1">Pagado</option>
-                                <option value="0">No Pagado</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <button class="btn btn-block" ng-disabled="!model.status || !model.fecha_hasta || !model.fecha_desde" ng-click="obtener_adeudos()">Obtener Adeudos</button>
+                            <button class="btn btn-block" ng-disabled=" !model.fecha_hasta || !model.fecha_desde" ng-click="obtener_adeudos()">Obtener Adeudos</button>
                         </div>
                     </div>
                 </div>
@@ -307,48 +300,10 @@
             </div>
         </div>
     </div>
-    <div class="row" ng-show="((sort_reporte.length > 0) || (sort_reporte_adeudo.length > 0)) && (filteredTodos.length > 0)">
-        <div class="col-md-6">
-            <pagination previous-text="Previo" next-text="siguiente" first-text="Primero" last-text="Ultimo" total-items="bigTotalItems" items-per-page="items_per_page" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages"></pagination>
-        </div>
+    <div class="row">
         <div class="col-md-6">
             <input type="button" class="btn" value="Descargar Reporte" ng-click="descargar_reporte()" />
         </div>
     </div>
-    <!--            <div isteven-multi-select
-                 input-model="datos_filtros[acomodo]"
-                 output-model="outputBrowsers1"
-                 title-button="{{acomodo}}"
-                 button-label="full_name"
-                 item-label="full_name"
-                 helper-elements="filter"
-                 tick-property="selected">
-            </div>-->
-    <div class="table-responsive">
-        <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
-            <thead>
-            <th ng-repeat="acomodo in sort_reporte">{{acomodo}}</th>
-            <th ng-repeat="acomodo in sort_title_adeudo">{{acomodo}}</th>
-            </thead>
-            <tbody>
-                <tr ng-if="adeudo['adeudos'].length != 0" ng-repeat-start="adeudo in filteredTodos">
-                    <td rowspan="{{(adeudo['adeudos'].length) + 1}}" ng-repeat="reporte in sort_reporte">{{adeudo[reporte]}}</td>
-                </tr>
-                <tr ng-repeat-end ng-repeat="single_adeudo in adeudo['adeudos']">
-                    <td ng-repeat="rep_adeudo in sort_reporte_adeudo">{{single_adeudo[rep_adeudo]}}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
     <div id="alumnos_data_container" style="height: 800px; overflow: auto;"></div>
-    <!--<tr ng-repeat="adeudo in filteredTodos">
-                    <td ng-repeat="reporte in sort_reporte">{{adeudo[reporte]}}</td>
-                    <td>
-                        <table>
-                            <tr ng-repeat="single_adeudo in adeudo['adeudos']">
-                                <td><pre>{{single_adeudo.sub_concepto}}</pre></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>-->
 </div>
