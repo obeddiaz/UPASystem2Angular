@@ -14,7 +14,7 @@
             <div class="col-lg-4">
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">Nivel</span>
-                    <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles"></select>
+                    <select class="form-control" ng-model="model.nivel" ng-change="getSubConceptos()" ng-options="key as val for (key,val) in niveles"></select>
                 </div>
             </div>
         </div>

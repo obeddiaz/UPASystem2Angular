@@ -747,6 +747,21 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 params: {
                     fecha_desde: dataAdeudos.fecha_desde,
                     fecha_hasta: dataAdeudos.fecha_hasta,
+                    status: dataAdeudos.status
+                }
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+
+        };
+        
+        var _getAdeudosReporte_periodo = function (dataAdeudos) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/adeudos/adeudos_reporte', {
+                params: {
                     periodo: dataAdeudos.periodo.idperiodo,
                     status: dataAdeudos.status
                 }
@@ -971,6 +986,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getAlumnosNoBecas = _getAlumnosNoBecas;
         adminServiceFactory.getAdeudos = _getAdeudos;
         adminServiceFactory.getAdeudosReporte = _getAdeudosReporte;
+        adminServiceFactory.getAdeudosReportePeriodo =_getAdeudosReporte_periodo;
         adminServiceFactory.getDatosReferencia = _getDatosReferencia;
 
 

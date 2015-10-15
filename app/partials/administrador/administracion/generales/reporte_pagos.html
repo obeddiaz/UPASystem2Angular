@@ -240,42 +240,63 @@
                 </div>
             </div>
         </div>
+        <!--        <div class="col-sm-4">
+                    <div class="panel panel-default" style="  height: 250px;">
+                        <div class="panel-heading">
+                            Datos Para Mostrar
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <div isteven-multi-select
+                                     input-model="show_data"
+                                     output-model="outputBrowsers"
+                                     title-button="Datos de Alumno"
+                                     c-output-model-s="sort_reporte"
+                                     c-output-model-t="sort_title"
+                                     button-label="full_name"
+                                     item-label="full_name"
+                                     helper-elements="filter"
+                                     tick-property="selected">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div isteven-multi-select
+                                     input-model="show_data_adeudos"
+                                     output-model="outputBrowsers1"
+                                     title-button="Datos de Adeudo"
+                                     c-output-model-s="sort_reporte_adeudo"
+                                     c-output-model-t="sort_title_adeudo"
+                                     button-label="full_name"
+                                     item-label="full_name"
+                                     helper-elements="filter"
+                                     tick-property="selected">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
         <div class="col-sm-4">
             <div class="panel panel-default" style="  height: 250px;">
                 <div class="panel-heading">
-                    Datos Para Mostrar
+                    Adeudos por Periodo
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <div isteven-multi-select
-                             input-model="show_data"
-                             output-model="outputBrowsers"
-                             title-button="Datos de Alumno"
-                             c-output-model-s="sort_reporte"
-                             c-output-model-t="sort_title"
-                             button-label="full_name"
-                             item-label="full_name"
-                             helper-elements="filter"
-                             tick-property="selected">
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">Ciclo</span>
+                                <select class="form-control" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos">
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div isteven-multi-select
-                             input-model="show_data_adeudos"
-                             output-model="outputBrowsers1"
-                             title-button="Datos de Adeudo"
-                             c-output-model-s="sort_reporte_adeudo"
-                             c-output-model-t="sort_title_adeudo"
-                             button-label="full_name"
-                             item-label="full_name"
-                             helper-elements="filter"
-                             tick-property="selected">
-                        </div>
+                        <button class="btn btn-block" ng-disabled=" !model.periodo" ng-click="obtener_adeudos_periodo()">Obtener Adeudos</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
+<!--        <div class="col-sm-4">
             <div class="panel panel-default" style="  height: 250px;">
                 <div class="panel-heading">
                     Filtros
@@ -298,12 +319,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <input type="button" class="btn" value="Descargar Reporte" ng-click="descargar_reporte()" />
-        </div>
-    </div>
-    <div id="alumnos_data_container" style="height: 800px; overflow: auto;"></div>
+    <!--    <div class="row">
+            <div class="col-md-6">
+                <input type="button" class="btn" value="Descargar Reporte" ng-click="descargar_reporte()" />
+            </div>
+        </div>-->
+    <kendo-grid ng-show="data_alumnos.data.length > 0" options="mainGridOptions" data-source="data_alumnos"></kendo-grid>
 </div>

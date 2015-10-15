@@ -4,12 +4,16 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <title>Universidad Politecnica de Aguascalientes</title>
-        <link rel="stylesheet" href="css/app.css"/>
-        <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <link href="css/kendo.common.min.css" rel="stylesheet" type="text/css"/>
+        <link href="css/kendo.default.min.css" rel="stylesheet" type="text/css"/>
         <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
         <link href="bower_components/handsontable-0.18.0/dist/handsontable.full.min.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="css/app.css"/>
+        <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="js/external_libs/jszip.min.js" type="text/javascript"></script>
+       
     </head>
     <body>
         <div ng-view></div>
@@ -21,14 +25,17 @@
         -->
 
         <!-- Libs -->
+
         <script src="bower_components/handsontable-0.18.0/dist/handsontable.full.js" type="text/javascript"></script>
         <script src="bower_components/angular/angular.min.js" type="text/javascript"></script>
         <script src="bower_components/angular/language/angular-locale_es-mx.js" type="text/javascript"></script>
         <script src="bower_components/angular-cache/dist/angular-cache.js" type="text/javascript"></script>
         <script src="bower_components/angular-route/angular-route.min.js" type="text/javascript"></script>
         <script src="bower_components/angular-multi-select-3.0.0/isteven-multi-select.js" type="text/javascript"></script>
+         <script src="js/external_libs/kendo.all.min.js" type="text/javascript"></script>
         <script src="js/app.js"></script>
-        
+
+
         <!-- Controllers -->
         <script src="js/controllers/MainCtrl.js" type="text/javascript"></script>
         <script src="js/controllers/controllers.js" type="text/javascript"></script>

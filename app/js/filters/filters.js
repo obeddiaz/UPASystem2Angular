@@ -38,8 +38,38 @@ angular.module('myApp.filters', [])
             return collection;
         }
         angular.forEach(collection, function (value, key) {
-            if (value[propertyName]==propertyValue){
+            if (value[propertyName] == propertyValue) {
                 output.push(value);
+            }
+        });
+        return output;
+    };
+}).filter('getAllObjectsBySubProperty', function () {
+    return function (subProperty, propertyName, propertyValue, collection) {
+//        console.log(subProperty);
+//        console.log(propertyName);
+//        console.log(propertyValue);
+//        console.log(collection);
+        if (propertyValue == null || propertyValue == undefined) {
+            return collection;
+        }
+        var output = new Array();
+        var tempsub = new Array();
+        var found = false;
+        angular.forEach(collection, function (value) {
+            tempsub = new Array();
+            //console.log(value[subProperty]);
+            angular.forEach(value[subProperty], function (value2) {
+                if (value2[propertyName] == propertyValue) {
+                    tempsub.push(value2);
+                    found = true;
+                }
+            });
+            if (found) {
+                found = false;
+                var length = output.push(value);
+                //console.log(length);
+                output[length - 1][subProperty] = tempsub;
             }
         });
         return output;
