@@ -1,0 +1,43 @@
+<div ng-controller="Modal_Administrar_becas">
+    <div class="modal-header">
+        <label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
+        <h4 class="modal-title">Becas</h4>
+    </div>
+    <div class="modal-body">
+        <div class="table-responsive">
+            <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                <thead>
+                <th>Abreviatura</th>
+                <th>Descripcion</th>
+                <th>Importe/Porcentaje</th>
+                <th>Administrar</th>
+                </thead>
+                <tr ng-repeat="beca in becas">
+                    <td data-title="'Concepto'">{{beca.abreviatura}}</td>
+                    <td data-title="'Descripcion'">{{beca.descripcion}}</td>
+                    <td data-title="'Administrar'">{{beca.importe}}</td>
+                    <td data-title="'Administrar'">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                Administrar Beca <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a ng-href="" ng-click="Modificar('m_modificarBeca', beca, $index)">Modificar</a></li>
+                                <li><a ng-href="" ng-click="Eliminar(beca.id)">Eliminar</a></li>
+                                <li class="divider"></li>
+                                <li><a ng-href="" ng-click="AlumnosBeca('m_AlumnosBeca', beca)">Alumnos</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer" style="border-top: 0px;">
+        <div class="col-md-3 pull-right">
+            <button class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>

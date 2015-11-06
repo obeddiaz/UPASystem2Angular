@@ -6,10 +6,12 @@ UPapp.controller('Administracion_Generales', function ($scope) {
         //{title: 'Adeudo Simple', click: 'single_adeudo'},
         {title: 'Archivo Referencias', click: 'subir_referencias'},
         {title: 'Becas', click: 'becas'},
+        {title: 'Reporte Becas', click: 'reporte_becas'},
         {title: 'Reporte Adeudos', click: 'reporte_adeudos'},
         {title: 'Reporte Pagos', click: 'reporte_pagos'},
         {title: 'Traducir Referencia', click: 'referencias'},
         {title: 'Descuentos', click: 'descuentos'},
+        
         //{title: 'Prorrogas', click: 'prorrogas'}
     ];
     $scope.active = 'planes_de_pago';
@@ -215,24 +217,41 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
 //        render_table();
         render_excel_table();
     };
+    $scope.columns = [
+        {field: "apellido_paterno", title: "Apellido Paterno", width: 200, groupable: false},
+        {field: "apellido_materno", title: "Apellido Materno", width: 200, groupable: false},
+        {field: "beca", title: "Beca", width: 200, groupable: false},
+        {field: "carrera", title: "Carrera", width: 200},
+        {field: "clave", title: "Clave", width: 200, groupable: false},
+        {field: "descuento", title: "Descuento", width: 200, groupable: false},
+        {field: "fecha_limite", title: "Fecha Limite", width: 200},
+        {field: "importe", title: "Importe", width: 200},
+        {field: "matricula", title: "Matricula", width: 200},
+        {field: "nombre", title: "Nombre", width: 200, groupable: false},
+        {field: "recargo", title: "Recargo", width: 200, groupable: false},
+        {field: "total", title: "Total", width: 100},
+        {field: "sub_concepto", title: "Sub Concepto", width: 200, aggregates: ["count", "sum"], groupHeaderTemplate: "#= value # | Adeudos: #= count# | Total Importe: #=test_function(value,\"importe\")# | Total: #=test_function(value,\"rtotal\")# | Total Descuentos: #=test_function(value,\"descuento\")# | | Total Beca: #=test_function(value,\"beca\")#"},
+        {field: "sub_concepto_id", title: "ID SubConcetpo", width: 100},
+        {field: "periodo", title: "Periodo"}
+    ];
+
+
+    $scope.test_function = function (test) {
+        console.log(test);
+    };
     $scope.mainGridOptions = {
+        test_function: function (test) {
+            console.log(test);
+        },
         toolbar: ["excel"],
         excel: {
             allPages: true
         },
+        columnMenu: true,
         selectable: "multiple cell",
         allowCopy: true,
-        columns: [
-            {field: "id_persona", title: "ID"},
-            {field: "matricula", title: "Matricula"},
-            {field: "nombre", title: "Nombre"},
-            {field: "descripcion_sc", title: "Descripcion/Mes"},
-            {field: "importe", title: "Importe"},
-            {field: "recargo", title: "Recargo"}
-        ],
-        pageable: true,
         sortable: true,
-        scrollable: true,
+        reorderable: true,
         filterable: {
             messages: {
                 info: "Elementos con valor que: ",
@@ -252,7 +271,6 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                 }
             }
         },
-        reorderable: true,
         messages: {
             commands: {
                 excel: "Exportar Excel"
@@ -263,6 +281,15 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                 empty: "Arrastra columnas para Agrupar"
             },
             showFooter: true
+        },
+        scrollable: {
+            virtual: true
+        },
+        height: 800,
+        pageable: {
+            info: true,
+            numeric: false,
+            previousNext: false
         }
 
     };
@@ -373,48 +400,158 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
             $scope.isBusy = false;
             $scope.datos_filtros = [];
             key_service = data.respuesta.data.key;
-            $scope.adeudos = data.respuesta.data.data.alumnos;
-            //console.log($scope.adeudos);
-            $scope.found = angular.copy($scope.adeudos);
-            render_excel_table();
-            //$scope.found = $scope.adeudos;
-            //angular.copy($scope.master, $scope.user);
+            console.log(data);
+            $scope.data_alumnos = {
+                data: [],
+                pageSize: 100,
+                schema: {
+                    model: {
+                        fields: {
+                            total: {type: "number"}
+                        }
+                    }
+                },
+                aggregate: [
+                    {field: "total", aggregate: "sum"}
+                ],
+                group: [
+                    {field: "periodo"},
+                    {field: "sub_concepto", aggregates: [{field: "sub_concepto", aggregate: "count"}]},
+                    {field: "matricula"}
+                ]
+            };
+            var totales = {
+                descuento: 0,
+                beca: 0,
+                importe: 0,
+                recargo: 0,
+                rtotal: 0
+            };
 
-            //console.log($scope.found);
-//            $scope.bigTotalItems = adeudos.length;
-//            $scope.bigCurrentPage = 1;
-//            $scope.maxSize = 10;
-//            $scope.items_per_page = 30;
-            //console.log(found);
-            $scope.carreras = data.respuesta.data.data.filtros.carreras;
-            $scope.sub_conceptos = data.respuesta.data.data.filtros.sub_conceptos;
-            $scope.descripcion_sc = data.respuesta.data.data.filtros.descripcion_sc;
+            angular.forEach(data.respuesta.data.periodos, function (v, k) {
+                if (!isNaN(k)) {
+                    angular.forEach(v.subconceptos, function (v1, k1) {
+                        if (!isNaN(k1)) {
+                            angular.forEach(v1.adeudo_info, function (v2, k2) {
+                                if (!isNaN(k2)) {
+                                    totales.descuento += v2.descuento;
+                                    totales.beca += v2.beca;
+                                    totales.importe += v2.importe;
+                                    totales.recargo += v2.recargo;
+                                    totales.rtotal += v2.total;
+                                    $scope.data_alumnos.data.push({
+                                        "apellido_paterno": v2["apellido paterno"],
+                                        "apellido_materno": v2["apellido materno"],
+                                        "beca": v2.beca,
+                                        "carrera": v2.carrera,
+                                        "clave": v2.clave,
+                                        "descuento": v2.descuento,
+                                        "fecha_limite": v2.fecha_limite,
+                                        "importe": v2.importe,
+                                        "matricula": v2.matricula,
+                                        "nombre": v2.nombre,
+                                        "recargo": v2.recargo,
+                                        "total": v2.total,
+                                        "sub_concepto": v1.sub_concepto,
+                                        "sub_concepto_id": v1.sub_concepto_id,
+                                        "periodo": v.periodo
+                                    });
+                                }
+                            });
+                            my_global[v1.sub_concepto] = totales;
+                            //console.log(totales);
+                            totales = {
+                                descuento: 0,
+                                beca: 0,
+                                importe: 0,
+                                recargo: 0,
+                                rtotal: 0
+                            };
+                        }
+                    });
+                }
+            });
         });
     };
     $scope.obtener_adeudos_periodo = function () {
         //console.log($scope.model);
         $scope.isBusy = true;
         $scope.model.status = 1;
-        adminService.getAdeudosReportePeriodo($scope.model).then(function (data) {
+        adminService.getAdeudosReporteOrdenadoPeriodo($scope.model).then(function (data) {
             $scope.isBusy = false;
             $scope.datos_filtros = [];
             key_service = data.respuesta.data.key;
-            $scope.adeudos = data.respuesta.data.data.alumnos;
-            //console.log($scope.adeudos);
-            $scope.found = angular.copy($scope.adeudos);
-            render_excel_table();
-            //$scope.found = $scope.adeudos;
-            //angular.copy($scope.master, $scope.user);
+            console.log(data);
+            $scope.data_alumnos = {
+                data: [],
+                pageSize: 100,
+                schema: {
+                    model: {
+                        fields: {
+                            total: {type: "number"}
+                        }
+                    }
+                },
+                aggregate: [
+                    {field: "total", aggregate: "sum"}
+                ],
+                group: [
+                    {field: "periodo"},
+                    {field: "sub_concepto", aggregates: [{field: "sub_concepto", aggregate: "count"}]},
+                    {field: "matricula"}
+                ]
+            };
+            var totales = {
+                descuento: 0,
+                beca: 0,
+                importe: 0,
+                recargo: 0,
+                rtotal: 0
+            };
 
-            //console.log($scope.found);
-//            $scope.bigTotalItems = adeudos.length;
-//            $scope.bigCurrentPage = 1;
-//            $scope.maxSize = 10;
-//            $scope.items_per_page = 30;
-            //console.log(found);
-            $scope.carreras = data.respuesta.data.data.filtros.carreras;
-            $scope.sub_conceptos = data.respuesta.data.data.filtros.sub_conceptos;
-            $scope.descripcion_sc = data.respuesta.data.data.filtros.descripcion_sc;
+            angular.forEach(data.respuesta.data.periodos, function (v, k) {
+                if (!isNaN(k)) {
+                    angular.forEach(v.subconceptos, function (v1, k1) {
+                        if (!isNaN(k1)) {
+                            angular.forEach(v1.adeudo_info, function (v2, k2) {
+                                if (!isNaN(k2)) {
+                                    totales.descuento += v2.descuento;
+                                    totales.beca += v2.beca;
+                                    totales.importe += v2.importe;
+                                    totales.recargo += v2.recargo;
+                                    totales.rtotal += v2.total;
+                                    $scope.data_alumnos.data.push({
+                                        "apellido_paterno": v2["apellido paterno"],
+                                        "apellido_materno": v2["apellido materno"],
+                                        "beca": v2.beca,
+                                        "carrera": v2.carrera,
+                                        "clave": v2.clave,
+                                        "descuento": v2.descuento,
+                                        "fecha_limite": v2.fecha_limite,
+                                        "importe": v2.importe,
+                                        "matricula": v2.matricula,
+                                        "nombre": v2.nombre,
+                                        "recargo": v2.recargo,
+                                        "total": v2.total,
+                                        "sub_concepto": v1.sub_concepto,
+                                        "sub_concepto_id": v1.sub_concepto_id,
+                                        "periodo": v.periodo
+                                    });
+                                }
+                            });
+                            my_global[v1.sub_concepto] = totales;
+                            //console.log(totales);
+                            totales = {
+                                descuento: 0,
+                                beca: 0,
+                                importe: 0,
+                                recargo: 0,
+                                rtotal: 0
+                            };
+                        }
+                    });
+                }
+            });
         });
     };
 
@@ -564,7 +701,10 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
 
 });
 
-
+var my_global = [];
+function test_function(sc, type) {
+    return my_global[sc][type];
+}
 
 UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $routeParams, adminService, $filter, $window) {
     $scope.model = [];
@@ -622,24 +762,37 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
 //        render_table();
         render_excel_table();
     };
+    $scope.columns = [
+        {m_select: true, field: "apellido_paterno", title: "Apellido Paterno", width: 200, groupable: false},
+        {m_select: true, field: "apellido_materno", title: "Apellido Materno", width: 200, groupable: false},
+        {m_select: true, field: "beca", title: "Beca", width: 200, groupable: false},
+        {m_select: true, field: "carrera", title: "Carrera", width: 200},
+        {m_select: false, field: "clave", title: "Clave", width: 200, groupable: false},
+        {m_select: false, field: "descuento", title: "Descuento", width: 200, groupable: false},
+        {m_select: false, field: "fecha_limite", title: "Fecha Limite", width: 200},
+        {m_select: false, field: "importe", title: "Importe", width: 200},
+        {m_select: false, field: "matricula", title: "Matricula", width: 200},
+        {m_select: false, field: "nombre", title: "Nombre", width: 200, groupable: false},
+        {m_select: false, field: "recargo", title: "Recargo", width: 200, groupable: false},
+        {m_select: false, field: "total", title: "Total", width: 100},
+        {m_select: false, field: "sub_concepto", title: "Sub Concepto", width: 200, aggregates: ["count", "sum"], groupHeaderTemplate: "#= value # | Adeudos: #= count# | Total Importe: #=test_function(value,\"importe\")# | Total: #=test_function(value,\"rtotal\")# | Total Descuentos: #=test_function(value,\"descuento\")# | | Total Beca: #=test_function(value,\"beca\")#"},
+        {m_select: false, field: "sub_concepto_id", title: "ID SubConcetpo", width: 100},
+        {m_select: false, field: "periodo", title: "Periodo"}
+    ];
+
+
+    $scope.test_function = function (test) {
+        console.log(test);
+    };
     $scope.mainGridOptions = {
         toolbar: ["excel"],
         excel: {
             allPages: true
         },
+        columnMenu: true,
         selectable: "multiple cell",
         allowCopy: true,
-        columns: [
-            {field: "id_persona", title: "ID"},
-            {field: "matricula", title: "Matricula"},
-            {field: "nombre", title: "Nombre"},
-            {field: "descripcion_sc", title: "Descripcion/Mes"},
-            {field: "importe", title: "Importe"},
-            {field: "recargo", title: "Recargo"}
-        ],
-        pageable: true,
         sortable: true,
-        scrollable: true,
         reorderable: true,
         filterable: {
             messages: {
@@ -660,10 +813,6 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                 }
             }
         },
-//        dataSource: {
-//            //data: temp_array,
-//            pageSize: 30
-//        },
         messages: {
             commands: {
                 excel: "Exportar Excel"
@@ -674,6 +823,15 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                 empty: "Arrastra columnas para Agrupar"
             },
             showFooter: true
+        },
+        scrollable: {
+            virtual: true
+        },
+        height: 800,
+        pageable: {
+            info: true,
+            numeric: false,
+            previousNext: false
         }
 
     };
@@ -686,7 +844,7 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
         //console.log(found);
         $scope.data_alumnos = {
             data: [],
-            pageSize: 30
+            pageSize: 80
         };
         angular.forEach($scope.found, function (val) {
             //temp_array.push([ val.idpersona,val.matricula, val.nom, val.appat, val.apmat, val.carrera, val.clave, val.curp, val.fecha_nac, val.grado, val.grupo, val.estatus_admin, val.adeudos[0].sub_concepto, val.adeudos[0].descripcion_sc, val.adeudos[0].fecha_limite, val.adeudos[0].periodo, val.adeudos[0].sub_concepto_id]);
@@ -782,197 +940,165 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
         //console.log($scope.model);
         $scope.isBusy = true;
         $scope.model.status = 0;
-        adminService.getAdeudosReporte($scope.model).then(function (data) {
+        adminService.getAdeudosReporteOrdenado($scope.model).then(function (data) {
             $scope.isBusy = false;
             $scope.datos_filtros = [];
             key_service = data.respuesta.data.key;
-            $scope.adeudos = data.respuesta.data.data.alumnos;
-            //console.log($scope.adeudos);
-            $scope.found = angular.copy($scope.adeudos);
-            render_excel_table();
-            //$scope.found = $scope.adeudos;
-            //angular.copy($scope.master, $scope.user);
+            console.log(data);
+            $scope.data_alumnos = {
+                data: [],
+                pageSize: 100,
+                schema: {
+                    model: {
+                        fields: {
+                            total: {type: "number"}
+                        }
+                    }
+                },
+                aggregate: [
+                    {field: "total", aggregate: "sum"}
+                ],
+                group: [
+                    {field: "periodo"},
+                    {field: "sub_concepto", aggregates: [{field: "sub_concepto", aggregate: "count"}]},
+                    {field: "matricula"}
+                ]
+            };
+            var totales = {
+                descuento: 0,
+                beca: 0,
+                importe: 0,
+                recargo: 0,
+                rtotal: 0
+            };
 
-            //console.log($scope.found);
-//            $scope.bigTotalItems = adeudos.length;
-//            $scope.bigCurrentPage = 1;
-//            $scope.maxSize = 10;
-//            $scope.items_per_page = 30;
-            //console.log(found);
-            $scope.carreras = data.respuesta.data.data.filtros.carreras;
-            $scope.sub_conceptos = data.respuesta.data.data.filtros.sub_conceptos;
-            $scope.descripcion_sc = data.respuesta.data.data.filtros.descripcion_sc;
+            angular.forEach(data.respuesta.data.periodos, function (v, k) {
+                if (!isNaN(k)) {
+                    angular.forEach(v.subconceptos, function (v1, k1) {
+                        if (!isNaN(k1)) {
+                            angular.forEach(v1.adeudo_info, function (v2, k2) {
+                                if (!isNaN(k2)) {
+                                    totales.descuento += v2.descuento;
+                                    totales.beca += v2.beca;
+                                    totales.importe += v2.importe;
+                                    totales.recargo += v2.recargo;
+                                    totales.rtotal += v2.total;
+                                    $scope.data_alumnos.data.push({
+                                        "apellido_paterno": v2["apellido paterno"],
+                                        "apellido_materno": v2["apellido materno"],
+                                        "beca": v2.beca,
+                                        "carrera": v2.carrera,
+                                        "clave": v2.clave,
+                                        "descuento": v2.descuento,
+                                        "fecha_limite": v2.fecha_limite,
+                                        "importe": v2.importe,
+                                        "matricula": v2.matricula,
+                                        "nombre": v2.nombre,
+                                        "recargo": v2.recargo,
+                                        "total": v2.total,
+                                        "sub_concepto": v1.sub_concepto,
+                                        "sub_concepto_id": v1.sub_concepto_id,
+                                        "periodo": v.periodo
+                                    });
+                                }
+                            });
+                            my_global[v1.sub_concepto] = totales;
+                            //console.log(totales);
+                            totales = {
+                                descuento: 0,
+                                beca: 0,
+                                importe: 0,
+                                recargo: 0,
+                                rtotal: 0
+                            };
+                        }
+                    });
+                }
+            });
         });
     };
 
     $scope.obtener_adeudos_periodo = function () {
-        //console.log($scope.model);
         $scope.isBusy = true;
         $scope.model.status = 0;
-        adminService.getAdeudosReportePeriodo($scope.model).then(function (data) {
+        adminService.getAdeudosReporteOrdenadoPeriodo($scope.model).then(function (data) {
             $scope.isBusy = false;
             $scope.datos_filtros = [];
             key_service = data.respuesta.data.key;
-            $scope.adeudos = data.respuesta.data.data.alumnos;
-            //console.log($scope.adeudos);
-            $scope.found = angular.copy($scope.adeudos);
-            render_excel_table();
-            //$scope.found = $scope.adeudos;
-            //angular.copy($scope.master, $scope.user);
+            console.log(data);
+            $scope.data_alumnos = {
+                data: [],
+                pageSize: 100,
+                schema: {
+                    model: {
+                        fields: {
+                            total: {type: "number"}
+                        }
+                    }
+                },
+                aggregate: [
+                    {field: "total", aggregate: "sum"}
+                ],
+                group: [
+                    {field: "periodo"},
+                    {field: "sub_concepto", aggregates: [{field: "sub_concepto", aggregate: "count"}]},
+                    {field: "matricula"}
+                ]
+            };
+            var totales = {
+                descuento: 0,
+                beca: 0,
+                importe: 0,
+                recargo: 0,
+                rtotal: 0
+            };
 
-            //console.log($scope.found);
-//            $scope.bigTotalItems = adeudos.length;
-//            $scope.bigCurrentPage = 1;
-//            $scope.maxSize = 10;
-//            $scope.items_per_page = 30;
-            //console.log(found);
-            $scope.carreras = data.respuesta.data.data.filtros.carreras;
-            $scope.sub_conceptos = data.respuesta.data.data.filtros.sub_conceptos;
-            $scope.descripcion_sc = data.respuesta.data.data.filtros.descripcion_sc;
+            angular.forEach(data.respuesta.data.periodos, function (v, k) {
+                if (!isNaN(k)) {
+                    angular.forEach(v.subconceptos, function (v1, k1) {
+                        if (!isNaN(k1)) {
+                            angular.forEach(v1.adeudo_info, function (v2, k2) {
+                                if (!isNaN(k2)) {
+                                    totales.descuento += v2.descuento;
+                                    totales.beca += v2.beca;
+                                    totales.importe += v2.importe;
+                                    totales.recargo += v2.recargo;
+                                    totales.rtotal += v2.total;
+                                    $scope.data_alumnos.data.push({
+                                        "apellido_paterno": v2["apellido paterno"],
+                                        "apellido_materno": v2["apellido materno"],
+                                        "beca": v2.beca,
+                                        "carrera": v2.carrera,
+                                        "clave": v2.clave,
+                                        "descuento": v2.descuento,
+                                        "fecha_limite": v2.fecha_limite,
+                                        "importe": v2.importe,
+                                        "matricula": v2.matricula,
+                                        "nombre": v2.nombre,
+                                        "recargo": v2.recargo,
+                                        "total": v2.total,
+                                        "sub_concepto": v1.sub_concepto,
+                                        "sub_concepto_id": v1.sub_concepto_id,
+                                        "periodo": v.periodo
+                                    });
+                                }
+                            });
+                            my_global[v1.sub_concepto] = totales;
+                            //console.log(totales);
+                            totales = {
+                                descuento: 0,
+                                beca: 0,
+                                importe: 0,
+                                recargo: 0,
+                                rtotal: 0
+                            };
+                        }
+                    });
+                }
+            });
+
         });
     };
-
-//    $scope.$watchCollection('bigCurrentPage', function () {
-//        //console.log($scope.bigCurrentPage);
-//        if ($scope.bigCurrentPage) {
-//         //   render_table();
-//        }
-//    });
-//    var used_keys = [];
-//
-//    var array_map = function (data) {
-//        return $.map(data, function (value, index) {
-//            //console.log(value);
-//            angular.forEach(value, function (val, key) {
-//                if (typeof val === 'object') {
-//                    angular.forEach(val, function (valobj, keyobj) {
-//                        angular.forEach(valobj, function (valsingle_adeudo, key_single_adeudo) {
-//                            if (!$scope.datos_filtros[key_single_adeudo])
-//                            {
-//                                //console.log(key_single_adeudo + " " + valsingle_adeudo);
-//                                $scope.datos_filtros[key_single_adeudo] = [];
-//                                used_keys[key_single_adeudo] = [];
-//                                used_keys[key_single_adeudo].push(valsingle_adeudo);
-//                                $scope.datos_filtros[key_single_adeudo].push({name: key_single_adeudo, selected: false, full_name: valsingle_adeudo});
-//                                //$scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
-//                            } else {
-//                                //console.log(key + " " + val);
-//                                // $scope.datos_filtros[key_single_adeudo][valsingle_adeudo] = {name: key_single_adeudo, selected: false, full_name: valsingle_adeudo};
-//                                if (used_keys[key_single_adeudo].indexOf(valsingle_adeudo) == -1)
-//                                {
-//                                    used_keys[key_single_adeudo].push(valsingle_adeudo);
-//                                    $scope.datos_filtros[key_single_adeudo].push({name: key_single_adeudo, selected: false, full_name: valsingle_adeudo});
-//                                    //$scope.datos_filtros[key_single_adeudo].push({name:key_single_adeudo,selected:false,full_name:valsingle_adeudo});
-//                                }
-//                            }
-//                        });
-//                    });
-//                } else {
-//                    if (!$scope.datos_filtros[key])
-//                    {
-//                        //console.log(key + " " + val);
-//                        $scope.datos_filtros[key] = [];
-//                        used_keys[key] = [];
-//                        used_keys[key].push(val);
-//                        //$scope.datos_filtros[key][val] = {name: key, selected: false, full_name: val};
-//                        $scope.datos_filtros[key].push({name: key, selected: false, full_name: val});
-//                    } else {
-//                        //console.log(key + " " + val);
-//                        //$scope.datos_filtros[key][val] = {name: key, selected: false, full_name: val};
-//                        if (used_keys[key].indexOf(val) == -1)
-//                        {
-//                            used_keys[key].push(val);
-//                            //{name: "id_persona", selected: false, full_name: "ID Alumno"}
-//                            $scope.datos_filtros[key].push({name: key, selected: false, full_name: val});
-//                        }
-//                    }
-//                }
-//            });
-//            return [value];
-//        });
-//    };
-
-//    $scope.show_data = [
-//        {name: "id_persona", selected: false, full_name: "ID Alumno"},
-//        {name: "matricula", selected: false, full_name: "Matricula"},
-//        {name: "nom", selected: false, full_name: "Nombre"},
-//        {name: "appat", selected: false, full_name: "Apellido Paterno"},
-//        {name: "apmat", selected: false, full_name: "Apellido Materno"},
-//        {name: "idperiodo", selected: false, full_name: "Periodo"},
-//        {name: "pe", selected: false, full_name: "Año Periodo"},
-//        {name: "nc", selected: false, full_name: "Nombre de Cuenta"},
-//        {name: "carrera", selected: false, full_name: "Carrera"},
-//        {name: "clave", selected: false, full_name: "Clave"},
-//        {name: "curp", selected: false, full_name: "CURP"},
-//        {name: "grado", selected: false, full_name: "Grado"},
-//        {name: "grupo", selected: false, full_name: "Grupo"},
-//        {name: "estatus_admin", selected: false, full_name: "Status"},
-//        {name: "fecha_nac", selected: false, full_name: "Fecha de Nacimiento"}
-//    ];
-//    $scope.sort_reporte = ["id_persona", "matricula", "nom", "apmat"];
-//    $scope.descargar_reporte = function () {
-//        var temp = sort_reporte = ["id_persona", "matricula", "nom", "apmat"];
-//        console.log($scope.sort_reporte_adeudo);
-//        console.log($scope.sort_reporte);
-//        if (key_service && ($scope.sort_reporte_adeudo || $scope.sort_reporte)) {
-//            //var filters = $scope.sort_reporte.concat($scope.sort_reporte_adeudo);
-//            var filters = temp.concat($scope.sort_reporte_adeudo);
-//            var url = serviceBase + '/adeudos/crear_reporte?key=' + key_service + '&filters=' + JSON.stringify(filters);
-//            $window.open(
-//                    url,
-//                    '_blank'
-//                    );
-//        }
-//    };
-
-//    $scope.show_data_adeudos = [
-//        {name: "fecha_limite", selected: false, full_name: "Fecha Limite"},
-//        {name: "meses_retraso", selected: false, full_name: "Meses de Retraso"},
-//        {name: "periodo", selected: false, full_name: "Periodo"},
-//        {name: "aplica_beca", selected: false, full_name: "Beca"},
-//        {name: "descripcion_sc", selected: false, full_name: "Descripcion Sub Concepto"},
-//        {name: "sub_concepto", selected: false, full_name: "Sub Concepto"},
-//        {name: "importe", selected: false, full_name: "Cantidad"},
-//        {name: "recargo", selected: false, full_name: "Recargo"},
-//    ];
-
-//    $scope.make_filters = function () {
-//        found = $filter('getAllObjectsByProperty')('carrera', $scope.model.filter.carrera, adeudos);
-//        $scope.bigTotalItems = found.length;
-//        $scope.bigCurrentPage = 1;
-//        render_table();
-//    };
-
-
-
-//    var render_table = function () {
-//        var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
-//                , end = begin + $scope.items_per_page;
-//        //console.log();
-//        //console.log(adeudos.length);
-//        $scope.filteredTodos = found.slice(begin, end);
-//    };
-
-//    $scope.add_new = function (data, title) {
-//        var index = $scope.sort_reporte.indexOf(data);
-//        var index_title = $scope.sort_title.indexOf(title);
-//        if (index > -1) {
-//            $scope.sort_reporte.splice(index, 1);
-//        } else {
-//            $scope.sort_reporte.push(data);
-//        }
-//        if (index_title > -1) {
-//            $scope.sort_title.splice(index_title, 1);
-//        } else {
-//            $scope.sort_title.push(title);
-//        }
-//        //console.log($scope.sort_reporte);
-//    };
-
-//    adminService.getAlladeudos().then(function (data) {
-//        console.log(data);
-//        $scope.Adeudos = data.respuesta;
-//    });
 
 
 });
@@ -1637,7 +1763,7 @@ UPapp.controller('Modal_ModifyBeca', function ($scope, adminService, $rootScope)
         if (data.respuesta.data) {
             $scope.model['periodicidades_id'] = $scope.data_modal['periodicidades_id'];
             $scope.model['tipo_importe_id'] = $scope.data_modal['tipo_importe_id'];
-            $scope.model['subcidios_id'] = $scope.data_modal['subcidios_id'];
+            $scope.model['subcidios_id'] = 1;
             $scope.catalogos = data.respuesta.data;
             $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
         }

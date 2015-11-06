@@ -1,38 +1,78 @@
 <div class="col-md-12" ng-controller="Administracion_Generales_becas">
     <h2><span class="glyphicon glyphicon-user"></span> Becas
         <span class="col-md-3 pull-right">
+            <button class="btn btn-primary btn-md btn-block" ng-click="Posteriores('m_beca_posteriores')">
+                Posteriores
+            </button>
+        </span>
+        <span class="col-md-3 pull-right">
             <button class="btn btn-primary btn-md btn-block" ng-click="NuevaBeca('m_NuevaBeca')">
                 <i class="fa fa-plus fa-2"></i> Nueva Beca
             </button>
         </span>
     </h2>
     <hr>
-    <div class="table-responsive">
-        <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
-            <thead>
-            <th>Abreviatura</th>
-            <th>Descripcion</th>
-            <th>Importe/Porcentaje</th>
-            <th>Administrar</th>
-            </thead>
-            <tr ng-repeat="beca in becas">
-                <td data-title="'Concepto'">{{beca.abreviatura}}</td>
-                <td data-title="'Descripcion'">{{beca.descripcion}}</td>
-                <td data-title="'Administrar'">{{beca.importe}}</td>
-                <td data-title="'Administrar'">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                            Administrar Beca <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a ng-href="" ng-click="Modificar('m_modificarBeca', beca, $index)">Modificar</a></li>
-                            <li><a ng-href="" ng-click="Eliminar(beca.id)">Eliminar</a></li>
-                            <li class="divider"></li>
-                            <li><a ng-href="" ng-click="AlumnosBeca('m_AlumnosBeca', beca)">Alumnos</a></li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}">{{alert.msg}}</alert>
+    <form class="" ng-submit="upload_xls_file()">
+        <div class="row form-group">
+            <div class="col-sm-4 text-center col-sm-offset-4" style=" margin-bottom:5px;">
+                <div class="fileUpload btn btn-primary">
+                    <label for="upload_excel_file"><i class="fa fa-file-excel-o fa-4" style="font-size: 12em;"></i></label>
+                    <input id="upload_excel_file" class="upload"  type="file" file-input="model_file.file" accept="text/plain" required/>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-offset-4">
+                <button type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                    Subir Archivo Becas (xls)
+                </button>
+            </div>
+        </div>
+            
+    </form>
+    <!--    <div class="table-responsive">
+            <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                <thead>
+                <th>Abreviatura</th>
+                <th>Descripcion</th>
+                <th>Importe/Porcentaje</th>
+                <th>Administrar</th>
+                </thead>
+                <tr ng-repeat="beca in becas">
+                    <td data-title="'Concepto'">{{beca.abreviatura}}</td>
+                    <td data-title="'Descripcion'">{{beca.descripcion}}</td>
+                    <td data-title="'Administrar'">{{beca.importe}}</td>
+                    <td data-title="'Administrar'">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                Administrar Beca <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a ng-href="" ng-click="Modificar('m_modificarBeca', beca, $index)">Modificar</a></li>
+                                <li><a ng-href="" ng-click="Eliminar(beca.id)">Eliminar</a></li>
+                                <li class="divider"></li>
+                                <li><a ng-href="" ng-click="AlumnosBeca('m_AlumnosBeca', beca)">Alumnos</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>-->
 </div>
+
+<style>
+    .fileUpload {
+        position: relative;
+        overflow: hidden;
+    }
+    .fileUpload input.upload {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0;
+        padding: 0;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        filter: alpha(opacity=0);
+    }
+</style>

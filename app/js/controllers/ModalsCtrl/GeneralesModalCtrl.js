@@ -6,9 +6,17 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
     var alm_noinsc = false;
     var alm_noinsc_car = [];
     var filter = [];
+    var carreras = {
+        Inscritos: [],
+        NoInscritos: []
+    };
+    var alumnos = {
+        Inscritos: [],
+        NoInscritos: []
+    };
     $scope.maxSize = 10;
     $scope.items_per_page = 30;
-    $scope.show_alumnos = true;
+    $scope.becados = true;
     $scope.$parent.isBusy = true;
     adminService.getPeriodos().then(function (data) {
         $scope.$parent.isBusy = true;
@@ -31,38 +39,125 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
             }
         });
     };
-    $scope.NivelesReady = function () {
+    var columnas = {
+        Inscritos: [
+//            {
+//                title: "Añadir",
+//                template: '<input type="checkbox" checklist-model="model.idpersona" checklist-value="dataItem.idpersonas">'
+//            },
+            {
+                field: "matricula",
+                title: "Matricula"
+            }, {
+                //field: "Col2",
+                title: "Nombre",
+                template: "#=nom + appat + apmat#"
+            },
+            {
+                title: "Estatus",
+                template: "<i class=\"fa\" ng-class=\"{'fa-times': dataItem.status == 0, 'fa-check': dataItem.status == 1}\"></i>"
+            },
+            {
+                title: "Consultar",
+                template: '<button class="btn btn-default btn-sm btn-block" ng-click="consultar_adeudos(\'m_consultarAdeudosBeca\', dataItem)">Consultar</button>'
+            }],
+        NoInscritos: [
+//            {
+//                title: "Añadir",
+//                template: '<input type="checkbox" checklist-model="model.idpersona" checklist-value="dataItem.idpersonas">'
+//            },
+            {
+                field: "matricula",
+                title: "Matricula"
+            },
+            {
+                title: "Nombre",
+                template: "#=nom + appat + apmat#"
+            },
+            {
+                title: "Añadir",
+                template: '<button class="btn btn-default btn-sm btn-block" ng-click="add_beca(\'m_consultarAdeudosBeca\', dataItem)">Añadir Beca</button>'
+            }]
+    };
+    $scope.add_beca = function (html, d_a) {
+        $scope.model.idpersona = [d_a.idpersonas];
         $scope.$parent.isBusy = true;
-        adminService.getAlumnosBecas($scope.model).then(function (data) {
+        adminService.addNIAlumnosBeca($scope.model).then(function (data) {
             $scope.$parent.isBusy = false;
-            if (data.respuesta) {
-                alm_insc_car = [];
-                if (data.respuesta.data) {
-                    alm_insc = data.respuesta.data;
-                    angular.forEach(data.respuesta.data, function (value, genre) {
-                        if (alm_insc_car.indexOf(value.carrera) == -1)
+            if (data.respuesta.data) {
+                alm_insc = data.respuesta.data;
+                angular.forEach(data.respuesta.data, function (value, genre) {
+                    if (alm_insc_car.indexOf(value.carrera) == -1)
+                    {
+                        alm_insc_car.push(value.carrera);
+                    }
+                });
+                $scope.model.idpersona = [];
+                $modal.open({
+                    templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+                    controller: 'ModalInstanceCtrl',
+                    size: 'lg',
+                    resolve: {
+                        custom_data: function () {
+                            return {alumno_data: d_a, periodo_data: $scope.model.periodo};
+                        }
+                    }
+                });
+            }
+        });
+    };
+    $scope.columns = columnas.Inscritos;
+    $scope.mainGridOptions = {
+        scrollable: {
+            virtual: true
+        },
+        height: 543,
+        pageable: {
+            info: true,
+            numeric: false,
+            previousNext: false
+        }
+    };
+    $scope.NivelesReady = function () {
+        $scope.becados = true;
+        $scope.$parent.isBusy = true;
+        carreras = {
+            Inscritos: [],
+            NoInscritos: []
+        };
+        alumnos = {
+            Inscritos: [],
+            NoInscritos: []
+        };
+        adminService.getAlumnosBecas($scope.model).then(function (di) {
+            $scope.$parent.isBusy = false;
+            if (di.respuesta) {
+                if (di.respuesta.data) {
+                    alumnos.Inscritos = di.respuesta.data;
+                    angular.forEach(di.respuesta.data, function (value, genre) {
+                        if (carreras.Inscritos.indexOf(value.carrera) == -1)
                         {
-                            alm_insc_car.push(value.carrera);
+                            carreras.Inscritos.push(value.carrera);
+                        }
+                    });
+                }
+                $scope.insc_noinsc();
+            }
+        });
+        adminService.getAlumnosNoBecas($scope.model).then(function (dni) {
+            if (dni.respuesta) {
+                if (dni.respuesta.data) {
+                    alumnos.NoInscritos = dni.respuesta.data;
+                    angular.forEach(dni.respuesta.data, function (value, genre) {
+                        if (carreras.NoInscritos.indexOf(value.carrera) == -1)
+                        {
+                            carreras.NoInscritos.push(value.carrera);
                         }
                     });
                 }
             }
-            $scope.insc_noinsc();
         });
-        adminService.getAlumnosNoBecas($scope.model).then(function (datanoinsc) {
-            if (datanoinsc.respuesta) {
-                alm_noinsc_car = [];
-                if (datanoinsc.respuesta.data) {
-                    alm_noinsc = datanoinsc.respuesta.data;
-                    angular.forEach(datanoinsc.respuesta.data, function (value, genre) {
-                        if (alm_noinsc_car.indexOf(value.carrera) == -1)
-                        {
-                            alm_noinsc_car.push(value.carrera);
-                        }
-                    });
-                }
-            }
-        });
+
 
     };
     var render_table = function () {
@@ -84,31 +179,51 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
     $scope.make_filters = function () {
         // console.log($scope.alumno_filter.carrera);
         if ($scope.alumno_filter.carrera) {
-            filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
+            if ($scope.becados) {
+                $scope.data_alumnos.data = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.Inscritos);
+            } else {
+                $scope.data_alumnos.data = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.NoInscritos);
+            }
         } else {
-            filter = $scope.alumnos;
+            if ($scope.becados) {
+                $scope.data_alumnos.data = alumnos.Inscritos;
+            } else {
+                $scope.data_alumnos.data = alumnos.NoInscritos;
+            }
         }
-        $scope.bigTotalItems = filter.length;
-        $scope.bigCurrentPage = 1;
-        //console.log($scope.alumnos);
-        render_table();
+    };
+    $scope.limpiar_busqueda = function () {
+        $scope.data_alumnos = {
+            data: []
+        };
+        if ($scope.becados) {
+            $scope.data_alumnos.data = alumnos.Inscritos;
+        } else {
+            $scope.data_alumnos.data = alumnos.NoInscritos;
+        }
     };
     $scope.insc_noinsc = function () {
-        $scope.alumno_filter = [];
         $scope.carreras = false;
-        console.log($scope.show_alumnos);
-        if ($scope.show_alumnos) {
-            $scope.show_alumnos = false;
-            $scope.alumnos = alm_insc;
-            $scope.carreras = alm_insc_car;
+        $scope.data_alumnos = {
+            data: [],
+            pageSize: 20
+        };
+        if ($scope.becados) {
+            $scope.becados = !$scope.becados;
+            //$scope.alumnos = alm_insc;
+            $scope.data_alumnos.data = alumnos.Inscritos;
+            $scope.carreras = carreras.Inscritos;
+            $scope.columns = columnas.Inscritos;
             //$scope.alumno_filter.carrera = alm_insc_car[0];
-            $scope.make_filters();
+            //$scope.make_filters();
         } else {
-            $scope.show_alumnos = true;
-            $scope.alumnos = alm_noinsc;
-            $scope.carreras = alm_noinsc_car;
+            $scope.becados = !$scope.becados;
+            $scope.data_alumnos.data = alumnos.NoInscritos;
+            // $scope.alumnos = alm_noinsc;
+            $scope.carreras = carreras.NoInscritos;
+            $scope.columns = columnas.NoInscritos;
             //$scope.alumno_filter.carrera = alm_noinsc_car[0];
-            $scope.make_filters();
+            //$scope.make_filters();
         }
     };
     $scope.add = function () {
@@ -178,26 +293,30 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
         });
 
         SearchInstance.result.then(function (searchParams) {
-            console.log(searchParams);
+            console.log($scope.data_alumnos.data);
             if ($scope.alumno_filter.carrera) {
-                filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
+                filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.data_alumnos.data);
             } else {
-                filter = $scope.alumnos;
+                filter = $scope.data_alumnos.data;
             }
             filter = $filter('filter')(filter, {appat: searchParams.appat});
             filter = $filter('filter')(filter, {apmat: searchParams.apmat});
             filter = $filter('filter')(filter, {nom: searchParams.nom});
             filter = $filter('filter')(filter, {matricula: searchParams.matricula});
-            console.log(filter);
-            $scope.bigTotalItems = filter.length;
-            $scope.bigCurrentPage = 1;
+            $scope.data_alumnos = {
+                data: []
+            };
+            $scope.data_alumnos.data = filter;
+            //console.log(filter);
+//            $scope.bigTotalItems = filter.length;
+//            $scope.bigCurrentPage = 1;
 
 //            filter = $filter('getAllObjectsByProperty')('appat', searchParams.apellido_paterno, filter);
 //            filter = $filter('getAllObjectsByProperty')('apmat', searchParams.apellido_materno, filter);
 //            filter = $filter('getAllObjectsByProperty')('nom', searchParams.nombre, filter);
 //            filter = $filter('getAllObjectsByProperty')('matricula', searchParams.matricula, filter);
             //console.log(filter);
-            render_table();
+            //render_table();
             //$scope.make_filters();
             //filter = $filter('getAllObjectsByProperty')('carrera', searchParams, filter);
         });
@@ -447,6 +566,56 @@ UPapp.controller('Modal_DescuentoAdeudo', function ($scope, adminService) {
             }
         });
     };
+});
+
+UPapp.controller('Modal_Administrar_becas', function ($scope, adminService, $modal) {
+    var BTemp = false;
+    $scope.isBusy = true;
+    adminService.getBecas().then(function (data) {
+        $scope.isBusy = false;
+        if (data.respuesta.data) {
+            $scope.becas = data.respuesta.data;
+        }
+    }, function (err) {
+    });
+
+    $scope.Modificar = function (html, data, idx) {
+        BTemp = idx;
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return data;
+                }
+            }
+        });
+    };
+    $scope.Eliminar = function (bid) {
+        adminService.DeleteBeca(bid).then(function (data) {
+            $scope.becas = data.respuesta.data;
+        });
+    };
+    $scope.AlumnosBeca = function (html, dbeca) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            resolve: {
+                custom_data: function () {
+                    return dbeca;
+                }
+            }
+        });
+    };
+    $scope.$on('modal_response', function (event, args) {
+        if (args.modificado) {
+            $scope.becas[BTemp] = args.data;
+        } else {
+            $scope.becas.push(args);
+        }
+    });
 });
 
 

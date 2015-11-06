@@ -36,26 +36,27 @@
                     <button class="btn btn-block" ng-disabled="isBusy" ng-click="Buscar_alumno('m_becas_buscar_alumno')">Buscar Alumno</button>
                 </div>
                 <div class="col-md-4">
-                    <button ng-disabled="isBusy" class="btn btn-block" ng-click="make_filters()">Limpiar Busqueda</button>
+                    <button ng-disabled="isBusy" class="btn btn-block" ng-click="limpiar_busqueda()">Limpiar Busqueda</button>
                 </div>
             </div>
-            <button class="btn" type="button" ng-click="insc_noinsc()" ng-disabled="!show_alumnos || isBusy">
+            <button class="btn" type="button" ng-click="insc_noinsc()" ng-disabled="!becados || isBusy">
                 Becados
             </button>
-            <button class="btn" type="button" ng-click="insc_noinsc()" ng-disabled="show_alumnos || isBusy">
+            <button class="btn" type="button" ng-click="insc_noinsc()" ng-disabled="becados || isBusy">
                 No Becados
             </button>
-            <button class="btn" type="button" ng-click="add()" ng-show="show_alumnos" ng-disabled="isBusy">
+<!--            <button class="btn" type="button" ng-click="add()" ng-show="becados" ng-disabled="isBusy">
                 Agregar Alumno
             </button>
-            <button class="btn" type="button" ng-click="activate()" ng-show="!show_alumnos" ng-disabled="isBusy">
+            <button class="btn" type="button" ng-click="activate()" ng-show="!becados" ng-disabled="isBusy">
                 Activar Beca Alumno
             </button>
-            <button class="btn" type="button" ng-click="deactivate()" ng-show="!show_alumnos" ng-disabled="isBusy">
+            <button class="btn" type="button" ng-click="deactivate()" ng-show="!becados" ng-disabled="isBusy">
                 Desactivar Beca Alumno
-            </button>
+            </button>-->
         </form>
-        <pagination previous-text="Previo" next-text="siguiente" first-text="Primero" last-text="Ultimo"  total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="items_per_page"></pagination>
+        <div kendo-grid k-options="mainGridOptions" k-data-source="data_alumnos" k-columns="columns"  k-rebind="columns"></div>
+<!--        <pagination previous-text="Previo" next-text="siguiente" first-text="Primero" last-text="Ultimo"  total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="items_per_page"></pagination>
         <table ng-show="show_alumnos" id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
             <thead>
             <th>Añadir</th>
@@ -71,8 +72,8 @@
                 <td data-title="'Nombre'">{{alumno.nom + " " + alumno.appat + " " + alumno.apmat}}</td>
                 <td data-title="'Nombre'"><button class="btn btn-default btn-sm btn-block" ng-click="consultar_adeudos('m_consultarAdeudosBeca', alumno)">Consultar</button></td>
             </tr>
-        </table>
-        <table ng-show="!show_alumnos" id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+        </table>-->
+<!--        <table ng-show="!show_alumnos" id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
             <thead>
             <th>Añadir</th>
             <th>Matricula</th>
@@ -90,7 +91,7 @@
                             'fa-times': alumno.status == 0, 'fa-check': alumno.status == 1}"></i></td>
                 <td data-title="'Nombre'"><button class="btn btn-default btn-sm btn-block" ng-click="consultar_adeudos('m_consultarAdeudosBeca', alumno)">Consultar</button></td>
             </tr>
-        </table>
+        </table>-->
     </div>
     <div class="modal-footer" style="border-top: 0px;">
         <div class="col-md-3 pull-right">

@@ -234,7 +234,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-block" ng-disabled="!model.fecha_hasta || !model.fecha_desde" ng-click="obtener_adeudos()">Obtener Adeudos</button>
+                            <button class="btn btn-block" ng-disabled="!model.fecha_hasta || !model.fecha_desde" ng-click="obtener_adeudos()">Obtener Pagos</button>
                         </div>
                     </div>
                 </div>
@@ -278,7 +278,7 @@
         <div class="col-sm-4">
             <div class="panel panel-default" style="  height: 250px;">
                 <div class="panel-heading">
-                    Adeudos por Periodo
+                    Pagos por Periodo
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
@@ -296,35 +296,36 @@
                 </div>
             </div>
         </div>
-<!--        <div class="col-sm-4">
-            <div class="panel panel-default" style="  height: 250px;">
-                <div class="panel-heading">
-                    Filtros
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <select ng-change="make_filters()" class="form-control" ng-model="model.filter.descripcion_sc" ng-options="descripcion for descripcion in descripcion_sc">
-                            <option value="">Descripcion/Mes</option>
-                        </select>
+        <!--        <div class="col-sm-4">
+                    <div class="panel panel-default" style="  height: 250px;">
+                        <div class="panel-heading">
+                            Filtros
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <select ng-change="make_filters()" class="form-control" ng-model="model.filter.descripcion_sc" ng-options="descripcion for descripcion in descripcion_sc">
+                                    <option value="">Descripcion/Mes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select ng-change="make_filters()" class="form-control" ng-model="model.filter.carrera" ng-options="carrera for carrera in carreras">
+                                    <option value="">Carrera</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select ng-change="make_filters()" class="form-control" ng-model="model.filter.sub_concepto" ng-options="sub_concepto for sub_concepto in sub_conceptos">
+                                    <option value="">Sub Concepto</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <select ng-change="make_filters()" class="form-control" ng-model="model.filter.carrera" ng-options="carrera for carrera in carreras">
-                            <option value="">Carrera</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <select ng-change="make_filters()" class="form-control" ng-model="model.filter.sub_concepto" ng-options="sub_concepto for sub_concepto in sub_conceptos">
-                            <option value="">Sub Concepto</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>-->
+                </div>-->
     </div>
     <!--    <div class="row">
             <div class="col-md-6">
                 <input type="button" class="btn" value="Descargar Reporte" ng-click="descargar_reporte()" />
             </div>
         </div>-->
-    <kendo-grid ng-show="data_alumnos.data.length > 0" options="mainGridOptions" data-source="data_alumnos"></kendo-grid>
+    <kendo-grid ng-show="data_alumnos.data.length > 0" options="mainGridOptions" columns="columns" data-source="data_alumnos"></kendo-grid>
+
 </div>

@@ -1,0 +1,28 @@
+<div class="col-md-12" ng-controller="Administracion_Generales_reporte_becas">
+    <h2><span class="glyphicon glyphicon-user"></span> Reporte Becas<label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label></h2>
+    <hr>
+    <div class="row ">
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Becas por Periodo
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">Ciclo</span>
+                                <select class="form-control" ng-model="model.periodo" ng-options="periodo.periodo for periodo in periodos">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-block" ng-disabled=" !model.periodo" ng-click="obtener_becas_periodo()">Obtener Adeudos</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div kendo-grid ng-show="data_alumnos.data.length > 0" k-options="mainGridOptions" k-data-source="data_alumnos" k-columns="columns"  k-rebind="columns"></div>
+</div>

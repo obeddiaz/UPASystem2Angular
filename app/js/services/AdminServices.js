@@ -485,6 +485,22 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
+        
+        var _getAlumnosBecaPeriodo = function (id_periodo) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/becas/catalogos/reporte',
+                    {params: {
+                            periodo: id_periodo
+                        }
+                    })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
 
         var _getAlumnosBecas = function (dataBeca) {
             var deferred = $q.defer();
@@ -500,6 +516,28 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                         deferred.resolve(data);
                     }).
                     error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _addBecasByFile = function (archivo) {
+            var deferred = $q.defer();
+            var fd = new FormData();
+            angular.forEach(archivo, function (file) {
+                fd.append('becas_file', file);
+            });
+            $http.post(serviceBase + '/administracion/generales/becas/subir', fd,
+                    {
+                        transformRequest: angular.identity,
+                        headers: {
+                            'Content-Type': undefined
+                        }
+                    })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
                         deferred.reject(err);
                     });
             return deferred.promise;
@@ -757,10 +795,44 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
 
         };
-        
+
         var _getAdeudosReporte_periodo = function (dataAdeudos) {
             var deferred = $q.defer();
             $http.get(serviceBase + '/adeudos/adeudos_reporte', {
+                params: {
+                    periodo: dataAdeudos.periodo.idperiodo,
+                    status: dataAdeudos.status
+                }
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+
+        };
+
+        var _getAdeudosReporteOrdenado = function (dataAdeudos) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/adeudos/adeudos_reporte_ordenado', {
+                params: {
+                    fecha_desde: dataAdeudos.fecha_desde,
+                    fecha_hasta: dataAdeudos.fecha_hasta,
+                    status: dataAdeudos.status
+                }
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+
+        };
+
+
+        var _getAdeudosReporteOrdenado_periodo = function (dataAdeudos) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/adeudos/adeudos_reporte_ordenado', {
                 params: {
                     periodo: dataAdeudos.periodo.idperiodo,
                     status: dataAdeudos.status
@@ -986,8 +1058,11 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getAlumnosNoBecas = _getAlumnosNoBecas;
         adminServiceFactory.getAdeudos = _getAdeudos;
         adminServiceFactory.getAdeudosReporte = _getAdeudosReporte;
-        adminServiceFactory.getAdeudosReportePeriodo =_getAdeudosReporte_periodo;
+        adminServiceFactory.getAdeudosReportePeriodo = _getAdeudosReporte_periodo;
+        adminServiceFactory.getAdeudosReporteOrdenado = _getAdeudosReporteOrdenado;
+        adminServiceFactory.getAdeudosReporteOrdenadoPeriodo = _getAdeudosReporteOrdenado_periodo;
         adminServiceFactory.getDatosReferencia = _getDatosReferencia;
+        adminServiceFactory.getAlumnosBecaPeriodo =_getAlumnosBecaPeriodo;
 
 
         adminServiceFactory.suspenderBeca = _suspenderBeca;
@@ -1004,6 +1079,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addNuevaBeca = _addNuevaBeca;
         adminServiceFactory.SubirReferencias = _SubirReferencias;
         adminServiceFactory.addNIAlumnosBeca = _addNIAlumnosBeca;
+       adminServiceFactory.addBecasByFile =  _addBecasByFile;
 
         adminServiceFactory.addDescuento = _addDescuento;
 
