@@ -240,41 +240,6 @@
                 </div>
             </div>
         </div>
-        <!--        <div class="col-sm-4">
-                    <div class="panel panel-default" style="  height: 250px;">
-                        <div class="panel-heading">
-                            Datos Para Mostrar
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <div isteven-multi-select
-                                     input-model="show_data"
-                                     output-model="outputBrowsers"
-                                     title-button="Datos de Alumno"
-                                     c-output-model-s="sort_reporte"
-                                     c-output-model-t="sort_title"
-                                     button-label="full_name"
-                                     item-label="full_name"
-                                     helper-elements="filter"
-                                     tick-property="selected">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div isteven-multi-select
-                                     input-model="show_data_adeudos"
-                                     output-model="outputBrowsers1"
-                                     title-button="Datos de Adeudo"
-                                     c-output-model-s="sort_reporte_adeudo"
-                                     c-output-model-t="sort_title_adeudo"
-                                     button-label="full_name"
-                                     item-label="full_name"
-                                     helper-elements="filter"
-                                     tick-property="selected">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
         <div class="col-sm-4">
             <div class="panel panel-default" style="  height: 250px;">
                 <div class="panel-heading">
@@ -291,41 +256,45 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-block" ng-disabled=" !model.periodo" ng-click="obtener_adeudos_periodo()">Obtener Adeudos</button>
+                        <button class="btn btn-block" ng-disabled=" !model.periodo" ng-click="obtener_adeudos_periodo()">Obtener Pagos</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!--        <div class="col-sm-4">
-                    <div class="panel panel-default" style="  height: 250px;">
-                        <div class="panel-heading">
-                            Filtros
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <select ng-change="make_filters()" class="form-control" ng-model="model.filter.descripcion_sc" ng-options="descripcion for descripcion in descripcion_sc">
-                                    <option value="">Descripcion/Mes</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select ng-change="make_filters()" class="form-control" ng-model="model.filter.carrera" ng-options="carrera for carrera in carreras">
-                                    <option value="">Carrera</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select ng-change="make_filters()" class="form-control" ng-model="model.filter.sub_concepto" ng-options="sub_concepto for sub_concepto in sub_conceptos">
-                                    <option value="">Sub Concepto</option>
-                                </select>
-                            </div>
-                        </div>
+<!--        <div class="col-sm-4">
+            <div class="panel panel-default" style="  height: 250px;">
+                <div class="panel-heading">
+                    Filtros de Datos
+                </div>
+                <div class="panel-body" style="height: 206px;overflow-y:scroll;">
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.sub_concepto.length > 0" translation-texts="traslates.sub_concepto" ng-dropdown-multiselect="" options="filters_data.sub_concepto" selected-model="filtros.sub_concepto"></div>
                     </div>
-                </div>-->
-    </div>
-    <!--    <div class="row">
-            <div class="col-md-6">
-                <input type="button" class="btn" value="Descargar Reporte" ng-click="descargar_reporte()" />
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.matricula.length > 0" translation-texts="traslates.matricula" ng-dropdown-multiselect="" options="filters_data.matricula" selected-model="filtros.matricula"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.carrera.length > 0" translation-texts="traslates.carrera" ng-dropdown-multiselect="" options="filters_data.carrera" selected-model="filtros.carrera"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.fecha_pago.length > 0" translation-texts="traslates.fecha_pago" ng-dropdown-multiselect="" options="filters_data.fecha_pago" selected-model="filtros.fecha_pago"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.importe.length > 0" translation-texts="traslates.importe" ng-dropdown-multiselect="" options="filters_data.importe" selected-model="filtros.importe"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.recargo.length > 0" translation-texts="traslates.recargo" ng-dropdown-multiselect="" options="filters_data.recargo" selected-model="filtros.recargo"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.beca.length > 0" translation-texts="traslates.beca" ng-dropdown-multiselect="" options="filters_data.beca" selected-model="filtros.beca"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-block" ng-if="filters_data.descuento_recargo.length > 0" translation-texts="traslates.descuento_recargo" ng-dropdown-multiselect="" options="filters_data.descuento_recargo" selected-model="filtros.descuento_recargo"></div>
+                    </div>
+                </div>
             </div>
         </div>-->
-    <kendo-grid ng-show="data_alumnos.data.length > 0" options="mainGridOptions" columns="columns" data-source="data_alumnos"></kendo-grid>
+    </div>
+    <div kendo-grid ng-show="data_alumnos.data.length > 0" k-options="mainGridOptions" k-columns="columns" k-data-source="data_alumnos"></div>
 
 </div>

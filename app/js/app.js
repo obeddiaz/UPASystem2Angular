@@ -15,7 +15,8 @@ var UPapp = angular.module('UPA_Pagos', [
     'checklist-model',
     'angular-data.DSCacheFactory',
     'isteven-multi-select',
-    'kendo.directives'
+    'kendo.directives',
+    'angularjs-dropdown-multiselect'
 ]);
 
 UPapp.config(['$routeProvider', function ($routeProvider) {

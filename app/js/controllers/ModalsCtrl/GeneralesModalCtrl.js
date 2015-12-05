@@ -1,3 +1,38 @@
+UPapp.controller('Modal_ConsultarAdeudosBecaAntes', function ($scope, adminService, $filter, $modal) {
+    console.log($scope.$parent.data_modal);
+    var idpersona = $scope.$parent.data_modal.alumno_data.idpersonas;
+    var idperiodo = $scope.$parent.data_modal.periodo_data.idperiodo;
+    adminService.getAdeudosAlumnoNew(idpersona, idperiodo).then(function (data) {
+        console.log(data);
+        if (data.respuesta) {
+            $scope.adeudos_alumno = data.respuesta;
+        } else {
+            $scope.adeudos_alumno = false;
+        }
+    }, function (err) {
+    });
+    $scope.beca_activar_suspender = function (id_adeudo, aplica_beca) {
+        adminService.suspenderBeca(id_adeudo, idpersona, idperiodo, aplica_beca).then(function (data) {
+            if (data.respuesta) {
+                $scope.adeudos_alumno = data.respuesta.data;
+            } else {
+                $scope.adeudos_alumno = false;
+            }
+        }, function (err) {
+        });
+    };
+    $scope.add_beca = function () {
+        adminService.addNIAlumnosBeca($scope.$parent.data_modal.model_data).then(function (data) {
+            $scope.$parent.isBusy = false;
+            if (data.respuesta.data) {
+                $scope.$parent.ok();
+            }
+        });
+    };
+});
+
+
+//
 UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $modal) {
     $scope.model = [];
     $scope.model['idbeca'] = $scope.data_modal['id'];
@@ -18,6 +53,9 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
     $scope.items_per_page = 30;
     $scope.becados = true;
     $scope.$parent.isBusy = true;
+    $scope.alumno_filter = {
+        carrera: ""
+    };
     adminService.getPeriodos().then(function (data) {
         $scope.$parent.isBusy = true;
         $scope.periodos = data;
@@ -39,6 +77,12 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
             }
         });
     };
+
+    $scope.eliminarAlumnoBeca = function (data, dataBeca, periodo) {
+        adminService.DeleteBecaAlumno(data.idpersonas, dataBeca.id, [], periodo.idperiodo, []).then(function (data) {
+            $scope.NivelesReady();
+        });
+    };
     var columnas = {
         Inscritos: [
 //            {
@@ -58,6 +102,10 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
                 template: "<i class=\"fa\" ng-class=\"{'fa-times': dataItem.status == 0, 'fa-check': dataItem.status == 1}\"></i>"
             },
             {
+                title: "Eliminar",
+                template: '<button ng-confirm-click="¿Eliminar Beca de {{dataItem.nom+\' \'+dataItem.appat+\' \'+dataItem.apmat+\'(\'+dataItem.matricula+\')\'}}?" class="btn btn-default btn-sm btn-block" ng-click="eliminarAlumnoBeca(dataItem,data_modal,model.periodo)">Eliminar Beca</button>'
+            },
+            {
                 title: "Consultar",
                 template: '<button class="btn btn-default btn-sm btn-block" ng-click="consultar_adeudos(\'m_consultarAdeudosBeca\', dataItem)">Consultar</button>'
             }],
@@ -75,36 +123,27 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
                 template: "#=nom + appat + apmat#"
             },
             {
-                title: "Añadir",
-                template: '<button class="btn btn-default btn-sm btn-block" ng-click="add_beca(\'m_consultarAdeudosBeca\', dataItem)">Añadir Beca</button>'
+                title: "Consultar Adeudos",
+                template: '<button class="btn btn-default btn-sm btn-block" ng-click="add_beca(\'m_becaconsultarantes\', dataItem)">Consultar Adeudos</button>'
             }]
     };
     $scope.add_beca = function (html, d_a) {
         $scope.model.idpersona = [d_a.idpersonas];
-        $scope.$parent.isBusy = true;
-        adminService.addNIAlumnosBeca($scope.model).then(function (data) {
-            $scope.$parent.isBusy = false;
-            if (data.respuesta.data) {
-                alm_insc = data.respuesta.data;
-                angular.forEach(data.respuesta.data, function (value, genre) {
-                    if (alm_insc_car.indexOf(value.carrera) == -1)
-                    {
-                        alm_insc_car.push(value.carrera);
-                    }
-                });
-                $scope.model.idpersona = [];
-                $modal.open({
-                    templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
-                    controller: 'ModalInstanceCtrl',
-                    size: 'lg',
-                    resolve: {
-                        custom_data: function () {
-                            return {alumno_data: d_a, periodo_data: $scope.model.periodo};
-                        }
-                    }
-                });
+        //$scope.$parent.isBusy = true;
+        var beca_instance = $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            resolve: {
+                custom_data: function () {
+                    return {alumno_data: d_a, periodo_data: $scope.model.periodo, model_data: $scope.model};
+                }
             }
         });
+        beca_instance.result.then(function () {
+            $scope.NivelesReady();
+        });
+
     };
     $scope.columns = columnas.Inscritos;
     $scope.mainGridOptions = {
@@ -157,8 +196,6 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
                 }
             }
         });
-
-
     };
     var render_table = function () {
         var begin = (($scope.bigCurrentPage - 1) * $scope.items_per_page)
@@ -177,54 +214,83 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
     });
 
     $scope.make_filters = function () {
-        // console.log($scope.alumno_filter.carrera);
-        if ($scope.alumno_filter.carrera) {
-            if ($scope.becados) {
-                $scope.data_alumnos.data = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.Inscritos);
+        if ($scope.alumno_filter.carrera != "") {
+            if (!$scope.becados) {
+                //console.log($filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.Inscritos));
+                $scope.data_alumnos = new kendo.data.DataSource({
+                    data: $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.Inscritos),
+                    pageSize: 20
+                });
+                //$scope.data_alumnos.data = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.Inscritos);
             } else {
-                $scope.data_alumnos.data = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.NoInscritos);
+                //console.log($filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.Inscritos));
+
+                $scope.data_alumnos = new kendo.data.DataSource({
+                    data: $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.NoInscritos),
+                    pageSize: 20
+                });
+                //$scope.data_alumnos.data = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.NoInscritos);
             }
         } else {
-            if ($scope.becados) {
-                $scope.data_alumnos.data = alumnos.Inscritos;
+            if (!$scope.becados) {
+                $scope.data_alumnos = new kendo.data.DataSource({
+                    data: alumnos.Inscritos,
+                    pageSize: 20
+                });
+                //$scope.data_alumnos.data = alumnos.Inscritos;
             } else {
-                $scope.data_alumnos.data = alumnos.NoInscritos;
+                //console.log(alumnos.NoInscritos);
+                $scope.data_alumnos = new kendo.data.DataSource({
+                    data: alumnos.NoInscritos,
+                    pageSize: 20
+                });
+                //$scope.data_alumnos.data = alumnos.NoInscritos;
             }
         }
     };
     $scope.limpiar_busqueda = function () {
-        $scope.data_alumnos = {
-            data: []
-        };
-        if ($scope.becados) {
-            $scope.data_alumnos.data = alumnos.Inscritos;
+        if (!$scope.becados) {
+            $scope.data_alumnos = new kendo.data.DataSource({
+                data: alumnos.Inscritos,
+                pageSize: 20
+            });
         } else {
-            $scope.data_alumnos.data = alumnos.NoInscritos;
+            $scope.data_alumnos = new kendo.data.DataSource({
+                data: alumnos.NoInscritos,
+                pageSize: 20
+            });
+            ///scope.data_alumnos.data = ;
         }
     };
     $scope.insc_noinsc = function () {
         $scope.carreras = false;
-        $scope.data_alumnos = {
-            data: [],
-            pageSize: 20
-        };
+
         if ($scope.becados) {
+            $scope.data_alumnos = new kendo.data.DataSource({
+                data: alumnos.Inscritos,
+                pageSize: 20
+            });
             $scope.becados = !$scope.becados;
             //$scope.alumnos = alm_insc;
-            $scope.data_alumnos.data = alumnos.Inscritos;
+            //$scope.data_alumnos.data = ;
             $scope.carreras = carreras.Inscritos;
             $scope.columns = columnas.Inscritos;
             //$scope.alumno_filter.carrera = alm_insc_car[0];
             //$scope.make_filters();
         } else {
             $scope.becados = !$scope.becados;
-            $scope.data_alumnos.data = alumnos.NoInscritos;
+            $scope.data_alumnos = new kendo.data.DataSource({
+                data: alumnos.NoInscritos,
+                pageSize: 20
+            });
+            //$scope.data_alumnos.data = alumnos.NoInscritos;
             // $scope.alumnos = alm_noinsc;
             $scope.carreras = carreras.NoInscritos;
             $scope.columns = columnas.NoInscritos;
             //$scope.alumno_filter.carrera = alm_noinsc_car[0];
             //$scope.make_filters();
         }
+
     };
     $scope.add = function () {
         $scope.$parent.isBusy = true;
@@ -293,32 +359,27 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
         });
 
         SearchInstance.result.then(function (searchParams) {
-            console.log($scope.data_alumnos.data);
-            if ($scope.alumno_filter.carrera) {
-                filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.data_alumnos.data);
+            if (!$scope.becados) {
+                if ($scope.alumno_filter.carrera != "") {
+                    filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.Inscritos);
+                } else {
+                    filter = alumnos.Inscritos;
+                }
             } else {
-                filter = $scope.data_alumnos.data;
+                if ($scope.alumno_filter.carrera != "") {
+                    filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, alumnos.NoInscritos);
+                } else {
+                    filter = alumnos.NoInscritos;
+                }
             }
             filter = $filter('filter')(filter, {appat: searchParams.appat});
             filter = $filter('filter')(filter, {apmat: searchParams.apmat});
             filter = $filter('filter')(filter, {nom: searchParams.nom});
             filter = $filter('filter')(filter, {matricula: searchParams.matricula});
-            $scope.data_alumnos = {
-                data: []
-            };
-            $scope.data_alumnos.data = filter;
-            //console.log(filter);
-//            $scope.bigTotalItems = filter.length;
-//            $scope.bigCurrentPage = 1;
-
-//            filter = $filter('getAllObjectsByProperty')('appat', searchParams.apellido_paterno, filter);
-//            filter = $filter('getAllObjectsByProperty')('apmat', searchParams.apellido_materno, filter);
-//            filter = $filter('getAllObjectsByProperty')('nom', searchParams.nombre, filter);
-//            filter = $filter('getAllObjectsByProperty')('matricula', searchParams.matricula, filter);
-            //console.log(filter);
-            //render_table();
-            //$scope.make_filters();
-            //filter = $filter('getAllObjectsByProperty')('carrera', searchParams, filter);
+            $scope.data_alumnos = new kendo.data.DataSource({
+                data: filter,
+                pageSize: 20
+            });
         });
     };
 
@@ -490,17 +551,42 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
     });
     $scope.getAdeudos = function () {
         $scope.isBusy = true;
-        console.log($scope.model.periodo);
+        //console.log($scope.model.periodo);
         adminService.getAdeudosAlumnoNew($scope.$parent.data_modal.idpersonas, $scope.model.periodo.idperiodo).then(function (data) {
             console.log(data);
             $scope.isBusy = false;
+            $scope.has_descuentos = 0;
+            $scope.has_descuento_recargo = 0;
             if (data.respuesta) {
                 $scope.adeudos_alumno = data.respuesta;
+                angular.forEach($scope.adeudos_alumno, function (v) {
+                    $scope.has_descuentos += v.descuento;
+                    $scope.has_descuento_recargo += v.descuento_recargo;
+                });
             } else {
                 $scope.adeudos_alumno = false;
             }
         }, function (err) {
         });
+    };
+
+    adminService.getCatalogos().then(function (data) {
+        if (data.respuesta.data) {
+            $scope.model.subcidios_id = 1;
+            $scope.catalogos = data.respuesta.data;
+            $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
+        }
+    });
+
+    $scope.add_descuento = function () {
+        angular.forEach($scope.adeudos_alumno, function (v) {
+            if ((v.descuento > 0) || (v.descuento_recargo > 0)) {
+                adminService.addDescuento($scope.model.tipo_importe_id, v.id, v.descuento, v.descuento_recargo, $scope.model.no_oficio).then(function (data) {
+
+                });
+            }
+        });
+        $scope.getAdeudos();
     };
 
     $scope.generar_Descuento = function (html, adeudo) {
@@ -555,15 +641,8 @@ UPapp.controller('Modal_DescuentoAdeudo', function ($scope, adminService) {
     });
 
     $scope.add_descuento = function () {
-//        console.log($scope.model.tipo_importe_id);
-//        console.log($scope.$parent.data_modal.id);
-//        console.log($scope.model.importe);
-        adminService.addDescuento($scope.model.tipo_importe_id, $scope.$parent.data_modal.id, $scope.model.importe).then(function (data) {
-            if (data.respuesta.data) {
-                $scope.model.subcidios_id = 1;
-                $scope.catalogos = data.respuesta.data;
-                $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
-            }
+        adminService.addDescuento($scope.model.tipo_importe_id, $scope.$parent.data_modal.id, $scope.model.importe, $scope.model.importe_recargo, $scope.model.no_oficio).then(function (data) {
+            $parent.cancel();
         });
     };
 });

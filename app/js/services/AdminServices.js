@@ -485,7 +485,25 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
-        
+
+        var _deleteBecaAlumno = function (idPersona, idBeca, idNivel, Periodo, status) {
+            var deferred = $q.defer();
+            $http.delete(serviceBase + '/administracion/generales/becas/alumnos/eliminar', {
+                params: {
+                    id_persona: idPersona,
+                    idbeca: idBeca,
+                    idnivel: idNivel,
+                    periodo: Periodo,
+                    status: status
+                }
+            }).success(function (data) {
+                deferred.resolve(data);
+            }).error(function (err, status) {
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        };
+
         var _getAlumnosBecaPeriodo = function (id_periodo) {
             var deferred = $q.defer();
             $http.get(serviceBase + '/administracion/generales/becas/catalogos/reporte',
@@ -1004,7 +1022,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                             id_adeudo: id_adeudo,
                             id_persona: id_persona,
                             periodo: periodo,
-                            aplica_beca: aplica_beca  // 0 bloquear 1 desbloquear
+                            aplica_beca: aplica_beca,  // 0 bloquear 1 desbloquear
+                            tipo:1 // 1 o 2 preguntar
                         }})
                     .success(function (data) {
                         deferred.resolve(data);
@@ -1015,15 +1034,19 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
-        var _addDescuento = function (p1, p2, p3) {
+        var _addDescuento = function (p1, p2, p3, p4, p5) {
             var deferred = $q.defer();
             //p1 tipo importe id
             //p2 adeudo id
             //p3 importe
+            //p4 importe_recargo
+            //p5 no_oficio
             $http.post(serviceBase + '/caja/descuentos/agregar', {
                 tipo_importe_id: p1,
                 adeudos_id: p2,
-                importe: p3
+                importe: p3,
+                importe_recargo: p4,
+                no_officio: p5
             })
                     .success(function (data) {
                         deferred.resolve(data);
@@ -1062,7 +1085,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.getAdeudosReporteOrdenado = _getAdeudosReporteOrdenado;
         adminServiceFactory.getAdeudosReporteOrdenadoPeriodo = _getAdeudosReporteOrdenado_periodo;
         adminServiceFactory.getDatosReferencia = _getDatosReferencia;
-        adminServiceFactory.getAlumnosBecaPeriodo =_getAlumnosBecaPeriodo;
+        adminServiceFactory.getAlumnosBecaPeriodo = _getAlumnosBecaPeriodo;
 
 
         adminServiceFactory.suspenderBeca = _suspenderBeca;
@@ -1079,7 +1102,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addNuevaBeca = _addNuevaBeca;
         adminServiceFactory.SubirReferencias = _SubirReferencias;
         adminServiceFactory.addNIAlumnosBeca = _addNIAlumnosBeca;
-       adminServiceFactory.addBecasByFile =  _addBecasByFile;
+        adminServiceFactory.addBecasByFile = _addBecasByFile;
 
         adminServiceFactory.addDescuento = _addDescuento;
 
@@ -1093,6 +1116,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.DeleteBeca = _DeleteBeca;
         adminServiceFactory.deletePlanePago = _deletePlanePago;
         adminServiceFactory.DeleteSubConcepto = _DeleteSubConcepto;
+        adminServiceFactory.DeleteBecaAlumno = _deleteBecaAlumno;
 
         adminServiceFactory.reactivarBecaAlumno = _reactivarBecaAlumno;
         adminServiceFactory.desactivarBecaAlumno = _desactivarBecaAlumno;

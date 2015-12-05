@@ -19,7 +19,48 @@
             </div>
         </div>
     </form>
-    <pre ng-repeat="file in files">
-        {{file.name}}
-    </pre>
+    <div class="row">
+        <div class="col-sm-12" ng-if="encontradas">
+            <h3>Referencias Existentes</h3>
+            <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                <thead>
+                <th>Matricula</th>
+                <th>Nombre</th>
+                <th>Convenio</th>
+                <th>Estado</th>
+                <th>Fecha de Pago</th>
+                <th>Importe</th>
+                <th>Referencia</th>
+                </thead>
+                <tr ng-repeat="alumno in encontradas">
+                    <td data-title="'Descripcion'">{{alumno.persona[0].matricula}}</td>
+                    <td data-title="'Nombre'">{{alumno.persona[0].nom + " " + alumno.persona[0].appat + " " + alumno.persona[0].apmat}}</td>
+                    <td data-title="'adeudo'">{{alumno.referencia.convenio}}</td>
+                    <td data-title="'adeudo'">{{alumno.referencia.estado}}</td>
+                    <td data-title="'adeudo'">{{alumno.referencia.fecha_de_pago}}</td>
+                    <td data-title="'adeudo'">{{alumno.referencia.importe}}</td>
+                    <td data-title="'adeudo'">{{alumno.referencia.referencia}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-sm-12" ng-if="no_encontradas">
+            <h3>Referencias No Existentes</h3>
+            <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                <thead>
+                <th>Convenio</th>
+                <th>Estado</th>
+                <th>Fecha de Pago</th>
+                <th>Importe</th>
+                <th>Referencia</th>
+                </thead>
+                <tr ng-repeat="ref in no_encontradas">
+                    <td data-title="'adeudo'">{{ref.referencia.convenio}}</td>
+                    <td data-title="'adeudo'">{{ref.referencia.estado}}</td>
+                    <td data-title="'adeudo'">{{ref.referencia.fecha_de_pago}}</td>
+                    <td data-title="'adeudo'">{{ref.referencia.importe}}</td>
+                    <td data-title="'adeudo'">{{ref.referencia.referencia}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>

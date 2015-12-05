@@ -13,7 +13,7 @@
         <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
         <script src="js/external_libs/jszip.min.js" type="text/javascript"></script>
-       
+
     </head>
     <body>
         <div ng-view></div>
@@ -32,7 +32,9 @@
         <script src="bower_components/angular-cache/dist/angular-cache.js" type="text/javascript"></script>
         <script src="bower_components/angular-route/angular-route.min.js" type="text/javascript"></script>
         <script src="bower_components/angular-multi-select-3.0.0/isteven-multi-select.js" type="text/javascript"></script>
-         <script src="js/external_libs/kendo.all.min.js" type="text/javascript"></script>
+        <script src="js/external_libs/kendo.all.min.js" type="text/javascript"></script>
+        <script src="js/external_libs/lodash.min.js" type="text/javascript"></script>
+        <script src="js/external_libs/angularjs-dropdown-multiselect.js" type="text/javascript"></script>
         <script src="js/app.js"></script>
 
 

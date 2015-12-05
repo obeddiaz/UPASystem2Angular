@@ -74,4 +74,17 @@ angular.module('myApp.filters', [])
         });
         return output;
     };
+}).filter('getAllObjectsByArray', function () {
+    return function (propertyName, ArraySearch, collection) {
+        if (ArraySearch == null || ArraySearch == undefined || ArraySearch.length == 0) {
+            return collection;
+        }
+        var output = new Array();
+        angular.forEach(collection, function (value) {
+            if (ArraySearch.indexOf(value[propertyName]) != -1) {
+                output.push(value);
+            }
+        });
+        return output;
+    };
 });

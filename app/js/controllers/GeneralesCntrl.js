@@ -83,40 +83,100 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
 
         render_excel_table();
     };
-//    $scope.columns = [
-//        {m_select: true, field: "apellido_paterno", title: "Apellido Paterno", width: 200, groupable: false},
-//        {m_select: true, field: "apellido_materno", title: "Apellido Materno", width: 200, groupable: false},
-//        {m_select: true, field: "beca", title: "Beca", width: 200, groupable: false},
-//        {m_select: true, field: "carrera", title: "Carrera", width: 200},
-//        {m_select: false, field: "clave", title: "Clave", width: 200, groupable: false},
-//        {m_select: false, field: "descuento", title: "Descuento", width: 200, groupable: false},
-//        {m_select: false, field: "fecha_limite", title: "Fecha Limite", width: 200},
-//        {m_select: false, field: "importe", title: "Importe", width: 200},
-//        {m_select: false, field: "matricula", title: "Matricula", width: 200},
-//        {m_select: false, field: "nombre", title: "Nombre", width: 200, groupable: false},
-//        {m_select: false, field: "recargo", title: "Recargo", width: 200, groupable: false},
-//        {m_select: false, field: "total", title: "Total", width: 100},
-//        {m_select: false, field: "sub_concepto", title: "Sub Concepto", width: 200, aggregates: ["count", "sum"], groupHeaderTemplate: "#= value # | Adeudos: #= count# | Total Importe: #=test_function(value,\"importe\")# | Total: #=test_function(value,\"rtotal\")# | Total Descuentos: #=test_function(value,\"descuento\")# | | Total Beca: #=test_function(value,\"beca\")#"},
-//        {m_select: false, field: "sub_concepto_id", title: "ID SubConcetpo", width: 100},
-//        {m_select: false, field: "periodo", title: "Periodo"}
-//    ];
 
     $scope.columns = [
-        {m_select: true, field: "abreviatura", title: "Abreviatura", width: 200},
-        {m_select: true, field: "descripcion", title: "Descripcion", width: 200},
-        {m_select: true, field: "matricula", title: "Matricula", width: 150, groupable: false},
-        {m_select: true, field: "nom", title: "Nombre", width: 200, groupable: false},
-        {m_select: true, field: "appat", title: "Apellido Paterno", width: 200, groupable: false},
-        {m_select: true, field: "apmat", title: "Apellido Materno", width: 200, groupable: false},
-        {m_select: true, field: "apmat", title: "Apellido Materno", width: 200, groupable: false},
-        {m_select: true, field: "carrera", title: "Carrera", width: 100},
-        {m_select: true, field: "grado", title: "Grado", width: 50, groupable: false},
-        {m_select: true, field: "grupo", title: "Grupo", width: 50, groupable: false},
-        {m_select: true, field: "periodo", title: "Periodo", width: 150},
-        {m_select: true, field: "tipo_cobro", title: "Tipo Cobro", width: 150}
+        {m_select: true, field: "importe", title: "Monto", width: 200},
+        {m_select: true, field: "tipo_cobro", title: "Tipo Monto", width: 150},
+        {m_select: true, field: "abreviatura", title: "Beca", width: 150,
+            filterable: {
+                ui: function (element) {
+                    element.removeAttr("data-bind");
+                    element.kendoMultiSelect({
+                        dataSource: $scope.filters_dd.abreviatura,
+                        change: function (e) {
+                            var filter = {logic: "or", filters: []};
+                            var values = this.value();
+                            angular.forEach(values, function (v) {
+                                filter.filters.push({field: "abreviatura", operator: "eq", value: v});
+                            });
+                            $scope.data_alumnos.filter(filter);
+                        }
+                    });
+                },
+                extra: false
+            }},
+        {m_select: true, field: "descripcion", title: "Descripcion Beca", width: 200,
+            filterable: {
+                ui: function (element) {
+                    element.removeAttr("data-bind");
+                    element.kendoMultiSelect({
+                        dataSource: $scope.filters_dd.descripcion,
+                        change: function (e) {
+                            var filter = {logic: "or", filters: []};
+                            var values = this.value();
+                            angular.forEach(values, function (v) {
+                                filter.filters.push({field: "descripcion", operator: "eq", value: v});
+                            });
+                            $scope.data_alumnos.filter(filter);
+                        }
+                    });
+                },
+                extra: false
+            }},
+        {m_select: true, field: "matricula", title: "Matricula", width: 150,
+            filterable: {
+                ui: function (element) {
+                    element.removeAttr("data-bind");
+                    element.kendoMultiSelect({
+                        dataSource: $scope.filters_dd.matricula,
+                        change: function (e) {
+                            var filter = {logic: "or", filters: []};
+                            var values = this.value();
+                            angular.forEach(values, function (v) {
+                                filter.filters.push({field: "matricula", operator: "eq", value: v});
+                            });
+                            $scope.data_alumnos.filter(filter);
+                        }
+                    });
+                },
+                extra: false
+            }},
+        {m_select: true, field: "nom", title: "Nombre", width: 200},
+        {m_select: true, field: "appat", title: "Apellido Paterno", width: 200},
+        {m_select: true, field: "apmat", title: "Apellido Materno", width: 200},
+        {m_select: true, field: "carrera", title: "Carrera", width: 100,
+            filterable: {
+                ui: function (element) {
+                    element.removeAttr("data-bind");
+                    element.kendoMultiSelect({
+                        dataSource: $scope.filters_dd.carrera,
+                        change: function (e) {
+                            var filter = {logic: "or", filters: []};
+                            var values = this.value();
+                            angular.forEach(values, function (v) {
+                                filter.filters.push({field: "carrera", operator: "eq", value: v});
+                            });
+                            $scope.data_alumnos.filter(filter);
+                        }
+                    });
+                },
+                extra: false
+            }},
+        {m_select: true, field: "grado", title: "Grado", width: 50},
+        {m_select: true, field: "grupo", title: "Grupo", width: 50},
+        {m_select: true, field: "periodo", title: "Periodo", width: 150}
     ];
 
-    /*abreviatura: "BECA100"
+    /*
+     *  $scope.filters_dd = {
+        "carrera": [],
+        "descripcion": [],
+        "abreviatura": [],
+        "matricula": []
+    };
+     * 
+     * 
+     * abreviatura: "BECA100"
      apmat: "MAGDALENO"
      appat: "MARTÍNEZ"
      carrera: "INGENIERÍA INDUSTRIAL"
@@ -174,6 +234,14 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
                     neq: "No Igaul a",
                     doesnotcontain: "No Contiene",
                     endswith: "Termina Con"
+                },
+                number: {
+                    eq: "Igual a",
+                    startswith: "Empieza Con",
+                    contains: "Contiene",
+                    neq: "No Igaul a",
+                    doesnotcontain: "No Contiene",
+                    endswith: "Termina Con"
                 }
             }
         },
@@ -196,8 +264,22 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
             info: true,
             numeric: false,
             previousNext: false
+        },
+        columnMenu: {
+            messages: {
+                sortAscending: "Ascendente",
+                sortDescending: "Descendente",
+                filter: "Filtrar",
+                columns: "Columnas"
+            }
         }
 
+    };
+    $scope.filters_dd = {
+        "carrera": [],
+        "descripcion": [],
+        "abreviatura": [],
+        "matricula": []
     };
 
     $scope.obtener_becas_periodo = function () {
@@ -206,11 +288,33 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
         adminService.getAlumnosBecaPeriodo($scope.model.periodo.idperiodo)
                 .then(function (data) {
                     $scope.isBusy = false;
-                    $scope.data_alumnos = {
-                        data: [],
+                    
+                    angular.forEach(data.respuesta.data, function (v, k) {
+                        if ($scope.filters_dd.carrera.indexOf(v.carrera) == -1) {
+                            if (v.carrera !== null) {
+                                $scope.filters_dd.carrera.push(v.carrera);
+                              }
+                        }
+                        if ($scope.filters_dd.descripcion.indexOf(v.descripcion) == -1) {
+                            if (v.carrera !== null) {
+                                $scope.filters_dd.descripcion.push(v.descripcion);
+                              }
+                        }
+                        if ($scope.filters_dd.abreviatura.indexOf(v.abreviatura) == -1) {
+                            if (v.abreviatura !== null) {
+                                $scope.filters_dd.abreviatura.push(v.abreviatura);
+                              }
+                        }
+                        if ($scope.filters_dd.matricula.indexOf(v.matricula) == -1) {
+                            if (v.matricula !== null) {
+                                $scope.filters_dd.matricula.push(v.matricula);
+                              }
+                        }
+                    });
+                    $scope.data_alumnos =  new kendo.data.DataSource({
+                        data: data.respuesta.data,
                         pageSize: 20
-                    };
-                    $scope.data_alumnos.data = data.respuesta.data;
+                    });
                     console.log(data);
                 });
     };
@@ -225,8 +329,29 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
             console.log(data);
             $scope.data_alumnos = {
                 data: [],
-                pageSize: 20
+                pageSize: 20, aggregate: [
+                    {field: "beca", aggregate: "sum"},
+                    {field: "descuento", aggregate: "sum"},
+                    {field: "recargo", aggregate: "sum"},
+                    {field: "total", aggregate: "sum"},
+                    {field: "importe", aggregate: "sum"}
+                ]
             };
+
+            /*
+             * 
+             *  {m_select: true, field: "abreviatura", title: "Abreviatura", width: 200},
+             {m_select: true, field: "descripcion", title: "Descripcion", width: 200},
+             {m_select: true, field: "matricula", title: "Matricula", width: 150, groupable: false},
+             {m_select: true, field: "nom", title: "Nombre", width: 200, groupable: false},
+             {m_select: true, field: "appat", title: "Apellido Paterno", width: 200, groupable: false},
+             {m_select: true, field: "apmat", title: "Apellido Materno", width: 200, groupable: false},
+             {m_select: true, field: "carrera", title: "Carrera", width: 100},
+             {m_select: true, field: "grado", title: "Grado", width: 50, groupable: false},
+             {m_select: true, field: "grupo", title: "Grupo", width: 50, groupable: false},
+             {m_select: true, field: "periodo", title: "Periodo", width: 150},
+             {m_select: true, field: "tipo_cobro", title: "Tipo Cobro", width: 150}
+             */
 
         });
     };

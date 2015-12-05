@@ -1,4 +1,4 @@
-<div ng-controller="Modal_ConsultarAdeudosBeca">
+<div ng-controller="Modal_ConsultarAdeudosBecaAntes">
     <div class="modal-header">
         <h4 class="modal-title">Adeudos de Alumno</h4>
     </div>
@@ -26,7 +26,6 @@
                         <th>Sub-Concepto</th>
                         <th>Descripcion/Mes</th>
                         <th>Fecha Limite</th>
-                        <th>Activar/Suspender</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,10 +33,6 @@
                         <td>{{adeudo.sub_concepto}}</td>
                         <td>{{adeudo.descripcion_sc}}</td>
                         <td>{{adeudo.fecha_limite}}</td>
-                        <td ng-switch on="adeudo.aplica_beca">
-                            <button ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="0" ng-click="beca_activar_suspender(adeudo.id, 1)">Activar</button>
-                            <button ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="1" ng-click="beca_activar_suspender(adeudo.id, 0)">Suspender</button>
-                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -45,9 +40,14 @@
     </div>
     <div class="modal-footer" style="border-top: 0px;">
         <div class="row form-group">
-            <div class="col-sm-offset-9 col-sm-3">
+            <div class="col-sm-offset-6 col-sm-3">
                 <button class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
                     Cerrar
+                </button>
+            </div>
+             <div class="col-sm-3">
+                <button ng-click="add_beca()" class="btn btn-default btn-md btn-block col-md-4">
+                    Añadir Alumno a Beca
                 </button>
             </div>
         </div>

@@ -72,6 +72,7 @@
                 <th>Vence</th>
                 <th>Beca</th>
                 <th>Saldo</th>
+                <th>Referencia</th>
                 </thead>
                 <tr ng-repeat="adeudo in adeudos" ng-class="{
                         'bg-success':adeudo.status_adeudo == 1}">
@@ -81,6 +82,9 @@
                     <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
                     <td data-title="'Beca'">{{adeudo.beca}}</td>
                     <td data-title="'Total'">{{adeudo.importe}}</td>
+                    <td data-title="'Generar'">
+                        <button ng-repeat="tp in adeudo.tipos_pago" class="btn" ng-disabled="isBusy" ng-if="(adeudo.status_adeudo == null || adeudo.status_adeudo == 0) && tp.tipo_pago_id == 1" ng-click="Generareferencia(adeudo.ref_counter);">Generar</button>
+                    </td>
                 </tr>
             </table>
         </div>

@@ -12,6 +12,16 @@
                 </div>
             </div>
         </div>
+        <h5>Numero Oficio</h5>
+        <div class="col-sm-12">
+            <textarea class="form-control" style="margin-bottom: 3px; resize: none; height: 50px;" ng-init="model.no_oficio=''" ng-model="model.no_oficio" required></textarea>
+        </div>
+        <div class="col-lg-6">
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">Descuento en</span>
+                <select required class="form-control" ng-model="model.tipo_importe_id" ng-options="tipo.id as tipo.nombre for tipo in catalogos.tipo_importe" required></select>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>
@@ -19,7 +29,12 @@
                         <th>Sub-Concepto</th>
                         <th>Descripcion/Mes</th>
                         <th>Fecha Limite</th>
+                        <th>Beca</th>
+                        <th>Recargo</th>
+                        <th>Importe</th>
                         <th>Descuento</th>
+                        <th>Descuento Recargo</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,19 +42,44 @@
                         <td>{{adeudo.sub_concepto}}</td>
                         <td>{{adeudo.descripcion_sc}}</td>
                         <td>{{adeudo.fecha_limite}}</td>
+                        <td>{{adeudo.beca}}</td>
+                        <td>{{adeudo.recargo_total}}</td>
+                        <td>{{adeudo.importe_inicial}}</td>
                         <td>
-                            <button ng-disabled="adeudo.descuento.length > 0" class="btn btn-default" ng-click="generar_Descuento('m_generarDescuento', adeudo)">Generar Descuento</button>
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-addon" ng-switch on="model.tipo_importe_id">
+                                    <span ng-switch-when="2">$</span>
+                                    <span ng-switch-when="1">%</span>
+                                    <span ng-switch-default>-</span>
+                                </div>
+                                <input ng-disabled="(has_descuentos > 0) || (has_descuento_recargo > 0)" type="number" class="form-control" ng-model="adeudo.descuento" required>
+                            </div>
                         </td>
+                        <td><div class="input-group input-group-sm">
+                                <div class="input-group-addon" ng-switch on="model.tipo_importe_id">
+                                    <span ng-switch-when="2">$</span>
+                                    <span ng-switch-when="1">%</span>
+                                    <span ng-switch-default>-</span>
+                                </div>
+                                <input ng-disabled="(has_descuentos > 0) || (has_descuento_recargo > 0)" type="number" class="form-control" ng-model="adeudo.descuento_recargo" required>
+                            </div>
+                        </td>
+                        <td>{{adeudo.importe - adeudo.descuento_recargo - adeudo.recargo}}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    </div>
+    </div>    
     <div class="modal-footer" style="border-top: 0px;">
         <div class="row form-group">
-            <div class="col-sm-offset-9 col-sm-3">
-                <button class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+            <div class="col-sm-offset-6 col-sm-3">
+                <button type="button" class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
                     Cerrar
+                </button>
+            </div>
+            <div class="col-sm-3">
+                <button ng-disabled="(has_descuentos > 0) || (has_descuento_recargo > 0) || (model.no_oficio == '')" type="submit" ng-click="add_descuento()" class="btn btn-default btn-md btn-block col-md-4">
+                    Generar Descuento
                 </button>
             </div>
         </div>

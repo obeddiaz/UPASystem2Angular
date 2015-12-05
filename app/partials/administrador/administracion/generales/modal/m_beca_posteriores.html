@@ -23,7 +23,7 @@
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a ng-href="" ng-click="Modificar('m_modificarBeca', beca, $index)">Modificar</a></li>
-                                <li><a ng-href="" ng-click="Eliminar(beca.id)">Eliminar</a></li>
+                                <li><a ng-href="" ng-confirm-click="¿Eliminar Beca?" ng-click="Eliminar(beca.id)">Eliminar</a></li>
                                 <li class="divider"></li>
                                 <li><a ng-href="" ng-click="AlumnosBeca('m_AlumnosBeca', beca)">Alumnos</a></li>
                             </ul>
