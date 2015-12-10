@@ -1617,7 +1617,7 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $m
 
     $scope.aif = function () {
         $scope.isBusy = true;
-        adminService.getAlumnosPaquete($scope.model.periodo.idperiodo, $scope.data_plan.id,$scope.model.nivel).then(function (data) {
+        adminService.getAlumnosPaquete($scope.model.periodo.idperiodo, $scope.data_plan.id, $scope.model.nivel).then(function (data) {
             $scope.isBusy = false;
             if (!data.error) {
                 //console.log(data);
@@ -1791,12 +1791,9 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
     };
 
     $scope.AddSCPaquete = function () {
-        $scope.model.subconcepto['recargo_acumulado']=0;
-        console.log($scope.model.subconcepto);
-        console.log(angular.toJson($scope.model.subconcepto));
-        console.log(angular.fromJson(angular.toJson($scope.model.subconcepto)));
-         
-        $scope.scp.push(angular.fromJson(angular.toJson($scope.model.subconcepto)));
+        $scope.model.subconcepto['recargo_acumulado'] = 0;
+        $scope.scp.push(angular.copy($scope.model.subconcepto));
+        //$scope.scp.push(angular.fromJson(angular.toJson($scope.model.subconcepto)));
         $scope.filldataSC();
         $scope.scp_show = true;
     };
@@ -1805,7 +1802,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             return;
         }
         $scope.$parent.isBusy = true;
-        var dataSCPaquete = [];
+        var dataSCPaquete = {};
         dataSCPaquete['paquete_id'] = datos_paquete.id;
         dataSCPaquete['sub_concepto'] = {};
         var temp_count = 0;
@@ -1840,9 +1837,9 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
     $scope.filldataSC = function () {
         $scope.data_subconcepto = {};
         $scope.scp.forEach(function (val, key) {
-            $scope.scp[key].opened = false;
-            $scope.scp[key].digito_referencia = parseInt($scope.scp[key].digito_referencia);
-            $scope.scp[key].recargo_acumulado = parseInt($scope.scp[key].recargo_acumulado);
+            val.opened = false;
+            val.digito_referencia = parseInt(val.digito_referencia);
+            val.recargo_acumulado = parseInt(val.recargo_acumulado);
             if (!$scope.data_subconcepto[val.id])
             {
                 $scope.data_subconcepto[val.id] = [];
@@ -1854,14 +1851,14 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
     };
     $scope.pqt_exists = false;
     $scope.get_scp = function () {
+        $scope.scp=[];
         $scope.model.tipos_pago = false;
         adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo, $scope.model.nivel).then(function (data) {
             if (!data.error) {
                 datos_paquete = data.respuesta.paquete;
                 $scope.pqt_exists = true;
                 $scope.scp_show = true;
-                $scope.scp = data.respuesta.data;
-                console.log(data.respuesta.data);
+                $scope.scp = angular.copy(data.respuesta.data);
                 $scope.filldataSC();
                 $scope.alerts = [];
                 if (data.respuesta.data) {

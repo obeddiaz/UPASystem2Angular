@@ -16,7 +16,7 @@
                 <div class="col-md-4">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon">Nivel</span>
-                        <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles" ng-change="get_scp();"></select>
+                        <select class="form-control" ng-model="model.nivel" ng-options="key as val for (key,val) in niveles" ng-change="get_scp();getSubconceptos();"></select>
                     </div>
                 </div>
                 <div  ng-show="!pqt_exists" class="col-md-4">
@@ -104,11 +104,8 @@
                                 </p>
                             </td>
                             <td data-title="'Importe'">{{single.importe}}</td>
-                            <td data-title="'Importe'"><input type="checkbox" ng-model="single.recargo_acumulado" ng-checked="single.recargo_acumulado == 1" ng-true-value="1" ng-false-value="0"></td>
+                            <td data-title="'Importe'"><input type="checkbox" ng-model="single.recargo_acumulado"  ng-checked="single.recargo_acumulado==1" ng-true-value="1" ng-false-value="0"></td>
                             <td><button type="button" ng-click="dropSC($index)" class="btn">Eliminar</button></td>
-                             <td><pre>{{(parseInt(single.recargo_acumulado)==1)}}</pre></td>
-                             <td><pre>{{single.recargo_acumulado==1}}</pre></td>
-                              <td><pre>{{single.recargo_acumulado}}</pre></td>
                         </tr>
                         
                     </table>
