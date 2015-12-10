@@ -27,16 +27,21 @@
                         <th>Descripcion/Mes</th>
                         <th>Fecha Limite</th>
                         <th>Activar/Suspender</th>
+                         <th>Activar/Suspender</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="adeudo in adeudos_alumno">
+                    <tr ng-repeat="adeudo in adeudos_alumno |  orderBy: 'fecha_limite'">
                         <td>{{adeudo.sub_concepto}}</td>
                         <td>{{adeudo.descripcion_sc}}</td>
                         <td>{{adeudo.fecha_limite}}</td>
                         <td ng-switch on="adeudo.aplica_beca">
                             <button ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="0" ng-click="beca_activar_suspender(adeudo.id, 1)">Activar</button>
                             <button ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="1" ng-click="beca_activar_suspender(adeudo.id, 0)">Suspender</button>
+                        </td>
+                        <td ng-switch on="adeudo.aplica_beca">
+                            <button ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="0" ng-click="beca_act_susp_desde(adeudo.id, 1)">Activar Posteriores</button>
+                            <button ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="1" ng-click="beca_act_susp_desde(adeudo.id, 0)">Suspender Posteriores</button>
                         </td>
                     </tr>
                 </tbody>

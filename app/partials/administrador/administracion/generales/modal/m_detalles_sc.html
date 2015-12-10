@@ -1,0 +1,70 @@
+<div ng-controller="Modal_DetallesSC">
+    <div class="modal-header">
+        <h4 class="modal-title">Detalles SubConcepto</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row" style="margin-top:5px;">
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">ID</span>
+                    <input type='text' class="form-control" value="{{$parent.data_modal.sc_data.id}}">
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;">
+            <div class="col-md-12">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Sub Concepto</span>
+                    <input type='text' class="form-control" value="{{$parent.data_modal.sc_data.sub_concepto}}">
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;">
+            <div class="col-md-12">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Descripcion</span>
+                    <input type='text' class="form-control" value="{{$parent.data_modal.sc_data.sub_concepto}}">
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;">
+            <div class="col-md-12">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Importe</span>
+                    <input type='text' class="form-control" value="{{$parent.data_modal.sc_data.importe}}">
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;">
+            <div class="col-md-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Nivel</span>
+                    <input type='text' class="form-control" value="{{sc_nivel}}">
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:5px;">
+            <div class="col-md-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Aplica Beca</span>
+                        <span data-title="'grado'" class="form-control ng-binding"> <i class="fa" ng-class="{'fa-times': $parent.data_modal.sc_data.aplica_beca == 0, 'fa-check': $parent.data_modal.sc_data.aplica_beca == 1}"></i></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Inscripcion</span>
+                        <span data-title="'grado'" class="form-control ng-binding"> <i class="fa" ng-class="{'fa-times': $parent.data_modal.sc_data.locker_manager == 0, 'fa-check': $parent.data_modal.sc_data.locker_manager == 1}"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer" style="border-top: 0px;">
+        <div class="row form-group">
+            <div class="col-sm-offset-9 col-sm-3">
+                <button class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

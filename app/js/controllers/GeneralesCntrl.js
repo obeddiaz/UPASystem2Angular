@@ -87,7 +87,7 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
     $scope.columns = [
         {m_select: true, field: "importe", title: "Monto", width: 200},
         {m_select: true, field: "tipo_cobro", title: "Tipo Monto", width: 150},
-        {m_select: true, field: "abreviatura", title: "Beca", width: 150,
+        {m_select: true, field: "abreviatura", aggregates: ["count"],groupHeaderTemplate: "Beca: #= value # (Cantidad: #= count#)", title: "Beca", width: 150,
             filterable: {
                 ui: function (element) {
                     element.removeAttr("data-bind");
@@ -105,7 +105,7 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
                 },
                 extra: false
             }},
-        {m_select: true, field: "descripcion", title: "Descripcion Beca", width: 200,
+        {m_select: true, field: "descripcion", aggregates: ["count"],groupHeaderTemplate: "Descripcion Beca: #= value # (Cantidad: #= count#)", title: "Descripcion Beca", width: 200,
             filterable: {
                 ui: function (element) {
                     element.removeAttr("data-bind");
@@ -169,11 +169,11 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
 
     /*
      *  $scope.filters_dd = {
-        "carrera": [],
-        "descripcion": [],
-        "abreviatura": [],
-        "matricula": []
-    };
+     "carrera": [],
+     "descripcion": [],
+     "abreviatura": [],
+     "matricula": []
+     };
      * 
      * 
      * abreviatura: "BECA100"
@@ -288,34 +288,37 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
         adminService.getAlumnosBecaPeriodo($scope.model.periodo.idperiodo)
                 .then(function (data) {
                     $scope.isBusy = false;
-                    
+
                     angular.forEach(data.respuesta.data, function (v, k) {
                         if ($scope.filters_dd.carrera.indexOf(v.carrera) == -1) {
                             if (v.carrera !== null) {
                                 $scope.filters_dd.carrera.push(v.carrera);
-                              }
+                            }
                         }
                         if ($scope.filters_dd.descripcion.indexOf(v.descripcion) == -1) {
                             if (v.carrera !== null) {
                                 $scope.filters_dd.descripcion.push(v.descripcion);
-                              }
+                            }
                         }
                         if ($scope.filters_dd.abreviatura.indexOf(v.abreviatura) == -1) {
                             if (v.abreviatura !== null) {
                                 $scope.filters_dd.abreviatura.push(v.abreviatura);
-                              }
+                            }
                         }
                         if ($scope.filters_dd.matricula.indexOf(v.matricula) == -1) {
                             if (v.matricula !== null) {
                                 $scope.filters_dd.matricula.push(v.matricula);
-                              }
+                            }
                         }
                     });
-                    $scope.data_alumnos =  new kendo.data.DataSource({
+                    $scope.data_alumnos = new kendo.data.DataSource({
                         data: data.respuesta.data,
-                        pageSize: 20
+                        pageSize: 20,
+                        aggregate: [
+                            {field: "abreviatura", aggregate: "count"},
+                            {field: "descripcion", aggregate: "count"}
+                        ]
                     });
-                    console.log(data);
                 });
     };
 

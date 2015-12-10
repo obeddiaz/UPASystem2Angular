@@ -9,12 +9,19 @@
                 <thead>
                 <th>Abreviatura</th>
                 <th>Descripcion</th>
-                <th>Importe/Porcentaje</th>
+                <th>Aplicacion</th>
+                <th>Cantidad</th>
                 <th>Administrar</th>
                 </thead>
                 <tr ng-repeat="beca in becas">
                     <td data-title="'Concepto'">{{beca.abreviatura}}</td>
                     <td data-title="'Descripcion'">{{beca.descripcion}}</td>
+                    <td data-title="'Administrar'">
+                        <div ng-switch="beca.tipo_importe_id">
+                            <span ng-switch-when="1">Porcentaje(%)</span>
+                            <span ng-switch-when="2">Importe($)</span>
+                        </div>
+                    </td>
                     <td data-title="'Administrar'">{{beca.importe}}</td>
                     <td data-title="'Administrar'">
                         <div class="btn-group">

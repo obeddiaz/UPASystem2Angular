@@ -21,6 +21,18 @@ UPapp.controller('Modal_ConsultarAdeudosBecaAntes', function ($scope, adminServi
         }, function (err) {
         });
     };
+
+    $scope.beca_act_susp_desde = function (id_adeudo, aplica_beca) {
+        adminService.suspenderBecaDesde(id_adeudo, idpersona, idperiodo, aplica_beca).then(function (data) {
+            if (data.respuesta) {
+                $scope.adeudos_alumno = data.respuesta.data;
+            } else {
+                $scope.adeudos_alumno = false;
+            }
+        }, function (err) {
+        });
+    };
+
     $scope.add_beca = function () {
         adminService.addNIAlumnosBeca($scope.$parent.data_modal.model_data).then(function (data) {
             $scope.$parent.isBusy = false;
@@ -150,6 +162,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
         scrollable: {
             virtual: true
         },
+        sortable: true,
         height: 543,
         pageable: {
             info: true,
@@ -353,7 +366,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
             size: 'md',
             resolve: {
                 custom_data: function () {
-                    return false;
+                    return {"becados":$scope.becados};
                 }
             }
         });
@@ -430,6 +443,16 @@ UPapp.controller('Modal_ConsultarAdeudosBeca', function ($scope, adminService) {
         }, function (err) {
         });
     };
+    $scope.beca_act_susp_desde = function (id_adeudo, aplica_beca) {
+        adminService.suspenderBecaDesde(id_adeudo, idpersona, idperiodo, aplica_beca).then(function (data) {
+            if (data.respuesta) {
+                $scope.adeudos_alumno = data.respuesta.data;
+            } else {
+                $scope.adeudos_alumno = false;
+            }
+        }, function (err) {
+        });
+    };
 });
 
 
@@ -461,7 +484,7 @@ UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
     };
 });
 
-UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
+UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService, $modal) {
     $scope.isBusy = true;
     $scope.new_sc = [];
     $scope.subconceptos = [];
@@ -486,6 +509,20 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
 
     }, function (err) {
     });
+
+    $scope.detalles_sc = function (html, sc) {
+        $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return {sc_data: sc};
+                }
+            }
+        });
+
+    };
     $scope.getSubConceptos = function () {
         $scope.$parent.isBusy = true;
         adminService.getSubConceptos($scope.data_modal.id, $scope.model.periodo.idperiodo, $scope.model.nivel).then(function (data) {
@@ -532,7 +569,17 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService) {
 });
 
 
-
+UPapp.controller('Modal_DetallesSC', function ($scope, adminService,$q) {
+    var promises = [];
+    promises.push(adminService.getNiveles().then(function (data) {
+        if (data.respuesta.data) {
+            $scope.niveles = data.respuesta.data;
+        }
+    }));
+    $q.all(promises).then(function (data) {
+        $scope.sc_nivel=$scope.niveles[$scope.$parent.data_modal.sc_data.nivel_id];
+    });
+});
 
 UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminService, $modal) {
     $scope.model = [];
@@ -657,6 +704,7 @@ UPapp.controller('Modal_Administrar_becas', function ($scope, adminService, $mod
         }
     }, function (err) {
     });
+
 
     $scope.Modificar = function (html, data, idx) {
         BTemp = idx;

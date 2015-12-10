@@ -74,7 +74,7 @@
                 <th>Saldo</th>
                 <th>Referencia</th>
                 </thead>
-                <tr ng-repeat="adeudo in adeudos" ng-class="{
+                <tr ng-repeat="adeudo in adeudos | orderBy: 'fecha_limite'" ng-class="{
                         'bg-success':adeudo.status_adeudo == 1}">
                     <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
                     <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>

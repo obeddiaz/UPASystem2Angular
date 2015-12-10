@@ -3,15 +3,14 @@ UPapp.controller('Administracion_Generales', function ($scope) {
         {title: 'Planes de Pago', click: 'planes_de_pago'},
         {title: 'Conceptos', click: 'conceptos'},
         {title: 'Bancos', click: 'bancos'},
-        //{title: 'Adeudo Simple', click: 'single_adeudo'},
+        {title: 'Recursamiento', click: 'single_adeudo'},
         {title: 'Archivo Referencias', click: 'subir_referencias'},
         {title: 'Becas', click: 'becas'},
         {title: 'Reporte Becas', click: 'reporte_becas'},
         {title: 'Reporte Adeudos', click: 'reporte_adeudos'},
         {title: 'Reporte Pagos', click: 'reporte_pagos'},
         {title: 'Traducir Referencia', click: 'referencias'},
-        {title: 'Descuentos', click: 'descuentos'},
-        //{title: 'Prorrogas', click: 'prorrogas'}
+        {title: 'Descuentos', click: 'descuentos'}
     ];
     $scope.active = 'planes_de_pago';
     $scope.subPageTemplate = 'partials/administrador/administracion/generales/planes_de_pago.html';
@@ -131,13 +130,14 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
     $scope.format = 'dd-MMMM-yyyy';
     var adeudos = [];
     var key_service;
-
+    $scope.p_byid = {};
     $scope.isBusy = true;
     var found = [];
     adminService.getPeriodos().then(function (data) {
         $scope.isBusy = false;
         $scope.periodos = data;
         data.forEach(function (val, key) {
+            $scope.p_byid[val.idperiodo] = val.periodo;
             if (val.actual == 1) {
                 $scope.model.periodo = $scope.periodos[key];
             }
@@ -159,94 +159,97 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
         $event.stopPropagation();
         $scope.model.dateto.opened = true;
     };
-    $scope.columns = [
-        {field: "concepto", title: "Concepto", width: 100,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.concepto,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "concepto", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "sub_concepto", title: "Sub Concepto", width: 200,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.sub_concepto,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "sub_concepto", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "importe", title: "Importe", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "recargo", title: "Recargo", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "beca", title: "Beca", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "descuento", title: "Descuento", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "descuento_recargo", title: "Descuento Recargos", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "total", title: "Total", width: 100, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "matricula", title: "Matricula", width: 200, hidden: true,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.matricula,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "matricula", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "nombre", title: "Nombre", width: 200, hidden: true},
-        {field: "apellido_paterno", title: "Apellido Paterno", width: 200, hidden: true},
-        {field: "apellido_materno", title: "Apellido Materno", width: 200, hidden: true},
-        {field: "carrera", title: "Carrera", width: 200, hidden: true},
-        {field: "clave", title: "Clave", width: 200, hidden: true},
-        {field: "fecha_limite", title: "Fecha Limite", width: 200, hidden: true},
-        {field: "fecha_pago", title: "Fecha Pago", width: 200, hidden: true},
-        {field: "sub_concepto_id", title: "ID SubConcetpo", width: 100, hidden: true,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.sub_concepto_id,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "sub_concepto_id", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "periodo", title: "Periodo", width: 100, hidden: true}
-    ];
+    var _readycols = function () {
+        $scope.columns = [
+            {field: "concepto", title: "Concepto", width: 100,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.concepto,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "concepto", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "sub_concepto", title: "Sub Concepto", width: 200,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.sub_concepto,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "sub_concepto", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "importe", title: "Importe", width: 200, aggregates: ["sum"], footerTemplate: "#=sum#", groupFooterTemplate: "#=sum#"},
+            {field: "recargo", title: "Recargo", width: 200, aggregates: ["sum"], footerTemplate: "#=sum#", groupFooterTemplate: "#=sum#"},
+            {field: "beca", title: "Beca", width: 200, aggregates: ["sum"], footerTemplate: "#=sum#", groupFooterTemplate: "#=sum#"},
+            {field: "descuento", title: "Descuento", width: 200, footerTemplate: "#=sum#", aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
+            {field: "descuento_recargo", title: "Descuento Recargos", width: 200, aggregates: ["sum"], footerTemplate: "#=sum#", groupFooterTemplate: "#=sum#"},
+            {field: "total", title: "Total", width: 100, aggregates: ["sum"], footerTemplate: "#=sum#", groupFooterTemplate: "#=sum#"},
+            {field: "matricula", title: "Matricula", width: 200, hidden: true,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.matricula,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "matricula", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "nombre", title: "Nombre", width: 200, hidden: true},
+            {field: "apellido_paterno", title: "Apellido Paterno", width: 200, hidden: true},
+            {field: "apellido_materno", title: "Apellido Materno", width: 200, hidden: true},
+            {field: "carrera", title: "Carrera", width: 200, hidden: true},
+            {field: "clave", title: "Clave", width: 200, hidden: true},
+            {field: "fecha_limite", title: "Fecha Limite", width: 200, hidden: true},
+            {field: "fecha_pago", title: "Fecha Pago", width: 200, hidden: true},
+            {field: "sub_concepto_id", title: "ID SubConcetpo", width: 100, hidden: true,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.sub_concepto_id,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "sub_concepto_id", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "ciclo", title: "Ciclo", width: 100, hidden: true},
+            {field: "periodo", title: "Periodo", width: 150, hidden: true}
+        ];
+    };
     $scope.to_hide = [];
     $scope.data_alumnos = [];
 
@@ -263,6 +266,16 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
         allowCopy: true,
         sortable: true,
         reorderable: true,
+//        dataBinding: function (e) {
+//            console.log("dataBinding");
+//            angular.forEach(e.sender.options.dataSource._group, function (v, k) {
+//                angular.forEach($scope.columns, function (v1, k1) {
+//                    if (v.field == v1.field) {
+//                        $scope.columns[k1].hidden = true;
+//                    }
+//                });
+//            });
+//        },
         filterable: {
             messages: {
                 info: "Elementos con valor que: ",
@@ -394,7 +407,7 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                                     if ($scope.filters_dd.fecha_pago.indexOf(v2.fecha_pago) == -1) {
                                         if (v2.fecha_pago !== null) {
                                             $scope.filters_dd.fecha_pago.push(v2.fecha_pago);
-                                         }
+                                        }
                                     }
                                     data_alumnos.push({
                                         "apellido_paterno": v2["apellido paterno"],
@@ -405,7 +418,7 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                                         "descuento": v2.descuento,
                                         "descuento_recargo": v2.descuento_recargo,
                                         "fecha_limite": v2.fecha_limite,
-                                        "fecha_pago":v2.fecha_pago,
+                                        "fecha_pago": v2.fecha_pago,
                                         "importe": v2.importe,
                                         "matricula": v2.matricula,
                                         "nombre": v2.nombre,
@@ -414,7 +427,8 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                                         "sub_concepto": v1.sub_concepto,
                                         "concepto": v2.concepto,
                                         "sub_concepto_id": v1.sub_concepto_id,
-                                        "periodo": v.periodo
+                                        "ciclo": v.periodo,
+                                        "periodo": $scope.p_byid[v.periodo]
                                     });
                                 }
                             });
@@ -427,6 +441,10 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                 pageSize: 30,
                 schema: {
                     model: {
+                        periodo: function () {
+                            console.log(this.get("ciclo"));
+                            return this.get("ciclo");
+                        },
                         fields: {
                             total: {type: "number"},
                             beca: {type: "number"},
@@ -446,144 +464,9 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                     {field: "importe", aggregate: "sum"}
                 ]
             });
-            //$scope.data_alumnos.data = data_alumnos;
-//            $scope.data_alumnos.aggregate = [
-//                {field: "beca", aggregate: "sum"},
-//                {field: "descuento", aggregate: "sum"},
-//                {field: "descuento_recargo", aggregate: "sum"},
-//                {field: "recargo", aggregate: "sum"},
-//                {field: "total", aggregate: "sum"},
-//                {field: "importe", aggregate: "sum"}
-//            ];
-
+            _readycols();
         });
     };
-//    $scope.appellidos = {
-//        paterno: [],
-//        materno: []
-//    };
-//    $scope.carrera_assign = {
-//        add: []
-//    };
-//    $scope.filtros = {
-//        matricula: [],
-//        sub_concepto: [],
-//        importe: [],
-//        recargo: [],
-//        beca: [],
-//        descuento_recargo: [],
-//        carrera: [],
-//        fecha_pago: []
-//    };
-
-//    var search_filters = function () {
-//        $scope.data_alumnos = {
-//            data: [],
-//            pageSize: 30,
-//            schema: {
-//                model: {
-//                    fields: {
-//                        total: {type: "number"},
-//                        beca: {type: "number"},
-//                        descuento: {type: "number"},
-//                        descuento_recargo: {type: "number"},
-//                        recargo: {type: "number"},
-//                        importe: {type: "number"}
-//                    }
-//                }
-//            }
-//        };
-//
-//
-//        var to_search = [];
-//        angular.forEach($scope.filtros.carrera, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('carrera', to_search, data_alumnos);
-//        to_search = [];
-//        angular.forEach($scope.filtros.matricula, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('matricula', to_search, $scope.data_alumnos.data);
-//        to_search = [];
-//        angular.forEach($scope.filtros.sub_concepto, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('sub_concepto', to_search, $scope.data_alumnos.data);
-//        to_search = [];
-//        angular.forEach($scope.filtros.importe, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('importe', to_search, $scope.data_alumnos.data);
-//        to_search = [];
-//        angular.forEach($scope.filtros.recargo, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('recargo', to_search, $scope.data_alumnos.data);
-//        to_search = [];
-//        angular.forEach($scope.filtros.beca, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('beca', to_search, $scope.data_alumnos.data);
-//        to_search = [];
-//        angular.forEach($scope.filtros.carrera, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('carrera', to_search, $scope.data_alumnos.data);
-//        to_search = [];
-//        angular.forEach($scope.filtros.fecha_pago, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('fecha_pago', to_search, $scope.data_alumnos.data);
-//        to_search = [];
-//        angular.forEach($scope.filtros.descuento_recargo, function (value) {
-//            to_search.push(value.id);
-//        });
-//        $scope.data_alumnos.data = $filter('getAllObjectsByArray')('descuento_recargo', to_search, $scope.data_alumnos.data);
-//
-//
-//    };
-//    $scope.$watchCollection('filtros.matricula', function () {
-//        search_filters();
-//    });
-//    $scope.$watchCollection('filtros.sub_concepto', function () {
-//        search_filters();
-//    });
-//    $scope.$watchCollection('filtros.importe', function () {
-//        search_filters();
-//    });
-//    $scope.$watchCollection('filtros.recargo', function () {
-//        search_filters();
-//    });
-//    $scope.$watchCollection('filtros.beca', function () {
-//        search_filters();
-//    });
-//    $scope.$watchCollection('filtros.descuento_recargo', function () {
-//        search_filters();
-//    });
-//    $scope.$watchCollection('filtros.carrera', function () {
-//        search_filters();
-//    });
-//    $scope.$watchCollection('filtros.fecha_pago', function () {
-//        search_filters();
-//    });
-
-//    $scope.traslates = {
-//        "matricula": {buttonDefaultText: 'Matricula', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//        "sub_concepto": {buttonDefaultText: 'Sub Concepto', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//        "importe": {buttonDefaultText: 'Importe', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//        "recargo": {buttonDefaultText: 'Recargo', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//        "beca": {buttonDefaultText: 'Beca', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//        "descuento_recargo": {buttonDefaultText: 'Descuento Recargo', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//        "carrera": {buttonDefaultText: 'Carrera', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//        "fecha_pago": {buttonDefaultText: 'Fecha de Pago', dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."},
-//    };
-//    $scope.c_traslate = {dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", buttonDefaultText: 'Seleccionar Carreras', checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."};
-//    $scope.app_traslate = {dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", buttonDefaultText: 'Apellido Paterno', checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."};
-//    $scope.apm_traslate = {dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", buttonDefaultText: 'Apellido Materno', checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."};
-//    $scope.sc_traslate = {dynamicButtonTextSuffix: "Seleccionados", selectionCount: "Seleccionados", buttonDefaultText: 'Sub/Conceptos', checkAll: 'Marcar Todos', uncheckAll: 'Desmarcar Todos', searchPlaceholder: "Buscar..."};
-
-
 
     var data_alumnos = [];
     $scope.obtener_adeudos_periodo = function () {
@@ -674,7 +557,8 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                                         "sub_concepto": v1.sub_concepto,
                                         "concepto": v2.concepto,
                                         "sub_concepto_id": v1.sub_concepto_id,
-                                        "periodo": v.periodo
+                                        "ciclo": v.periodo,
+                                        "periodo": $scope.p_byid[v.periodo]
                                     });
                                 }
                             });
@@ -687,6 +571,10 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                 pageSize: 30,
                 schema: {
                     model: {
+                        periodo: function () {
+                            console.log(this.get("ciclo"));
+                            return this.get("ciclo");
+                        },
                         fields: {
                             total: {type: "number"},
                             beca: {type: "number"},
@@ -706,7 +594,7 @@ UPapp.controller('Administracion_Generales_reporte_pagos', function ($scope, $ro
                     {field: "importe", aggregate: "sum"}
                 ]
             });
-            console.log($scope.data_alumnos);
+            _readycols();
         });
     };
 
@@ -736,7 +624,10 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
         "fecha_limite": [],
         "fecha_pago": [],
         "sub_concepto_id": [],
-        "periodo": []
+        "periodo": [],
+        "ap_pat": [],
+        "ap_mat": [],
+        "nombre": []
     };
     $scope.filters_data = {
         "concepto": [],
@@ -753,7 +644,10 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
         "fecha_limite": [],
         "fecha_pago": [],
         "sub_concepto_id": [],
-        "periodo": []
+        "periodo": [],
+        "ap_pat": [],
+        "ap_mat": [],
+        "nombre": []
     };
     $scope.sub_conceptos = [];
     $scope.descripcion_sc = [];
@@ -762,13 +656,14 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
     $scope.format = 'dd-MMMM-yyyy';
     var adeudos = [];
     var key_service;
-
+    $scope.p_byid = {};
     $scope.isBusy = true;
     var found = [];
     adminService.getPeriodos().then(function (data) {
         $scope.isBusy = false;
         $scope.periodos = data;
         data.forEach(function (val, key) {
+            $scope.p_byid[val.idperiodo] = val.periodo;
             if (val.actual == 1) {
                 $scope.model.periodo = $scope.periodos[key];
             }
@@ -790,93 +685,97 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
         $event.stopPropagation();
         $scope.model.dateto.opened = true;
     };
-    $scope.columns = [
-        {field: "concepto", title: "Concepto", width: 100,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.concepto,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "concepto", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "sub_concepto", title: "Sub Concepto", width: 200,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.sub_concepto,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "sub_concepto", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "importe", title: "Importe", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "recargo", title: "Recargo", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "beca", title: "Beca", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "descuento", title: "Descuento", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "descuento_recargo", title: "Descuento Recargos", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "total", title: "Total", width: 100, aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
-        {field: "matricula", title: "Matricula", width: 200, hidden: true,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.matricula,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "matricula", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "nombre", title: "Nombre", width: 200, hidden: true},
-        {field: "apellido_paterno", title: "Apellido Paterno", width: 200, hidden: true},
-        {field: "apellido_materno", title: "Apellido Materno", width: 200, hidden: true},
-        {field: "carrera", title: "Carrera", width: 200, hidden: true},
-        {field: "clave", title: "Clave", width: 200, hidden: true},
-        {field: "fecha_limite", title: "Fecha Limite", width: 200, hidden: true},
-        {field: "sub_concepto_id", title: "ID SubConcetpo", width: 100, hidden: true,
-            filterable: {
-                ui: function (element) {
-                    element.removeAttr("data-bind");
-                    element.kendoMultiSelect({
-                        dataSource: $scope.filters_dd.sub_concepto_id,
-                        change: function (e) {
-                            var filter = {logic: "or", filters: []};
-                            var values = this.value();
-                            angular.forEach(values, function (v) {
-                                filter.filters.push({field: "sub_concepto_id", operator: "eq", value: v});
-                            });
-                            $scope.data_alumnos.filter(filter);
-                        }
-                    });
-                },
-                extra: false
-            }},
-        {field: "periodo", title: "Periodo", width: 100, hidden: true}
-    ];
+    var _define_columns = function () {
+        $scope.columns = [
+            {field: "concepto", title: "Concepto", width: 100,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.concepto,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "concepto", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "sub_concepto", title: "Sub Concepto", width: 200,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.sub_concepto,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "sub_concepto", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "importe", title: "Importe", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#", footerTemplate: "#=sum#"},
+            {field: "recargo", title: "Recargo", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#", footerTemplate: "#=sum#"},
+            {field: "beca", title: "Beca", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#", footerTemplate: "#=sum#"},
+            {field: "descuento", title: "Descuento", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#", footerTemplate: "#=sum#"},
+            {field: "descuento_recargo", title: "Descuento Recargos", width: 200, aggregates: ["sum"], groupFooterTemplate: "#=sum#", footerTemplate: "#=sum#"},
+            {field: "total", title: "Total", width: 100, aggregates: ["sum"], groupFooterTemplate: "#=sum#", footerTemplate: "#=sum#"},
+            {field: "matricula", title: "Matricula", width: 200, hidden: true,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.matricula,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "matricula", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "nombre", title: "Nombre", width: 200, hidden: true},
+            {field: "apellido_paterno", title: "Apellido Paterno", width: 200, hidden: true},
+            {field: "apellido_materno", title: "Apellido Materno", width: 200, hidden: true},
+            {field: "carrera", title: "Carrera", width: 200, hidden: true},
+            {field: "clave", title: "Clave", width: 200, hidden: true},
+            {field: "fecha_limite", title: "Fecha Limite", width: 200, hidden: true},
+            {field: "sub_concepto_id", title: "ID SubConcetpo", width: 100, hidden: true,
+                filterable: {
+                    ui: function (element) {
+                        element.removeAttr("data-bind");
+                        element.kendoMultiSelect({
+                            dataSource: $scope.filters_dd.sub_concepto_id,
+                            change: function (e) {
+                                var filter = {logic: "or", filters: []};
+                                var values = this.value();
+                                angular.forEach(values, function (v) {
+                                    filter.filters.push({field: "sub_concepto_id", operator: "eq", value: v});
+                                });
+                                $scope.data_alumnos.filter(filter);
+                            }
+                        });
+                    },
+                    extra: false
+                }},
+            {field: "ciclo", title: "Ciclo", width: 100, hidden: true},
+            {field: "periodo", title: "Periodo", width: 150, hidden: true}
+
+        ];
+    };
     $scope.to_hide = [];
     $scope.data_alumnos = [];
 
@@ -893,6 +792,16 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
         allowCopy: true,
         sortable: true,
         reorderable: true,
+//        dataBinding: function (e) {
+//            console.log("dataBinding");
+//            angular.forEach(e.sender.options.dataSource._group, function (v, k) {
+//                angular.forEach($scope.columns, function (v1, k1) {
+//                    if (v.field == v1.field) {
+//                        $scope.columns[k1].hidden = true;
+//                    }
+//                });
+//            });
+//        },
         filterable: {
             messages: {
                 info: "Elementos con valor que: ",
@@ -959,7 +868,7 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
             $scope.datos_filtros = [];
             key_service = data.respuesta.data.key;
 
-            console.log($scope.data_alumnos);
+            //console.log($scope.data_alumnos);
             data_alumnos = [];
             angular.forEach(data.respuesta.data.periodos, function (v, k) {
                 if (!isNaN(k)) {
@@ -1021,6 +930,24 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                                             //$scope.filters_data.matricula.push({label: v2.matricula, id: v2.matricula});
                                         }
                                     }
+                                    if ($scope.filters_dd.ap_pat.indexOf(v2["apellido paterno"]) == -1) {
+                                        if (v2["apellido paterno"] !== null) {
+                                            $scope.filters_dd.ap_pat.push(v2["apellido paterno"]);
+                                            //$scope.filters_data.sub_concepto.push({label: v1.sub_concepto, id: v1.sub_concepto});
+                                        }
+                                    }
+                                    if ($scope.filters_dd.ap_mat.indexOf(v2["apellido materno"]) == -1) {
+                                        if (v2["apellido materno"] !== null) {
+                                            $scope.filters_dd.ap_mat.push(v2["apellido materno"]);
+                                            //$scope.filters_data.sub_concepto.push({label: v1.sub_concepto, id: v1.sub_concepto});
+                                        }
+                                    }
+                                    if ($scope.filters_dd.nombre.indexOf(v2.nombre) == -1) {
+                                        if (v2.nombre !== null) {
+                                            $scope.filters_dd.nombre.push(v2.nombre);
+                                            //$scope.filters_data.sub_concepto.push({label: v1.sub_concepto, id: v1.sub_concepto});
+                                        }
+                                    }
                                     data_alumnos.push({
                                         "apellido_paterno": v2["apellido paterno"],
                                         "apellido_materno": v2["apellido materno"],
@@ -1038,7 +965,8 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                                         "sub_concepto": v1.sub_concepto,
                                         "concepto": v2.concepto,
                                         "sub_concepto_id": v1.sub_concepto_id,
-                                        "periodo": v.periodo
+                                        "ciclo": v.periodo,
+                                        "periodo": $scope.p_byid[v.periodo]
                                     });
                                 }
                             });
@@ -1051,6 +979,10 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                 pageSize: 30,
                 schema: {
                     model: {
+                        periodo: function () {
+                            console.log(this.get("ciclo"));
+                            return this.get("ciclo");
+                        },
                         fields: {
                             total: {type: "number"},
                             beca: {type: "number"},
@@ -1070,15 +1002,7 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                     {field: "importe", aggregate: "sum"}
                 ]
             });
-            //$scope.data_alumnos.data = data_alumnos;
-//            $scope.data_alumnos.aggregate = [
-//                {field: "beca", aggregate: "sum"},
-//                {field: "descuento", aggregate: "sum"},
-//                {field: "descuento_recargo", aggregate: "sum"},
-//                {field: "recargo", aggregate: "sum"},
-//                {field: "total", aggregate: "sum"},
-//                {field: "importe", aggregate: "sum"}
-//            ];
+            _define_columns();
 
         });
     };
@@ -1267,13 +1191,31 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                                             $scope.filters_dd.matricula.push(v2.matricula);
                                         }
                                     }
-                                     if ($scope.filters_dd.concepto.indexOf(v2.concepto) == -1) {
+                                    if ($scope.filters_dd.concepto.indexOf(v2.concepto) == -1) {
                                         if (v2.concepto !== null) {
                                             $scope.filters_dd.concepto.push(v2.concepto);
                                             //$scope.filters_data.sub_concepto.push({label: v1.sub_concepto, id: v1.sub_concepto});
                                         }
                                     }
-
+                                    //
+                                    if ($scope.filters_dd.ap_pat.indexOf(v2["apellido paterno"]) == -1) {
+                                        if (v2["apellido paterno"] !== null) {
+                                            $scope.filters_dd.ap_pat.push(v2["apellido paterno"]);
+                                            //$scope.filters_data.sub_concepto.push({label: v1.sub_concepto, id: v1.sub_concepto});
+                                        }
+                                    }
+                                    if ($scope.filters_dd.ap_mat.indexOf(v2["apellido materno"]) == -1) {
+                                        if (v2["apellido materno"] !== null) {
+                                            $scope.filters_dd.ap_mat.push(v2["apellido materno"]);
+                                            //$scope.filters_data.sub_concepto.push({label: v1.sub_concepto, id: v1.sub_concepto});
+                                        }
+                                    }
+                                    if ($scope.filters_dd.nombre.indexOf(v2.nombre) == -1) {
+                                        if (v2.nombre !== null) {
+                                            $scope.filters_dd.nombre.push(v2.nombre);
+                                            //$scope.filters_data.sub_concepto.push({label: v1.sub_concepto, id: v1.sub_concepto});
+                                        }
+                                    }
                                     data_alumnos.push({
                                         "apellido_paterno": v2["apellido paterno"],
                                         "apellido_materno": v2["apellido materno"],
@@ -1291,7 +1233,8 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                                         "sub_concepto": v1.sub_concepto,
                                         "concepto": v2.concepto,
                                         "sub_concepto_id": v1.sub_concepto_id,
-                                        "periodo": v.periodo
+                                        "ciclo": v.periodo,
+                                        "periodo": $scope.p_byid[v.periodo]
                                     });
                                 }
                             });
@@ -1323,7 +1266,7 @@ UPapp.controller('Administracion_Generales_reporte_adeudos', function ($scope, $
                     {field: "importe", aggregate: "sum"}
                 ]
             });
-            console.log($scope.data_alumnos);
+            _define_columns();
         });
     };
 
@@ -1566,6 +1509,12 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $m
         return true;
     }, function (err) {
     }));
+
+    promises.push(adminService.getNiveles().then(function (data) {
+        $scope.niveles = data.respuesta.data;
+        $scope.model.nivel = Object.keys(data.respuesta.data)[0];
+        //$scope.getSubConceptos();
+    }));
     $q.all(promises).then(function (data) {
         waitingDialog.hide();
         $scope.isBusy = false;
@@ -1668,7 +1617,7 @@ UPapp.controller('Administracion_Agrupaciones_showalumnos', function ($scope, $m
 
     $scope.aif = function () {
         $scope.isBusy = true;
-        adminService.getAlumnosPaquete($scope.model.periodo.idperiodo, $scope.data_plan.id).then(function (data) {
+        adminService.getAlumnosPaquete($scope.model.periodo.idperiodo, $scope.data_plan.id,$scope.model.nivel).then(function (data) {
             $scope.isBusy = false;
             if (!data.error) {
                 //console.log(data);
@@ -1804,8 +1753,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
                 $scope.model.periodo = $scope.periodos[key];
             }
         });
-        $scope.get_scp();
-        _PeriodosReady();
+        _nivelesReady();
     }, function (err) {
     });
     var _PeriodosReady = function () {
@@ -1817,21 +1765,37 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
             }
         });
     };
-    $scope.getSubconceptos = function () {
-        var t_sc = $scope.model;
-        adminService.getAllSubConceptos(t_sc.concepto.id).then(function (data) {
-            console.log(data);
-            if (data.respuesta.data) {
-                $scope.subconceptos = data.respuesta.data;
-                $scope.model.subconcepto = $scope.subconceptos[0];
-            }
+    var _nivelesReady = function () {
+        adminService.getNiveles().then(function (data) {
+            $scope.niveles = data.respuesta.data;
+            $scope.model.nivel = Object.keys(data.respuesta.data)[0];
+            $scope.get_scp();
+            _PeriodosReady();
         });
     };
-    adminService.getNiveles().then(function (data) {
-        $scope.niveles = data.respuesta.data;
-        $scope.model.nivel = Object.keys(data.respuesta.data)[0];
-    });
+    $scope.getSubconceptos = function () {
+        adminService.getSubConceptos($scope.model.concepto.id, $scope.model.periodo.idperiodo, $scope.model.nivel).then(function (data) {
+            $scope.$parent.isBusy = false;
+            if (!data.error) {
+                var arr_length = data.respuesta.data.length;
+                if (arr_length >= 1) {
+                    $scope.subconceptos = data.respuesta.data;
+                    $scope.model.subconcepto = $scope.subconceptos[0];
+                } else {
+                    $scope.subconceptos = [];
+                    $scope.model.subconcepto = [];
+                }
+            }
+
+        });
+    };
+
     $scope.AddSCPaquete = function () {
+        $scope.model.subconcepto['recargo_acumulado']=0;
+        console.log($scope.model.subconcepto);
+        console.log(angular.toJson($scope.model.subconcepto));
+        console.log(angular.fromJson(angular.toJson($scope.model.subconcepto)));
+         
         $scope.scp.push(angular.fromJson(angular.toJson($scope.model.subconcepto)));
         $scope.filldataSC();
         $scope.scp_show = true;
@@ -1867,7 +1831,6 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
         adminService.addSCPaquete(dataSCPaquete).then(function (data) {
             $scope.$parent.isBusy = false;
             $scope.get_scp();
-            console.log(data);
         });
     };
     $scope.tipo_adeudo = [
@@ -1892,8 +1855,7 @@ UPapp.controller('Modal_planCtrl', function ($scope, adminService) {
     $scope.pqt_exists = false;
     $scope.get_scp = function () {
         $scope.model.tipos_pago = false;
-        adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo).then(function (data) {
-            console.log(data);
+        adminService.getSubConceptosPlan($scope.data_modal.id, $scope.model.periodo.idperiodo, $scope.model.nivel).then(function (data) {
             if (!data.error) {
                 datos_paquete = data.respuesta.paquete;
                 $scope.pqt_exists = true;

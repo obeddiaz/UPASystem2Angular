@@ -163,9 +163,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
-        var _getAlumnosPaquete = function (id_periodo, plan_pago) {
+        var _getAlumnosPaquete = function (id_periodo, plan_pago,idnivel) {
             var deferred = $q.defer();
-            $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo}})
+            $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo,idnivel:idnivel}})
                     .success(function (data) {
                         deferred.resolve(data);
                     }).
@@ -253,9 +253,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         };
 
 
-        var _getSubConceptosPlan = function (plan, periodo) {
+        var _getSubConceptosPlan = function (plan, periodo, idnivel) {
             var deferred = $q.defer();
-            $http.get(serviceBase + '/administracion/generales/planes_de_pago/subconceptos', {params: {id: plan, periodo: periodo}})
+            $http.get(serviceBase + '/administracion/generales/planes_de_pago/subconceptos', {params: {id: plan, periodo: periodo, idnivel: idnivel}})
                     .success(function (data) {
                         deferred.resolve(data);
                     }).
@@ -1022,8 +1022,27 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                             id_adeudo: id_adeudo,
                             id_persona: id_persona,
                             periodo: periodo,
-                            aplica_beca: aplica_beca,  // 0 bloquear 1 desbloquear
-                            tipo:1 // 1 o 2 preguntar
+                            aplica_beca: aplica_beca, // 0 bloquear 1 desbloquear
+                            tipo: 1 // 1 o 2 preguntar
+                        }})
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
+        var _suspenderBecaDesde = function (id_adeudo, id_persona, periodo, aplica_beca) {
+            var deferred = $q.defer();
+            $http.get(serviceBase + '/administracion/generales/becas/suspender_mes',
+                    {params: {
+                            id_adeudo: id_adeudo,
+                            id_persona: id_persona,
+                            periodo: periodo,
+                            aplica_beca: aplica_beca, // 0 bloquear 1 desbloquear
+                            tipo: 2 // 1 o 2 preguntar
                         }})
                     .success(function (data) {
                         deferred.resolve(data);
@@ -1089,6 +1108,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
 
         adminServiceFactory.suspenderBeca = _suspenderBeca;
+        adminServiceFactory.suspenderBecaDesde = _suspenderBecaDesde;
 
         adminServiceFactory.setAdeudosalumno = _setAdeudosalumno;
         adminServiceFactory.addSubConcepto = _addSubConcepto;

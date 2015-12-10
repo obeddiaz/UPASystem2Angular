@@ -8,13 +8,13 @@
             <alert ng-repeat="alert in alerts" type="{{alert.type}}">{{alert.msg}}</alert>
             <alert ng-repeat="alert in alertsAdded" type="{{alert.type}}">{{alert.msg}}</alert>
             <div class="row form-group">
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <div class="input-group input-group-sm" style="margin-bottom: 10px;">
                         <span class="input-group-addon">Ciclo</span>
                         <select class="form-control" ng-model="model.periodo" ng-change="aif()" ng-options="periodo.periodo for periodo in periodos"></select>
                     </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <div class="input-group input-group-sm" style="margin-bottom: 10px;">
                         <span class="input-group-addon">Carrera</span>
                         <select class="form-control" ng-change="uncheckAll(); search_filters();" ng-model="model.filter.carrera" ng-options="carrera for carrera in carreras">
@@ -22,6 +22,12 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-lg-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Nivel</span>
+                    <select class="form-control" ng-model="model.nivel" ng-change="aif()" ng-options="key as val for (key,val) in niveles"></select>
+                </div>
+            </div>
             </div>
             <div class="row form-group">
                 <div class="col-sm-3">

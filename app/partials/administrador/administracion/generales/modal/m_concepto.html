@@ -64,13 +64,15 @@
             <th>Sub Concepto</th>
             <th>Descripcion</th>
             <th>Importe</th>
+            <th>Detalles</th>
             <th>Eliminar</th>
             </thead>
             <tr ng-repeat="subconcepto in subconceptos">
                 <td data-title="'Concepto'">{{subconcepto.sub_concepto}}</td>
                 <td data-title="'Importe'">{{subconcepto.descripcion}}</td>
                 <td data-title="'Recargo'"><strong>{{subconcepto.importe| currency}}</strong></td>
-                <td data-title="'Recargo'"><button class="btn btn-default btn-block" ng-click="delete_sc(subconcepto.id)"><i class="fa fa-times"></i> Borrar</button></td>
+                <td data-title="'Recargo'"><button class="btn btn-default btn-block" ng-click="detalles_sc('m_detalles_sc',subconcepto)">Detalles</button></td>
+                <td data-title="'Recargo'"><button ng-confirm-click="¿Borrar Subconcepto Seleccionado?" class="btn btn-default btn-block" ng-click="delete_sc(subconcepto.id)"><i class="fa fa-times"></i> Borrar</button></td>
             </tr>
         </table>
         <div class="form-group">
