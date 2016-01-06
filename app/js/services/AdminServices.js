@@ -163,9 +163,9 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         };
 
-        var _getAlumnosPaquete = function (id_periodo, plan_pago,idnivel) {
+        var _getAlumnosPaquete = function (id_periodo, plan_pago, idnivel) {
             var deferred = $q.defer();
-            $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo,idnivel:idnivel}})
+            $http.get(serviceBase + '/administracion/generales/planes_de_pago/alumnos_paquete_alumno', {params: {id: plan_pago, periodo: id_periodo, idnivel: idnivel}})
                     .success(function (data) {
                         deferred.resolve(data);
                     }).
@@ -726,6 +726,29 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
+        var _SubirAdeudosExcel = function (archivo, paquete_id) {
+            var deferred = $q.defer();
+            var fd = new FormData();
+            angular.forEach(archivo, function (file) {
+                fd.append('paquete_file', file);
+            });
+            fd.append('paquete_id', paquete_id);
+            $http.post(serviceBase + '/administracion/agrupaciones/alumnos_paquete/agregar_archivo', fd,
+                    {
+                        transformRequest: angular.identity,
+                        headers: {
+                            'Content-Type': undefined
+                        }
+                    })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    })
+                    .error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+
         var _getAdeudos = function (persona, periodo) {
             var deferred = $q.defer();
             $http.get(serviceBase + '/estado_de_cuenta/adeudos', {params: {id_persona: persona, periodo: periodo}})
@@ -1075,6 +1098,41 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
         };
+        
+        var _modifyDescuento= function (p1, p2, p3) {
+            var deferred = $q.defer();
+            //p1 importe
+            //p2 importe_recargo
+            //p3 id
+            
+            $http.put(serviceBase + '/caja/descuentos/guardar', {
+                importe: p1,
+                importe_recargo: p2,
+                id: p3
+            })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+        };
+        
+        
+        var _setReferencias = function (referencias) {
+            var deferred = $q.defer();
+            console.log(referencias);
+            $http.post(serviceBase + '/estado_de_cuenta/referencias', {adeudos: referencias})
+                    .success(function (data) {
+                        deferred.resolve(data.respuesta);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
+
+        };
 
         //http://localhost/UPASystem2/public/indexapi.php/administracion/generales/becas/suspender_mes es
 
@@ -1121,16 +1179,20 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addAdeudosimple = _addAdeudosimple;
         adminServiceFactory.addNuevaBeca = _addNuevaBeca;
         adminServiceFactory.SubirReferencias = _SubirReferencias;
+        adminServiceFactory.SubirAdeudosExcel =_SubirAdeudosExcel
         adminServiceFactory.addNIAlumnosBeca = _addNIAlumnosBeca;
         adminServiceFactory.addBecasByFile = _addBecasByFile;
-
         adminServiceFactory.addDescuento = _addDescuento;
+        
+        adminServiceFactory.setReferencias = _setReferencias;
 
         adminServiceFactory.Modifybanco = _Modifybanco;
         adminServiceFactory.ModifyBeca = _ModifyBeca;
         adminServiceFactory.ModifyPlanePago = _ModifyPlanePago;
         adminServiceFactory.ModifyConcepto = _ModifyConcepto;
+        adminServiceFactory.modifyDescuento =_modifyDescuento;
         adminServiceFactory.activarCuentaBanco = _activarCuentaBanco;
+         
 
         adminServiceFactory.DeleteBanco = _DeleteBanco;
         adminServiceFactory.DeleteBeca = _DeleteBeca;

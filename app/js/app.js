@@ -1,6 +1,7 @@
 'use strict';
 
 var serviceBase = '/SistemaUPA2.0/public/index.php';
+var app_version = '1.1';
 // Declare app level module which depends on filters, and services
 var UPapp = angular.module('UPA_Pagos', [
     'ngRoute',
@@ -21,32 +22,32 @@ var UPapp = angular.module('UPA_Pagos', [
 
 UPapp.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/home', {
-            templateUrl: 'partials/index.html',
+            templateUrl: 'partials/index.html?ver='+app_version,
             controller: 'HomeCtrl'
         });
         //.../home/admin
         $routeProvider.when('/home/admin/:pagename', {
-            templateUrl: 'partials/index.html',
+            templateUrl: 'partials/index.html?ver='+app_version,
             controller: 'HomeCtrl'
         });
         $routeProvider.when('/home/alumno/recibo', {
-            templateUrl: 'partials/alumno/recibo.html',
+            templateUrl: 'partials/alumno/recibo.html?ver='+app_version,
             controller: 'ReciboCtrl'
         });
         $routeProvider.when('/home/alumno/:pagename', {
-            templateUrl: 'partials/index.html',
+            templateUrl: 'partials/index.html?ver='+app_version,
             controller: 'HomeCtrl'
         });
         $routeProvider.when('/home/admin/:pagename/:subpagename', {
-            templateUrl: 'partials/index.html',
+            templateUrl: 'partials/index.html?ver='+app_version,
             controller: 'HomeCtrl'
         });
         $routeProvider.when('/home/alumno/:pagename/:subpagename', {
-            templateUrl: 'partials/index.html',
+            templateUrl: 'partials/index.html?ver='+app_version,
             controller: 'HomeCtrl'
         });
         $routeProvider.when('/login', {
-            templateUrl: 'partials/login/index.html'
+            templateUrl: 'partials/login/index.html?ver='+app_version
         });
         $routeProvider.otherwise({redirectTo: '/login'});
     }]);

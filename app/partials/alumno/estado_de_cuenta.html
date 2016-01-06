@@ -35,6 +35,7 @@
                 <td data-title="'Generar'">
                     <button ng-repeat="tp in adeudo.tipos_pago" class="btn" ng-disabled="isBusy" ng-if="(adeudo.status_adeudo == null || adeudo.status_adeudo == 0) && tp.tipo_pago_id == 1" ng-click="Generareferencia(adeudo.ref_counter);">Generar</button>
                 </td>
+                <td><pre>{{adeudo.ref_counter}}</pre></td>
             </tr>
         </table>
     </div>

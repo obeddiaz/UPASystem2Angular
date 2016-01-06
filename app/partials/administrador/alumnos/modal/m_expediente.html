@@ -66,19 +66,24 @@
         <div class="table-responsive" ng-if="adeudos">
             <table id="tableEdo" ng-table="tableParams" class="table table-condensed">
                 <thead>
-                <th>Descripción</th>
+                <th>SubConcepto</th>
+                <th>Descripción/Mes</th>
                 <th>Importe</th>
                 <th>Recargos</th>
+                <th>Descuento</th>
+                <th>Descuento Recargo</th>
                 <th>Vence</th>
                 <th>Beca</th>
                 <th>Saldo</th>
                 <th>Referencia</th>
                 </thead>
-                <tr ng-repeat="adeudo in adeudos | orderBy: 'fecha_limite'" ng-class="{
-                        'bg-success':adeudo.status_adeudo == 1}">
+                <tr ng-repeat="adeudo in adeudos| orderBy: 'fecha_limite'" ng-class="{'bg-success':adeudo.status_adeudo == 1}">
                     <td data-title="'Concepto'">{{adeudo.sub_concepto}}</td>
+                    <td data-title="'Concepto'">{{adeudo.descripcion_sc}}</td>
                     <td data-title="'Importe'">{{adeudo.importe_inicial}}</td>
                     <td data-title="'Recargo'">{{adeudo.recargo_total}}</td>
+                    <td data-title="'Importe'">{{adeudo.descuento}}</td>
+                    <td data-title="'Recargo'">{{adeudo.descuento_recargo}}</td>
                     <td data-title="'Vence'">{{adeudo.fecha_limite}}</td>
                     <td data-title="'Beca'">{{adeudo.beca}}</td>
                     <td data-title="'Total'">{{adeudo.importe}}</td>

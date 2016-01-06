@@ -17,17 +17,19 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
                             _authentication.isAuth = true;
                             _authentication.token = ('token', response_data._token);
                             _authentication.persona = ('persona', persona);
-                            if (parseInt(persona.admin_activo) === 1) {
+                            console.log(parseInt(persona.alumno_activo));
+                            if (parseInt(persona.alumno_activo) === 1||parseInt(persona.alumno) === 1) {
+                                _authentication.user_type = 'alumno';
+                                $window.sessionStorage.setItem('user_type', 'alumno');
+                            } else if (parseInt(persona.admin_activo) === 1) {
                                 _authentication.user_type = 'administrador';
                                 $window.sessionStorage.setItem('user_type', 'administrador');
+                            } else if (parseInt(persona.profesor_activo) === 1) {
+                                _authentication.user_type = 'profesor';
+                                $window.sessionStorage.setItem('user_type', 'administrador');
                             } else {
-                                if (parseInt(persona.profesor_activo) === 1) {
-                                    _authentication.user_type = 'profesor';
-                                    $window.sessionStorage.setItem('user_type', 'administrador');
-                                } else {
-                                    _authentication.user_type = 'alumno';
-                                    $window.sessionStorage.setItem('user_type', 'alumno');
-                                }
+                                _authentication.user_type = 'alumno';
+                                $window.sessionStorage.setItem('user_type', 'alumno');
                             }
                             deferred.resolve(data);
                         } else {

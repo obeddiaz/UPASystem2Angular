@@ -14,101 +14,128 @@
                         <select class="form-control" ng-model="model.periodo" ng-change="aif()" ng-options="periodo.periodo for periodo in periodos"></select>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="input-group input-group-sm" style="margin-bottom: 10px;">
-                        <span class="input-group-addon">Carrera</span>
-                        <select class="form-control" ng-change="uncheckAll(); search_filters();" ng-model="model.filter.carrera" ng-options="carrera for carrera in carreras">
-                            <option value="">Mostrar Todos</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="col-lg-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">Nivel</span>
-                    <select class="form-control" ng-model="model.nivel" ng-change="aif()" ng-options="key as val for (key,val) in niveles"></select>
-                </div>
-            </div>
-            </div>
-            <div class="row form-group">
-                <div class="col-sm-3">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-addon">Grado</span>
-                        <select class="form-control" ng-change="uncheckAll(); search_filters();" ng-model="model.filter.grado" ng-options="grado as grado for grado in grados | orderBy:grado">
-                            <option value="">Mostrar Todos</option>
-                        </select>
+                        <span class="input-group-addon">Nivel</span>
+                        <select class="form-control" ng-model="model.nivel" ng-change="aif()" ng-options="key as val for (key,val) in niveles"></select>
                     </div>
                 </div>
-                <div class="col-sm-3">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon">Grupo</span>
-                        <select class="form-control" ng-change="uncheckAll(); search_filters();" ng-model="model.filter.grupo" ng-options="grupo for grupo in grupos | orderBy:grupo" >
-                            <option value="">Mostrar Todos</option>
-                        </select>
+            </div>
+            <div ng-show="paquete_exists">
+                <div class="form-group" >
+                    <span class="form-group">
+                        <strong>Nota:</Strong> Los alumnos Se agregaran al paquete en el periodo seleccionado.
+                    </span>
+                    <div class="row form-group">
+                        <div class="col-md-4">
+                            <input type="file" file-input="model.file" accept="text/plain" required/>
+                        </div>
+                        <div class="col-md-4">
+                            <button ng-click="upload_file();" ng-disabled="!model.file" type="submit" class="btn btn-primary btn-md btn-block col-md-4">
+                                Agregar Alumnos Excel
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/paquete_ejemplo.xlsx" target="_blank" type="submit" class="btn btn-primary btn-md btn-block col-md-4">Ejemplo de Archivo</a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <button class="btn btn-block" ng-disabled="isBusy" ng-click="Buscar_alumno('m_BuscarAlumno')">Buscar Alumno</button>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <div class="input-group input-group-sm" style="margin-bottom: 10px;">
+                            <span class="input-group-addon">Carrera</span>
+                            <select class="form-control" ng-change="uncheckAll();
+                                    search_filters();" ng-model="model.filter.carrera" ng-options="carrera for carrera in carreras">
+                                <option value="">Mostrar Todos</option>
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="col-md-3">
-                    <button ng-disabled="isBusy" class="btn btn-block" ng-click="search_filters();uncheckAll();">Limpiar Busqueda</button>
+                <div class="row form-group">
+                    <div class="col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">Grado</span>
+                            <select class="form-control" ng-change="uncheckAll();
+                                    search_filters();" ng-model="model.filter.grado" ng-options="grado as grado for grado in grados | orderBy:grado">
+                                <option value="">Mostrar Todos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">Grupo</span>
+                            <select class="form-control" ng-change="uncheckAll();
+                                    search_filters();" ng-model="model.filter.grupo" ng-options="grupo for grupo in grupos | orderBy:grupo" >
+                                <option value="">Mostrar Todos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-block" ng-disabled="isBusy" ng-click="Buscar_alumno('m_BuscarAlumno')">Buscar Alumno</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button ng-disabled="isBusy" class="btn btn-block" ng-click="search_filters();
+                            uncheckAll();">Limpiar Busqueda</button>
+                    </div>
                 </div>
+                <div class="row form-group">
+                    <div class="col-md-3">
+                        <button ng-disabled="!alumnos_show || isBusy || !paquete_periodo" class="btn btn-block" type="button" ng-click="Insc_NoInsc()">
+                            Asignados
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button ng-disabled="alumnos_show || isBusy || !paquete_periodo" class="btn btn-block" type="button" ng-click="Insc_NoInsc();">
+                            No Asignados
+                        </button>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-3">
+                        <button ng-disabled="isBusy || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="checkAllPagina()">
+                            Seleccionar Todos Pagina
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button ng-disabled="isBusy || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="checkAllBusqueda()">
+                            Seleccionar Todos Busqueda
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button ng-disabled="isBusy || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="uncheckAll()">
+                            Desmarcar Todos
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button ng-disabled="isBusy || alumno_assign.add.length == 0 || alumno_assign.add.length == null || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="asignar_alumnos()">
+                            Añadir Alumnos
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <pagination num-pages="numPages" previous-text="Previo" next-text="siguiente" first-text="Primero" last-text="Ultimo"  total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="items_per_page"></pagination>
+                    </div>
+                    <div class="col-md-12">
+                        <h5>Pagina {{bigCurrentPage}} de {{numPages}} | {{bigTotalItems}} Resultados</h5>
+                    </div>
+                </div>
+                <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
+                    <thead>
+                    <th ng-show="alumnos_show">Añadir</th>
+                    <th>Matricula</th>
+                    <th>Nombre</th>
+                    </thead>
+                    <tr ng-repeat="alumno in filteredAlumnos">
+                        <td ng-show="alumnos_show" data-title="'Assign'">
+                            <input type="checkbox" checklist-model="alumno_assign.add" checklist-value="alumno.idpersonas">
+                        </td>
+                        <td data-title="'Descripcion'">{{alumno.matricula}}</td>
+                        <td data-title="'Nombre'">{{alumno.nom + " " + alumno.appat + " " + alumno.apmat}}</td>
+                    </tr>
+                </table>
             </div>
-            <div class="row form-group">
-                <div class="col-md-3">
-                    <button ng-disabled="!alumnos_show || isBusy || !paquete_periodo" class="btn btn-block" type="button" ng-click="Insc_NoInsc()">
-                        Asignados
-                    </button>
-                </div>
-                <div class="col-md-3">
-                    <button ng-disabled="alumnos_show || isBusy || !paquete_periodo" class="btn btn-block" type="button" ng-click="Insc_NoInsc();">
-                        No Asignados
-                    </button>
-                </div>
-            </div>
-            <div class="row form-group">
-                <div class="col-sm-3">
-                    <button ng-disabled="isBusy || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="checkAllPagina()">
-                        Seleccionar Todos Pagina
-                    </button>
-                </div>
-                <div class="col-md-3">
-                    <button ng-disabled="isBusy || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="checkAllBusqueda()">
-                        Seleccionar Todos Busqueda
-                    </button>
-                </div>
-                <div class="col-md-3">
-                    <button ng-disabled="isBusy || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="uncheckAll()">
-                        Desmarcar Todos
-                    </button>
-                </div>
-                <div class="col-md-3">
-                    <button ng-disabled="isBusy || alumno_assign.add.length == 0 || alumno_assign.add.length == null || !paquete_periodo" ng-show="alumnos_show" class="btn btn-block btn-default" type="button" ng-click="asignar_alumnos()">
-                        Añadir Alumnos
-                    </button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <pagination num-pages="numPages" previous-text="Previo" next-text="siguiente" first-text="Primero" last-text="Ultimo"  total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false"  items-per-page="items_per_page"></pagination>
-                </div>
-                <div class="col-md-12">
-                    <h5>Pagina {{bigCurrentPage}} de {{numPages}} | {{bigTotalItems}} Resultados</h5>
-                </div>
-            </div>
-            <table id="tableEdo" ng-table="tableParams" class="table table-striped table-condensed table-hover">
-                <thead>
-                <th ng-show="alumnos_show">Añadir</th>
-                <th>Matricula</th>
-                <th>Nombre</th>
-                </thead>
-                <tr ng-repeat="alumno in filteredAlumnos">
-                    <td ng-show="alumnos_show" data-title="'Assign'">
-                        <input type="checkbox" checklist-model="alumno_assign.add" checklist-value="alumno.idpersonas">
-                    </td>
-                    <td data-title="'Descripcion'">{{alumno.matricula}}</td>
-                    <td data-title="'Nombre'">{{alumno.nom + " " + alumno.appat + " " + alumno.apmat}}</td>
-                </tr>
-            </table>
         </fieldset>
     </form>
 </div>

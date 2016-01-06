@@ -28,21 +28,39 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $l
         ref_count = 0;
         studentService.getAdeudos(curr_user.idpersonas, $scope.Modelo_Periodo.idperiodo).then(function (data) {
             $scope.isBusy = false;
-            console.log(data);
+            if (data.beca) {
+                $scope.beca = data.beca;
+            }
+            delete data.beca;
             $scope.adeudos = data;
-            data.forEach(function (val, key) {
+            for (var x in data) {
                 var banco_allow = false;
-                val.tipos_pago.forEach(function (tpval) {
+                data[x].tipos_pago.forEach(function (tpval) {
                     if (tpval.tipo_pago_id == 1) {
                         banco_allow = true;
                     }
                 });
-                if ((val.status_adeudo == null || val.status_adeudo == 0) && (banco_allow)) {
-                    anp[ref_count] = val;
+                if ((data[x].status_adeudo == null || data[x].status_adeudo == 0) && (banco_allow)) {
+                    anp[ref_count] = data[x];
                     ref_count++;
-                    $scope.adeudos[key]['ref_counter'] = ref_count;
+                    console.log(ref_count);
+                    $scope.adeudos[x]['ref_counter'] = ref_count;
                 }
-            });
+            }
+//            data.forEach(function (val, key) {
+//                var banco_allow = false;
+//                val.tipos_pago.forEach(function (tpval) {
+//                    if (tpval.tipo_pago_id == 1) {
+//                        banco_allow = true;
+//                    }
+//                });
+//                if ((val.status_adeudo == null || val.status_adeudo == 0) && (banco_allow)) {
+//                    anp[ref_count] = val;
+//                    ref_count++;
+//                    console.log(ref_count);
+//                    $scope.adeudos[key]['ref_counter'] = ref_count;
+//                }
+//            });
         }, function (err) {
             $scope.alerts = [
                 {type: 'danger', msg: 'Usuario o contraseña incorrectos'}
@@ -55,6 +73,7 @@ UPapp.controller('EstadoCuentaCtrl', function ($scope, $window, $routeParams, $l
         for (var c = 0; c < a; c++) {
             total_referencias[c] = anp[c];
         }
+
         studentService.setReferencias(total_referencias).then(function (data) {
             console.log(data);
             $scope.isBusy = false;

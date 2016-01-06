@@ -1,5 +1,6 @@
 UPapp.controller("Control_loginCtrl", function ($scope, $location, authService, $window) {
     $scope.isBusy = false;
+    waitingDialog.hide();
     $scope.login = function () {
         $scope.isBusy = true;
         authService.login($scope.loginData).then(function (response) {

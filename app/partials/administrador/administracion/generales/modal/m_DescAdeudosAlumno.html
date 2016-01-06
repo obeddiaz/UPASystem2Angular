@@ -14,7 +14,7 @@
         </div>
         <h5>Numero Oficio</h5>
         <div class="col-sm-12">
-            <textarea class="form-control" style="margin-bottom: 3px; resize: none; height: 50px;" ng-init="model.no_oficio=''" ng-model="model.no_oficio" required></textarea>
+            <textarea class="form-control" style="margin-bottom: 3px; resize: none; height: 50px;" ng-init="model.no_oficio = ''" ng-model="model.no_oficio" required></textarea>
         </div>
         <div class="col-lg-6">
             <div class="input-group input-group-sm">
@@ -22,7 +22,7 @@
                 <select required class="form-control" ng-model="model.tipo_importe_id" ng-options="tipo.id as tipo.nombre for tipo in catalogos.tipo_importe" required></select>
             </div>
         </div>
-        <div class="table-responsive">
+        <div ng-show="adeudos_alumno" class="table-responsive">
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -38,12 +38,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="adeudo in adeudos_alumno">
+                    <tr ng-repeat="adeudo in adeudos_alumno"  ng-class="{'bg-success':adeudo.status_adeudo == 1}">
                         <td>{{adeudo.sub_concepto}}</td>
                         <td>{{adeudo.descripcion_sc}}</td>
                         <td>{{adeudo.fecha_limite}}</td>
                         <td>{{adeudo.beca}}</td>
-                        <td>{{adeudo.recargo_total}}</td>
+                        <td>{{adeudo.recargo_no_descuento}}</td>
                         <td>{{adeudo.importe_inicial}}</td>
                         <td>
                             <div class="input-group input-group-sm">
@@ -52,24 +52,25 @@
                                     <span ng-switch-when="1">%</span>
                                     <span ng-switch-default>-</span>
                                 </div>
-                                <input ng-disabled="(has_descuentos > 0) || (has_descuento_recargo > 0)" type="number" class="form-control" ng-model="adeudo.descuento" required>
+                                <input ng-disabled="adeudo.status_adeudo == 1" type="number" class="form-control" ng-model="adeudo.descuento" required>
                             </div>
                         </td>
-                        <td><div class="input-group input-group-sm">
+                        <td>
+                            <div class="input-group input-group-sm">
                                 <div class="input-group-addon" ng-switch on="model.tipo_importe_id">
                                     <span ng-switch-when="2">$</span>
                                     <span ng-switch-when="1">%</span>
                                     <span ng-switch-default>-</span>
                                 </div>
-                                <input ng-disabled="(has_descuentos > 0) || (has_descuento_recargo > 0)" type="number" class="form-control" ng-model="adeudo.descuento_recargo" required>
+                                <input ng-disabled="adeudo.status_adeudo == 1" type="number" class="form-control" ng-model="adeudo.descuento_recargo" required>
                             </div>
                         </td>
-                        <td>{{adeudo.importe - adeudo.descuento_recargo - adeudo.recargo}}</td>
+                        <td>{{adeudo.importe}}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    </div>    
+    </div>
     <div class="modal-footer" style="border-top: 0px;">
         <div class="row form-group">
             <div class="col-sm-offset-6 col-sm-3">
@@ -78,7 +79,7 @@
                 </button>
             </div>
             <div class="col-sm-3">
-                <button ng-disabled="(has_descuentos > 0) || (has_descuento_recargo > 0) || (model.no_oficio == '')" type="submit" ng-click="add_descuento()" class="btn btn-default btn-md btn-block col-md-4">
+                <button ng-disabled="!(has_adeudos) || (model.no_oficio == '')" type="submit" ng-click="add_descuento()" class="btn btn-default btn-md btn-block col-md-4">
                     Generar Descuento
                 </button>
             </div>

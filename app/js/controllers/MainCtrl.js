@@ -11,11 +11,11 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                 }
             ];
             if ($routeParams.pagename && $routeParams.subpagename) {
-                $scope.template = 'partials/alumno/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html';
+                $scope.template = 'partials/alumno/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html?ver='+app_version;
             } else if ($routeParams.pagename) {
-                $scope.template = 'partials/alumno/' + $routeParams.pagename + '.html';
+                $scope.template = 'partials/alumno/' + $routeParams.pagename + '.html?ver='+app_version;
             } else {
-                $scope.template = 'partials/alumno/estado_de_cuenta.html';
+                $scope.template = 'partials/alumno/estado_de_cuenta.html?ver='+app_version;
             }
         } else if (curr_user.user_type === 'profesor' || curr_user.user_type === 'administrador') {
             var main_route = '#/home/admin';
@@ -54,9 +54,9 @@ UPapp.controller('HomeCtrl', function ($scope, $routeParams, authService, $locat
                 }
             ];
             if ($routeParams.pagename && $routeParams.subpagename) {
-                $scope.template = 'partials/administrador/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html';
+                $scope.template = 'partials/administrador/' + $routeParams.pagename + '/' + $routeParams.subpagename + '.html?ver='+app_version;
             } else if ($routeParams.pagename) {
-                $scope.template = 'partials/administrador/' + $routeParams.pagename + '.html';
+                $scope.template = 'partials/administrador/' + $routeParams.pagename + '.html?ver='+app_version;
             } else {
                 $location.path('/home/admin/administracion/agrupaciones');
             }

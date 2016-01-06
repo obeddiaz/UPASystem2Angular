@@ -1,0 +1,21 @@
+<div ng-controller="Modal_AlumnosAsignados">
+    <div class="modal-header">
+        <label class="pull-right" ng-show="isBusy"><i class="fa fa-spinner fa-spin"></i> Cargando</label>
+        <h4 class="modal-title">Alumnos Asignados y no Asignados a paquete</h4>
+    </div>
+    <div class="modal-body" style="overflow: auto;">
+        <button type='button' ng-click='grid_change();' ng-if='asignados_no_asignados' class='btn'>Mostrar Asignados</button>
+        <button type='button' ng-click='grid_change();' ng-if='!asignados_no_asignados' class='btn'>Mostrar No Asignados</button>
+        <hr>
+        <h4 ng-if='asignados_no_asignados'>No Asignados</h4>
+        <h4 ng-if='!asignados_no_asignados'>Asignados</h4>
+        <div kendo-grid k-options="mainGridOptions" k-data-source="data_alumnos" k-columns="columns"  k-rebind="columns"></div>
+    </div>
+    <div class="modal-footer" style="border-top: 0px;">
+        <div class="col-md-3 pull-right">
+            <button class="btn btn-default btn-md btn-block col-md-4" ng-click="$parent.cancel()">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>

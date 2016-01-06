@@ -143,7 +143,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
         $scope.model.idpersona = [d_a.idpersonas];
         //$scope.$parent.isBusy = true;
         var beca_instance = $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
             controller: 'ModalInstanceCtrl',
             size: 'lg',
             resolve: {
@@ -361,12 +361,12 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
 
     $scope.Buscar_alumno = function (html) {
         var SearchInstance = $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
             controller: 'ModalInstanceCtrl',
             size: 'md',
             resolve: {
                 custom_data: function () {
-                    return {"becados":$scope.becados};
+                    return {"becados": $scope.becados};
                 }
             }
         });
@@ -398,7 +398,7 @@ UPapp.controller('Modal_AlumnosBeca', function ($scope, adminService, $filter, $
 
     $scope.consultar_adeudos = function (html, alumno_data) {
         var ConsultarInstance = $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
             controller: 'ModalInstanceCtrl',
             size: 'lg',
             resolve: {
@@ -456,8 +456,11 @@ UPapp.controller('Modal_ConsultarAdeudosBeca', function ($scope, adminService) {
 });
 
 
-UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
+UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService, $window, $location) {
     $scope.model = [];
+    var ref_count = 0;
+    var anp = {};
+    var total_referencias = {};
     $scope.model['id_persona'] = $scope.data_modal['idpersonas'];
     adminService.getPeriodos().then(function (data) {
         $scope.periodos = data;
@@ -470,18 +473,64 @@ UPapp.controller('Modal_ConsultaAlumno', function ($scope, adminService) {
     }, function (err) {
     });
 
+    $scope.Generareferencia = function (a) {
+        $scope.isBusy = true;
+        for (var c = 0; c < a; c++) {
+            total_referencias[c] = anp[c];
+        }
 
-
+        adminService.setReferencias(total_referencias).then(function (data) {
+            console.log(data);
+            $scope.isBusy = false;
+            $window.sessionStorage.setItem('recibo', JSON.stringify(data));
+            $location.path('/home/alumno/recibo');
+        }, function (err) {
+        });
+    };
     $scope.Mostrar_Referencia = function () {
         ref_count = 0;
-        console.log($scope.model);
         adminService.getAdeudosAlumno($scope.model).then(function (data) {
             if (data.respuesta) {
+                $scope.isBusy = false;
+                if (data.respuesta.beca) {
+                    $scope.beca = data.respuesta.beca;
+                }
+                delete data.respuesta.beca;
                 $scope.adeudos = data.respuesta;
+                for (var x in data.respuesta) {
+                    var banco_allow = false;
+                    data.respuesta[x].tipos_pago.forEach(function (tpval) {
+                        if (tpval.tipo_pago_id == 1) {
+                            banco_allow = true;
+                        }
+                    });
+                    if ((data.respuesta[x].status_adeudo == null || data.respuesta[x].status_adeudo == 0) && (banco_allow)) {
+                        anp[ref_count] = data.respuesta[x];
+                        ref_count++;
+                        $scope.adeudos[x]['ref_counter'] = ref_count;
+                    }
+                }
+
             }
         }, function (err) {
         });
     };
+});
+
+UPapp.controller('Modal_AdeudosRecibosCtrl', function ($scope, $window) {
+    var recibo = $window.sessionStorage.getItem('recibo');
+    recibo = JSON.parse(recibo);
+    $scope.datos_recibo = recibo;
+    $scope.convenio = recibo.data.convenio;
+    $scope.fecha_limite = recibo.data.fecha_limite;
+    $scope.importe_total = recibo.data.importe_total;
+    $scope.apmat = recibo.data.persona[0].apmat;
+    $scope.appat = recibo.data.persona[0].appat;
+    $scope.nom = recibo.data.persona[0].nom;
+    $scope.matricula = recibo.data.persona[0].matricula;
+    $scope.carrera = recibo.data.persona[0].carrera;
+    $scope.periodo = recibo.data.periodo;
+    $scope.referencias = recibo.data.referencias;
 });
 
 UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService, $modal) {
@@ -512,7 +561,7 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService, $modal) 
 
     $scope.detalles_sc = function (html, sc) {
         $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
             controller: 'ModalInstanceCtrl',
             size: 'md',
             resolve: {
@@ -569,7 +618,7 @@ UPapp.controller('Modal_conceptosCtrl', function ($scope, adminService, $modal) 
 });
 
 
-UPapp.controller('Modal_DetallesSC', function ($scope, adminService,$q) {
+UPapp.controller('Modal_DetallesSC', function ($scope, adminService, $q) {
     var promises = [];
     promises.push(adminService.getNiveles().then(function (data) {
         if (data.respuesta.data) {
@@ -577,11 +626,11 @@ UPapp.controller('Modal_DetallesSC', function ($scope, adminService,$q) {
         }
     }));
     $q.all(promises).then(function (data) {
-        $scope.sc_nivel=$scope.niveles[$scope.$parent.data_modal.sc_data.nivel_id];
+        $scope.sc_nivel = $scope.niveles[$scope.$parent.data_modal.sc_data.nivel_id];
     });
 });
 
-UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminService, $modal) {
+UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminService, $modal, $q) {
     $scope.model = [];
     $scope.isBusy = true;
     adminService.getPeriodos().then(function (data) {
@@ -600,16 +649,16 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
         $scope.isBusy = true;
         //console.log($scope.model.periodo);
         adminService.getAdeudosAlumnoNew($scope.$parent.data_modal.idpersonas, $scope.model.periodo.idperiodo).then(function (data) {
-            console.log(data);
             $scope.isBusy = false;
-            $scope.has_descuentos = 0;
-            $scope.has_descuento_recargo = 0;
+            $scope.has_adeudos = false;
             if (data.respuesta) {
+                delete data.respuesta.beca;
                 $scope.adeudos_alumno = data.respuesta;
-                angular.forEach($scope.adeudos_alumno, function (v) {
-                    $scope.has_descuentos += v.descuento;
-                    $scope.has_descuento_recargo += v.descuento_recargo;
-                });
+                for (var x in $scope.adeudos_alumno) {
+                    if (parseInt($scope.adeudos_alumno[x].status_adeudo) == 0) {
+                        $scope.has_adeudos = true;
+                    }
+                }
             } else {
                 $scope.adeudos_alumno = false;
             }
@@ -626,19 +675,28 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
     });
 
     $scope.add_descuento = function () {
-        angular.forEach($scope.adeudos_alumno, function (v) {
-            if ((v.descuento > 0) || (v.descuento_recargo > 0)) {
-                adminService.addDescuento($scope.model.tipo_importe_id, v.id, v.descuento, v.descuento_recargo, $scope.model.no_oficio).then(function (data) {
-
-                });
+        $scope.isBusy = true;
+        var promises = [];
+        for (var x in $scope.adeudos_alumno) {
+            if (parseInt($scope.adeudos_alumno[x].status_adeudo) == 0) {
+                if (($scope.adeudos_alumno[x].descuento_id == null) && (($scope.adeudos_alumno[x].descuento > 0) || ($scope.adeudos_alumno[x].descuento_recargo > 0))) {
+                    promises.push(adminService.addDescuento($scope.model.tipo_importe_id, $scope.adeudos_alumno[x].id, $scope.adeudos_alumno[x].descuento, $scope.adeudos_alumno[x].descuento_recargo, $scope.model.no_oficio).then(function (data) {
+                    }));
+                } else if (($scope.adeudos_alumno[x].descuento_id > 0) && (($scope.adeudos_alumno[x].descuento > 0) || ($scope.adeudos_alumno[x].descuento_recargo > 0))) {
+                    promises.push(adminService.modifyDescuento($scope.adeudos_alumno[x].descuento, $scope.adeudos_alumno[x].descuento_recargo, $scope.adeudos_alumno[x].descuento_id).then(function (data) {
+                    }));
+                }
             }
+        }
+        $q.all(promises).then(function (data) {
+            $scope.isBusy = false;
+            $scope.getAdeudos();
         });
-        $scope.getAdeudos();
-    };
 
+    };
     $scope.generar_Descuento = function (html, adeudo) {
         var SearchInstance = $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
             controller: 'ModalInstanceCtrl',
             size: 'md',
             resolve: {
@@ -647,31 +705,6 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
                 }
             }
         });
-
-//        SearchInstance.result.then(function (searchParams) {
-//            console.log(searchParams);
-//            if ($scope.alumno_filter.carrera) {
-//                filter = $filter('getAllObjectsByProperty')('carrera', $scope.alumno_filter.carrera, $scope.alumnos);
-//            } else {
-//                filter = $scope.alumnos;
-//            }
-//            filter = $filter('filter')(filter, {appat: searchParams.appat});
-//            filter = $filter('filter')(filter, {apmat: searchParams.apmat});
-//            filter = $filter('filter')(filter, {nom: searchParams.nom});
-//            filter = $filter('filter')(filter, {matricula: searchParams.matricula});
-//            console.log(filter);
-//            $scope.bigTotalItems = filter.length;
-//            $scope.bigCurrentPage = 1;
-
-//            filter = $filter('getAllObjectsByProperty')('appat', searchParams.apellido_paterno, filter);
-//            filter = $filter('getAllObjectsByProperty')('apmat', searchParams.apellido_materno, filter);
-//            filter = $filter('getAllObjectsByProperty')('nom', searchParams.nombre, filter);
-//            filter = $filter('getAllObjectsByProperty')('matricula', searchParams.matricula, filter);
-        //console.log(filter);
-        //render_table();
-        //$scope.make_filters();
-        //filter = $filter('getAllObjectsByProperty')('carrera', searchParams, filter);
-        //});
     };
 
 });
@@ -709,7 +742,7 @@ UPapp.controller('Modal_Administrar_becas', function ($scope, adminService, $mod
     $scope.Modificar = function (html, data, idx) {
         BTemp = idx;
         $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
             controller: 'ModalInstanceCtrl',
             size: 'md',
             resolve: {
@@ -726,7 +759,7 @@ UPapp.controller('Modal_Administrar_becas', function ($scope, adminService, $mod
     };
     $scope.AlumnosBeca = function (html, dbeca) {
         $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
             controller: 'ModalInstanceCtrl',
             size: 'lg',
             resolve: {

@@ -1,7 +1,7 @@
 UPapp.controller('Administracion_Generales_becas', function ($scope, adminService, $modal) {
     $scope.Posteriores = function (html) {
         $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver='+app_version,
             controller: 'ModalInstanceCtrl',
             size: 'lg',
             resolve: {
@@ -13,7 +13,7 @@ UPapp.controller('Administracion_Generales_becas', function ($scope, adminServic
     };
     $scope.NuevaBeca = function (html) {
         $modal.open({
-            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html',
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver='+app_version,
             controller: 'ModalInstanceCtrl',
             size: 'md',
             resolve: {
@@ -85,6 +85,7 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
     };
 
     $scope.columns = [
+        {m_select: true, field: "asignada_por", title: "Asignada Por", width: 200},
         {m_select: true, field: "importe", title: "Monto", width: 200},
         {m_select: true, field: "tipo_cobro", title: "Tipo Monto", width: 150},
         {m_select: true, field: "abreviatura", aggregates: ["count"],groupHeaderTemplate: "Beca: #= value # (Cantidad: #= count#)", title: "Beca", width: 150,
@@ -164,7 +165,10 @@ UPapp.controller('Administracion_Generales_reporte_becas', function ($scope, adm
             }},
         {m_select: true, field: "grado", title: "Grado", width: 50},
         {m_select: true, field: "grupo", title: "Grupo", width: 50},
-        {m_select: true, field: "periodo", title: "Periodo", width: 150}
+        {m_select: true, field: "periodo", title: "Periodo", width: 150},
+        {m_select: true, field: "cancelada_por", title: "Cancelada Por", width: 200},
+        {m_select: true, field: "cancelada_fecha", title: "Fecha Cancelacion", width: 200},
+        {m_select: true, field: "cancelada_motivo", title: "Motivo Cancelacion", width: 200}
     ];
 
     /*
