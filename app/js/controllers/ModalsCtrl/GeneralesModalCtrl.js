@@ -630,6 +630,88 @@ UPapp.controller('Modal_DetallesSC', function ($scope, adminService, $q) {
     });
 });
 
+UPapp.controller('Modal_AdeudosRegistroPago', function ($scope, adminService, $modal, $q) {
+    $scope.model = [];
+    $scope.isBusy = true;
+    adminService.getPeriodos().then(function (data) {
+        $scope.isBusy = false;
+        $scope.$parent.isBusy = true;
+        $scope.periodos = data;
+        data.forEach(function (val, key) {
+            if (val.actual == 1) {
+                $scope.model.periodo = $scope.periodos[key];
+            }
+        });
+        $scope.getAdeudos();
+    }, function (err) {
+    });
+    $scope.getAdeudos = function () {
+        $scope.isBusy = true;
+        //console.log($scope.model.periodo);
+        adminService.getAdeudosAlumnoNew($scope.$parent.data_modal.idpersonas, $scope.model.periodo.idperiodo).then(function (data) {
+            $scope.isBusy = false;
+            $scope.has_adeudos = false;
+            if (data.respuesta) {
+                delete data.respuesta.beca;
+                $scope.adeudos_alumno = data.respuesta;
+                for (var x in $scope.adeudos_alumno) {
+                    if (parseInt($scope.adeudos_alumno[x].status_adeudo) == 0) {
+                        $scope.has_adeudos = true;
+                    }
+                }
+            } else {
+                $scope.adeudos_alumno = false;
+            }
+        }, function (err) {
+        });
+    };
+
+    adminService.getCatalogos().then(function (data) {
+        if (data.respuesta.data) {
+            $scope.model.subcidios_id = 1;
+            $scope.catalogos = data.respuesta.data;
+            $scope.model.tipo_importe_id = $scope.catalogos.tipo_importe[1].id;
+        }
+    });
+
+    $scope.add_descuento = function () {
+        $scope.isBusy = true;
+        var promises = [];
+        for (var x in $scope.adeudos_alumno) {
+            if (parseInt($scope.adeudos_alumno[x].status_adeudo) == 0) {
+               // if (($scope.adeudos_alumno[x].descuento_id == null) && (($scope.adeudos_alumno[x].descuento > 0) || ($scope.adeudos_alumno[x].descuento_recargo > 0))) {
+                    promises.push(adminService.addRegistroPago($scope.adeudos_alumno[x].importe_registro_pago,$scope.adeudos_alumno[x].id,$scope.model.razon).then(function (data) {
+                        console.log(data);
+                    }));
+//                } else if (($scope.adeudos_alumno[x].descuento_id > 0) && (($scope.adeudos_alumno[x].descuento > 0) || ($scope.adeudos_alumno[x].descuento_recargo > 0))) {
+//                    promises.push(adminService.modifyDescuento($scope.adeudos_alumno[x].descuento, $scope.adeudos_alumno[x].descuento_recargo, $scope.adeudos_alumno[x].descuento_id).then(function (data) {
+//                    }));
+//                }
+            }
+        }
+        $q.all(promises).then(function () {
+            $scope.isBusy = false;
+            alert("El Pago se Registro Correctamente.");
+            $scope.getAdeudos();
+        });
+
+    };
+    $scope.generar_Descuento = function (html, adeudo) {
+        var SearchInstance = $modal.open({
+            templateUrl: 'partials/administrador/administracion/generales/modal/' + html + '.html?ver=' + app_version,
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                custom_data: function () {
+                    return adeudo;
+                }
+            }
+        });
+    };
+
+});
+
+
 UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminService, $modal, $q) {
     $scope.model = [];
     $scope.isBusy = true;
@@ -680,7 +762,7 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
         for (var x in $scope.adeudos_alumno) {
             if (parseInt($scope.adeudos_alumno[x].status_adeudo) == 0) {
                 if (($scope.adeudos_alumno[x].descuento_id == null) && (($scope.adeudos_alumno[x].descuento > 0) || ($scope.adeudos_alumno[x].descuento_recargo > 0))) {
-                    promises.push(adminService.addDescuento($scope.model.tipo_importe_id, $scope.adeudos_alumno[x].id, $scope.adeudos_alumno[x].descuento, $scope.adeudos_alumno[x].descuento_recargo, $scope.model.no_oficio).then(function (data) {
+                    promises.push(adminService.addDescuento($scope.model.tipo_importe_id, $scope.adeudos_alumno[x].id, $scope.adeudos_alumno[x].descuento, $scope.adeudos_alumno[x].descuento_recargo, $scope.model.no_oficio,$scope.model.descripcion_officio).then(function (data) {
                     }));
                 } else if (($scope.adeudos_alumno[x].descuento_id > 0) && (($scope.adeudos_alumno[x].descuento > 0) || ($scope.adeudos_alumno[x].descuento_recargo > 0))) {
                     promises.push(adminService.modifyDescuento($scope.adeudos_alumno[x].descuento, $scope.adeudos_alumno[x].descuento_recargo, $scope.adeudos_alumno[x].descuento_id).then(function (data) {
@@ -688,8 +770,9 @@ UPapp.controller('Modal_ConsultarAdeudosDescuentos', function ($scope, adminServ
                 }
             }
         }
-        $q.all(promises).then(function (data) {
+        $q.all(promises).then(function () {
             $scope.isBusy = false;
+            alert("El descuento a sido Generado Correctamente.");
             $scope.getAdeudos();
         });
 
@@ -721,7 +804,7 @@ UPapp.controller('Modal_DescuentoAdeudo', function ($scope, adminService) {
     });
 
     $scope.add_descuento = function () {
-        adminService.addDescuento($scope.model.tipo_importe_id, $scope.$parent.data_modal.id, $scope.model.importe, $scope.model.importe_recargo, $scope.model.no_oficio).then(function (data) {
+        adminService.addDescuento($scope.model.tipo_importe_id, $scope.$parent.data_modal.id, $scope.model.importe, $scope.model.importe_recargo, $scope.model.no_oficio,$scope.model.descripcion_officio).then(function (data) {
             $parent.cancel();
         });
     };

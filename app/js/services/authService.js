@@ -12,24 +12,24 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
                         if (!data.error) {
                             var response_data = data.respuesta[0];
                             var persona = response_data.user.persona;
-                            $window.sessionStorage.setItem('token', response_data._token);
-                            $window.sessionStorage.setItem('persona', JSON.stringify(persona));
+                            $window.localStorage.setItem('token', response_data._token);
+                            $window.localStorage.setItem('persona', JSON.stringify(persona));
                             _authentication.isAuth = true;
                             _authentication.token = ('token', response_data._token);
                             _authentication.persona = ('persona', persona);
-                            console.log(parseInt(persona.alumno_activo));
+                            //console.log(parseInt(persona.alumno_activo));
                             if (parseInt(persona.alumno_activo) === 1||parseInt(persona.alumno) === 1) {
                                 _authentication.user_type = 'alumno';
-                                $window.sessionStorage.setItem('user_type', 'alumno');
+                                $window.localStorage.setItem('user_type', 'alumno');
                             } else if (parseInt(persona.admin_activo) === 1) {
                                 _authentication.user_type = 'administrador';
-                                $window.sessionStorage.setItem('user_type', 'administrador');
+                                $window.localStorage.setItem('user_type', 'administrador');
                             } else if (parseInt(persona.profesor_activo) === 1) {
                                 _authentication.user_type = 'profesor';
-                                $window.sessionStorage.setItem('user_type', 'administrador');
+                                $window.localStorage.setItem('user_type', 'administrador');
                             } else {
                                 _authentication.user_type = 'alumno';
-                                $window.sessionStorage.setItem('user_type', 'alumno');
+                                $window.localStorage.setItem('user_type', 'alumno');
                             }
                             deferred.resolve(data);
                         } else {
@@ -45,9 +45,9 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
         };
 
         var _logOut = function () {
-            $window.sessionStorage.removeItem('persona');
-            $window.sessionStorage.removeItem('token');
-            $window.sessionStorage.removeItem('user_type');
+            $window.localStorage.removeItem('persona');
+            $window.localStorage.removeItem('token');
+            $window.localStorage.removeItem('user_type');
             _authentication.isAuth = false;
             _authentication.token = false;
             _authentication.persona = false;
@@ -55,9 +55,9 @@ UPapp_Auth.factory('authService', ['$http', '$q', '$window', function ($http, $q
         };
 
         var _fillAuthData = function () {
-            var authData = $window.sessionStorage.getItem('token');
-            var persona = $window.sessionStorage.getItem('persona');
-            var user_type = $window.sessionStorage.getItem('user_type');
+            var authData = $window.localStorage.getItem('token');
+            var persona = $window.localStorage.getItem('persona');
+            var user_type = $window.localStorage.getItem('user_type');
             if (authData)
             {
                 _authentication.isAuth = true;

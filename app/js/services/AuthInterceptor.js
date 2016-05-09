@@ -8,12 +8,14 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
                     var Auth_Service = $injector.get('authService');
                     //console.log(Auth_Service.authentication.isAuth);
                     config.headers = config.headers || {};
-                    //$location.path('/login');
-                    //console.log($window.sessionStorage.getItem('token'));
+
                     if (Auth_Service.authentication.isAuth) {
                         config.headers.Authorization = $window.sessionStorage.getItem('token');
                     } else {
-                        $location.path('/login');
+                        if ($location.path() != "/login") {
+                            alert("Tu Sesión se a terminado.");
+                            $location.path('/login');
+                        }
                     }
                     return config || $q.when(config);
                 },
@@ -50,7 +52,11 @@ UPapp_Interceptor.config(function ($provide, $httpProvider) {
                                 //console.log(response.data);
                                 Modals.dismissAll();
                                 Auth_Service.logOut();
-                                $location.path('/login');
+                                if ($location.path() != "/login") {
+                                    alert("Tu Sesión se a terminado.");
+                                    $location.path('/login');
+                                }
+                                //$location.path('/login');
                             }
                         }
                         //console.log(response.data);

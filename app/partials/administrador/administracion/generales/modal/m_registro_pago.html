@@ -1,4 +1,4 @@
-<div ng-controller="Modal_ConsultarAdeudosDescuentos">
+<div ng-controller="Modal_AdeudosRegistroPago">
     <div class="modal-header">
         <h4 class="modal-title">Adeudos de Alumno: {{$parent.data_modal.matricula + " " + $parent.data_modal.nom + " " + $parent.data_modal.appat + " " + $parent.data_modal.apmat}}</h4>
     </div>
@@ -12,19 +12,9 @@
                 </div>
             </div>
         </div>
-        <h5>Numero Oficio</h5>
+        <h5>Razon de Registro de Pago</h5>
         <div class="col-sm-12">
-            <textarea class="form-control" style="margin-bottom: 3px; resize: none; height: 50px;" ng-init="model.no_oficio = ''" ng-model="model.no_oficio" required></textarea>
-        </div>
-        <h5>Descripción Oficio</h5>
-        <div class="col-sm-12">
-            <textarea class="form-control" style="margin-bottom: 3px; resize: none; height: 50px;" ng-init="model.descripcion_officio = ''" ng-model="model.descripcion_officio" required></textarea>
-        </div>
-        <div class="col-lg-6">
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">Descuento en</span>
-                <select required class="form-control" ng-model="model.tipo_importe_id" ng-options="tipo.id as tipo.nombre for tipo in catalogos.tipo_importe" required></select>
-            </div>
+            <textarea class="form-control" style="margin-bottom: 3px; resize: none; height: 50px;" ng-init="model.razon = ''" ng-model="model.razon" required></textarea>
         </div>
         <div ng-show="adeudos_alumno" class="table-responsive">
             <table class="table table-bordered">
@@ -36,8 +26,7 @@
                         <th>Beca</th>
                         <th>Recargo</th>
                         <th>Importe</th>
-                        <th>Descuento</th>
-                        <th>Descuento Recargo</th>
+                        <th>Registro Pago</th>
                         <th>Total</th>
                     </tr>
                 </thead>
@@ -52,21 +41,9 @@
                         <td>
                             <div class="input-group input-group-sm">
                                 <div class="input-group-addon" ng-switch on="model.tipo_importe_id">
-                                    <span ng-switch-when="2">$</span>
-                                    <span ng-switch-when="1">%</span>
-                                    <span ng-switch-default>-</span>
+                                    <span>$</span>
                                 </div>
-                                <input ng-disabled="adeudo.status_adeudo == 1" type="number" class="form-control" ng-model="adeudo.descuento" required>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-addon" ng-switch on="model.tipo_importe_id">
-                                    <span ng-switch-when="2">$</span>
-                                    <span ng-switch-when="1">%</span>
-                                    <span ng-switch-default>-</span>
-                                </div>
-                                <input ng-disabled="adeudo.status_adeudo == 1" type="number" class="form-control" ng-model="adeudo.descuento_recargo" required>
+                                <input ng-disabled="adeudo.status_adeudo == 1" type="number" class="form-control" ng-model="adeudo.importe_registro_pago" required>
                             </div>
                         </td>
                         <td>{{adeudo.importe}}</td>
@@ -84,7 +61,7 @@
             </div>
             <div class="col-sm-3">
                 <button ng-disabled="!(has_adeudos) || (model.no_oficio == '') || isBusy" type="submit" ng-click="add_descuento()" class="btn btn-default btn-md btn-block col-md-4">
-                    Generar Descuento
+                    Registrar Pago
                 </button>
             </div>
         </div>

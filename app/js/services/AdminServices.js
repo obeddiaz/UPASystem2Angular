@@ -308,10 +308,17 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
 
         var _addPaquetePlan = function (data_paquete) {
             var deferred = $q.defer();
+            console.log(data_paquete);
+            var nivel_nombre="";
+            if (parseInt(data_paquete.nivel)==1){
+                nivel_nombre="LICENCIATURA";
+            }else{
+                nivel_nombre="MAESTRIA";
+            }
             $http.post(serviceBase + '/administracion/generales/planes_de_pago/paquete_plandepago/agregar', {
                 id_plandepago: data_paquete.id_plandepago,
                 idnivel: data_paquete.nivel,
-                nivel: 'LICENCIATURA',
+                nivel: nivel_nombre,
                 periodo: data_paquete.periodo.idperiodo,
                 recargo: 0,
                 recargo_inscripcion: 0
@@ -1076,7 +1083,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
             return deferred.promise;
         };
 
-        var _addDescuento = function (p1, p2, p3, p4, p5) {
+        var _addDescuento = function (p1, p2, p3, p4, p5, p6) {
             var deferred = $q.defer();
             //p1 tipo importe id
             //p2 adeudo id
@@ -1088,7 +1095,8 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                 adeudos_id: p2,
                 importe: p3,
                 importe_recargo: p4,
-                no_officio: p5
+                no_officio: p5,
+                descripcion_officio:p6
             })
                     .success(function (data) {
                         deferred.resolve(data);
@@ -1132,6 +1140,26 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
                     });
             return deferred.promise;
 
+        };
+        
+         var _addRegistroPago = function (p1, p2, p3) {
+            var deferred = $q.defer();
+            //p1 importe_registro_pago
+            //p2 adeudo_id
+            //p3 razon
+            
+            $http.post(serviceBase + '/administracion/generales/registro_pago/agregar', {
+                importe_registro_pago: p1,
+                adeudo_id: p2,
+                razon: p3
+            })
+                    .success(function (data) {
+                        deferred.resolve(data);
+                    }).
+                    error(function (err, status) {
+                        deferred.reject(err);
+                    });
+            return deferred.promise;
         };
 
         //http://localhost/UPASystem2/public/indexapi.php/administracion/generales/becas/suspender_mes es
@@ -1183,6 +1211,7 @@ UPapp.factory('adminService', ['$http', '$q', '$window', 'cacheService', functio
         adminServiceFactory.addNIAlumnosBeca = _addNIAlumnosBeca;
         adminServiceFactory.addBecasByFile = _addBecasByFile;
         adminServiceFactory.addDescuento = _addDescuento;
+        adminServiceFactory.addRegistroPago =_addRegistroPago;
         
         adminServiceFactory.setReferencias = _setReferencias;
 
