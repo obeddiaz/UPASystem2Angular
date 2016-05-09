@@ -4,7 +4,7 @@ UPapp.controller('Administracion_Generales', function ($scope) {
         {title: 'Registro de Pago', click: 'registro_de_pago'},
         {title: 'Conceptos', click: 'conceptos'},
         {title: 'Bancos', click: 'bancos'},
-        {title: 'Recursamiento', click: 'single_adeudo'},
+        //{title: 'Recursamiento', click: 'single_adeudo'},
         {title: 'Archivo Referencias', click: 'subir_referencias'},
         {title: 'Becas', click: 'becas'},
         {title: 'Reporte Becas', click: 'reporte_becas'},

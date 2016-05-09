@@ -234,7 +234,7 @@
                                 </tr>
                                 <tr>
                                     <td style="text-align: center;">
-                                        20{{datos_recibo.data.persona[0].idperiodo}}
+                                        20{{datos_recibo.data.periodo}}
                                     </td>
                                     <td style="text-align: center;">
                                         CIE {{datos_recibo.data.convenio}}
@@ -274,12 +274,16 @@
                                     <td>
                                         <strong>Referencia</strong>
                                     </td>
+                                    <td>
+                                        <strong>Fecha Limite</strong>
+                                    </td>
                                 </tr>
                                 <tr ng-repeat="referencia in datos_recibo.data.referencias">
                                     <td>{{ referencia.sub_concepto}}</td>
                                     <td>Descripcion</td>
-                                    <td>{{ referencia.importe | currency:MDX}}</td>
+                                    <td>$ {{ referencia.importe | number:2}}</td>
                                     <td>{{ referencia.referencia}}</td>
+                                    <td>{{ referencia.fecha_limite}}</td>
                                 </tr>
                             </tbody>
                         </table>

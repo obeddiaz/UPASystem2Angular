@@ -36,12 +36,12 @@
                         <td>{{adeudo.descripcion_sc}}</td>
                         <td>{{adeudo.fecha_limite}}</td>
                         <td ng-switch on="adeudo.aplica_beca">
-                            <button ng-show="adeudo.locker_manager!=1" ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="0" ng-click="beca_activar_suspender(adeudo.id, 1)">Activar</button>
-                            <button ng-show="adeudo.locker_manager!=1" ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="1" ng-click="beca_activar_suspender(adeudo.id, 0)">Suspender</button>
+                            <button ng-show="adeudo.locker_manager!=1" class="btn btn-default" ng-switch-when="0" ng-click="beca_activar_suspender(adeudo.id, 1)">Activar</button>
+                            <button ng-show="adeudo.locker_manager!=1" class="btn btn-default" ng-switch-when="1" ng-click="beca_activar_suspender(adeudo.id, 0)">Suspender</button>
                         </td>
                         <td ng-switch on="adeudo.aplica_beca">
-                            <button ng-show="adeudo.locker_manager!=1" ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="0" ng-click="beca_act_susp_desde(adeudo.id, 1)">Activar Posteriores</button>
-                            <button ng-show="adeudo.locker_manager!=1" ng-disabled="$parent.data_modal.alumno_data.status==0" class="btn btn-default" ng-switch-when="1" ng-click="beca_act_susp_desde(adeudo.id, 0)">Suspender Posteriores</button>
+                            <button ng-show="adeudo.locker_manager!=1"  class="btn btn-default" ng-switch-when="0" ng-click="beca_act_susp_desde(adeudo.id, 1)">Activar Posteriores</button>
+                            <button ng-show="adeudo.locker_manager!=1" class="btn btn-default" ng-switch-when="1" ng-click="beca_act_susp_desde(adeudo.id, 0)">Suspender Posteriores</button>
                         </td>
                     </tr>
                 </tbody>
